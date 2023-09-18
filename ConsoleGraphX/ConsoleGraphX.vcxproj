@@ -133,6 +133,8 @@
     <ClInclude Include="engine.h" />
     <ClInclude Include="dispatcher.h" />
     <ClInclude Include="input_system.h" />
+    <ClInclude Include="player_controller.h" />
+    <ClInclude Include="player_controller_system.h" />
     <ClInclude Include="render_system.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene_system.h" />
@@ -153,6 +155,8 @@
     <ClCompile Include="entity.h" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player_controller.cpp" />
+    <ClCompile Include="player_controller_system.cpp" />
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_system.cpp" />

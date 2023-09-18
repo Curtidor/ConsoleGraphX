@@ -1,9 +1,11 @@
 #pragma once
 #include <string>
+#include <stack>
 #include <unordered_map>
 #include <vector>
 #include <functional>
 #include <queue>
+#include "debugger.h"
 
 /**
  * @brief A generic event dispatcher that supports event prioritization.
@@ -34,10 +36,12 @@ public:
         auto it = _s_event_registry.find(event_name);
 
         if (it != _s_event_registry.end()) {
-            while (!it->second.empty()) {
-                const auto& listener = it->second.top();
+            std::priority_queue<Listener> listener_queue_copy = it->second;
+
+            while (!listener_queue_copy.empty()) {
+                Listener listener = listener_queue_copy.top();
                 listener.callback(eventData);
-                it->second.pop();
+                listener_queue_copy.pop();
             }
         }
     }

@@ -15,6 +15,7 @@ public:
 
 	Sprite();
 	Sprite(int width, int height);
+	Sprite(int width, int height, int color);
 	Sprite(int width, int height, CHAR_INFO* pixels);
 
 	~Sprite() override;

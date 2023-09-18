@@ -11,6 +11,13 @@ Sprite::Sprite(int width, int height)
 	std::fill(m_pixels, m_pixels + (m_width * m_height), c);
 }
 
+Sprite::Sprite(int width, int height, int color)
+	: m_width(width), m_height(height), m_pixels(new CHAR_INFO[width * height]), m_transform(Transform())
+{
+	CHAR_INFO c = { L'█', color };
+	std::fill(m_pixels, m_pixels + (m_width * m_height), c);
+}
+
 Sprite::Sprite(int width, int height, CHAR_INFO* pixels)
 	:m_width(width), m_height(height), m_pixels(pixels), m_transform(Transform())
 {}

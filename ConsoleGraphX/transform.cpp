@@ -1,54 +1,56 @@
 #include "transform.h"
-#include <iostream>
 
 Transform::Transform()
+    : m_position(0.0f, 0.0f, 0.0f), m_world_position(0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f)
 {
-    this->m_position = Vector3();
-    this->m_scale = Vector3(1, 1, 1);
-    this->m_rotation = 0;
 }
 
 Transform::Transform(float x, float y, float scaleX, float scaleY)
+    : m_position(x, y, 0.0f), m_world_position(x, y, 0.0f), m_scale(scaleX, scaleY, 1.0f), m_rotation(0.0f)
 {
-    this->m_position = Vector3(x, y);
-    this->m_scale = Vector3(scaleX, scaleY, 1);
-    this->m_rotation = 0;
 }
 
 Transform::Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ)
+    : m_position(x, y, z), m_world_position(x, y, z), m_scale(scaleX, scaleY, scaleZ), m_rotation(0.0f)
 {
-    this->m_position = Vector3(x, y, z);
-    this->m_scale = Vector3(scaleX, scaleY, scaleZ);
-    this->m_rotation = 0;
 }
 
-Transform::~Transform(){}
-
+Transform::~Transform()
+{
+}
 
 void Transform::SetPosition(float x, float y)
 {
-    this->m_position.x = x;
-    this->m_position.y = y;
+    m_position.x = x;
+    m_position.y = y;
 }
 
 void Transform::SetPosition(float x, float y, float z)
 {
-    this->m_position.x = x;
-    this->m_position.y = y;
-    this->m_position.z = z;
+    m_position.x = x;
+    m_position.y = y;
+    m_position.z = z;
 }
 
 void Transform::SetScale(float x, float y)
 {
-    this->m_scale.x = x;
-    this->m_scale.y = y;
+    m_scale.x = x;
+    m_scale.y = y;
 }
 
 void Transform::SetScale(float x, float y, float z)
 {
-    this->m_scale.x = x;
-    this->m_scale.y = y;
-    this->m_scale.z = z;
+    m_scale.x = x;
+    m_scale.y = y;
+    m_scale.z = z;
 }
 
-const Vector3 Transform::GetPosition() { return this->m_position; }
+const Vector3 Transform::GetPosition()
+{
+    return m_position;
+}
+
+void Transform::Translate(const Vector3& translation)
+{
+    m_position += translation;
+}

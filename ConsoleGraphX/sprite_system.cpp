@@ -1,5 +1,4 @@
 #include "sprtite_system.h"
-#include "debugger.h"
 
 std::vector<Entity*> SpriteSystem::_s_entities_w_sprites;
 
@@ -7,6 +6,11 @@ void SpriteSystem::Initalize() const
 {
 	Dispatcher<Entity*>::RegisterListener("AddComponentstruct Sprite", SpriteSystem::RegisterEntitySprite);
 	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct Sprite", SpriteSystem::DeregisterEntitySprite);
+}
+
+void SpriteSystem::Update() const
+{
+	
 }
 
 

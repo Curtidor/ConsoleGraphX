@@ -12,18 +12,25 @@ void StartGame()
 	Debugger debugger = Debugger(10);
 	Engine engine = Engine(270, 100, 3, 6, &debugger);
 	
-	ComponentSystem::RegisterComponent<Sprite>();
-	ComponentSystem::RegisterComponent<Transform>();
-
 	Scene* scene = new Scene();
 	SceneSystem::LoadScene(scene);
 
-	Entity* entity = new Entity("Entity");
+	Entity* grass = new Entity("Grass");
+	grass->GetComponent<Transform>()->SetPosition(0, 80);
+	grass->AddComponent<Sprite>(270, 10, 10);
+	
+	Entity* dirt = new Entity("Dirt");
+	dirt->GetComponent<Transform>()->SetPosition(0, 0);
+	dirt->AddComponent<Sprite>(270, 80, 3);
 
-	entity->GetComponent<Transform>()->SetPosition(10, 10);
-	entity->AddComponent<Sprite>(100, 10);
+	Entity* player = new Entity("Player");
+	player->GetComponent<Transform>()->SetPosition(10, 68);
+	player->AddComponent<Sprite>(7, 12, 6);
+	player->AddComponent<PlayerController>(player, 50.0f, 5, 9);
 
-	scene->RegisterEntity(entity);
+	scene->RegisterEntity(grass);
+	scene->RegisterEntity(dirt);
+	scene->RegisterEntity(player);
 
 	engine.Run();
 }

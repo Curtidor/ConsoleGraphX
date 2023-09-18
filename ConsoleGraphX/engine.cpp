@@ -1,17 +1,20 @@
 #include "engine.h"
 
 Engine::Engine(short screen_width, short screen_height, short pixel_width, short pixel_height, Debugger* debugger)
-	: m_debugger(debugger)
+	: _m_debugger(debugger)
 {
 	int debugger_height = debugger != nullptr ? debugger->GetMaxMessages() : 0;
 
 	Screen* screen = new Screen(screen_width, screen_height, debugger_height, pixel_width, pixel_height);
 	screen->FillScreen({ Screen::pixel, 0 });
 
-	SpriteSystem* sps = new SpriteSystem();
-	sps->Initalize();
+    _m_system = new System();
+    _m_system->RegisterSystem<SpriteSystem>();
+    _m_system->RegisterSystem<PlayerControllerSystem>();
 
-	m_systems.push_back(sps);
+    ComponentSystem::RegisterComponent<Sprite>();
+    ComponentSystem::RegisterComponent<Transform>();
+    ComponentSystem::RegisterComponent<PlayerController>();
 }
 
 
@@ -28,8 +31,10 @@ void Engine::Run()
         // InputSystem::UpdateMousePosition();
         RenderSystem::DrawSprites_SS(SpriteSystem::GetEntitySprites());
 
-        if (this->m_debugger != nullptr)
-            this->m_debugger->DisplayMessages();
+        if (this->_m_debugger != nullptr)
+            this->_m_debugger->DisplayMessages();
+
+        _m_system->Update();
 
         active_screen->DrawScreen();
         active_screen->FillScreen({ Screen::pixel, 0 });
@@ -49,6 +54,6 @@ void Engine::Run()
         active_screen->SetConsoleName("FPS: " + std::to_string(fps));
 
         // Sleep to control the frame rate (e.g., limit to 60 FPS)
-       // std::this_thread::sleep_for(std::chrono::milliseconds(16)); // 16 milliseconds for 60 FPS
+       //std::this_thread::sleep_for(std::chrono::milliseconds(16)); // 16 milliseconds for 60 FPS
     }
 }

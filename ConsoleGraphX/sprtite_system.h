@@ -12,6 +12,8 @@ private:
 
 public:
 	void Initalize() const override;
+	void Update() const override;
+
 	static void RegisterEntitySprite(Entity* entity);
 
 	static void DeregisterEntitySprite(Entity* entity);
