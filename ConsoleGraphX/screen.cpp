@@ -16,7 +16,7 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	short total_height = m_height + m_debugger_height;
 
 	// Set the buffer size and allocate memory for the buffer
-	this->m_screenBuffer->bufferSize = { m_width, total_height};
+	this->m_screenBuffer->bufferSize = { m_width, total_height };
 	this->m_screenBuffer->buffer = new CHAR_INFO[m_screenBuffer->bufferSize.X * m_screenBuffer->bufferSize.Y];
 	this->m_screenBuffer->bufferCoord = { 0, 0 };
 	this->m_screenBuffer->writePosition = { 0, 0, (short)(m_screenBuffer->bufferSize.X - 1), (short)(m_screenBuffer->bufferSize.Y - 1) };
@@ -24,14 +24,14 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	this->m_screenBuffer->wHandle = GetConsoleWindow();
 
 	// Set the console screen buffer size
-	COORD totalBufferSize = { m_width * fontWidth, total_height * fontHeight };
+	COORD totalBufferSize = { m_width , m_height };
 	SetConsoleScreenBufferSize(m_screenBuffer->hConsole, totalBufferSize);
 
 	// Set the console font size and window size
 	SetConsoleFontSize(fontWidth, fontHeight);
-	SetConsoleWindowSize(m_width * fontWidth, total_height * fontHeight);
+	SetConsoleWindowSize(m_width, m_height);
 
-	FillScreen({pixel , 0});
+	FillScreen({ pixel , 0 });
 
 	Screen::s_active_screen = this;
 }
@@ -63,7 +63,7 @@ void Screen::RandomFillScreen()
 
 		for (int j = 0; j < Screen::GetWidth(); j++) {
 
-			this->SetPixel(j, i, {pixel , Screen::RandomColor() });
+			this->SetPixel(j, i, { pixel , Screen::RandomColor() });
 
 		}
 	}
@@ -213,4 +213,3 @@ WORD Screen::RandomColor()
 
 Screen* Screen::GetActiveScreen() { return Screen::s_active_screen; }
 CHAR_INFO* Screen::GetBuffer() { return Screen::s_active_screen->m_screenBuffer->buffer; }
-

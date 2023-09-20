@@ -1,12 +1,13 @@
 #include "render_system.h"
 #include <iostream>
 
-
 /*
 Parallelization: If you have a multi-core CPU, you could explore parallelizing the rendering process.
 For example, you could divide the screen into smaller regions and assign a separate thread 
 to copy pixels for each region. This can improve performance, especially if you have a lot of sprites to render.
 */
+
+
 void RenderSystem::DrawSprite_SS(Entity* entity_w_sprite)
 {
     if (!entity_w_sprite)

@@ -32,6 +32,11 @@ void Transform::SetPosition(float x, float y, float z)
     m_position.z = z;
 }
 
+void Transform::SetPosition(const Vector3& position)
+{
+    m_position = position;
+}
+
 void Transform::SetScale(float x, float y)
 {
     m_scale.x = x;

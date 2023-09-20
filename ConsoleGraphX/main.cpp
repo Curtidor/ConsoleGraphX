@@ -27,10 +27,14 @@ void StartGame()
 	player->GetComponent<Transform>()->SetPosition(10, 68);
 	player->AddComponent<Sprite>(7, 12, 6);
 	player->AddComponent<PlayerController>(player, 50.0f, 5, 9);
+	PhysicsBody2D* p_body = (PhysicsBody2D*)player->AddComponent<PhysicsBody2D>();
+
 
 	scene->RegisterEntity(grass);
 	scene->RegisterEntity(dirt);
 	scene->RegisterEntity(player);
+
+	p_body->SetAcceleration(Vector3(10, 0, 0));
 
 	engine.Run();
 }

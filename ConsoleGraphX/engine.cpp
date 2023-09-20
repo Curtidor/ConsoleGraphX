@@ -1,20 +1,22 @@
 #include "engine.h"
 
 Engine::Engine(short screen_width, short screen_height, short pixel_width, short pixel_height, Debugger* debugger)
-	: _m_debugger(debugger)
+    : _m_debugger(debugger)
 {
-	int debugger_height = debugger != nullptr ? debugger->GetMaxMessages() : 0;
+    int debugger_height = debugger != nullptr ? debugger->GetMaxMessages() : 0;
 
-	Screen* screen = new Screen(screen_width, screen_height, debugger_height, pixel_width, pixel_height);
-	screen->FillScreen({ Screen::pixel, 0 });
+    Screen* screen = new Screen(screen_width, screen_height, debugger_height, pixel_width, pixel_height);
+    screen->FillScreen({ Screen::pixel, 0 });
 
     _m_system = new System();
     _m_system->RegisterSystem<SpriteSystem>();
     _m_system->RegisterSystem<PlayerControllerSystem>();
+    _m_system->RegisterSystem<PhysicsSystem>();
 
     ComponentSystem::RegisterComponent<Sprite>();
     ComponentSystem::RegisterComponent<Transform>();
     ComponentSystem::RegisterComponent<PlayerController>();
+    ComponentSystem::RegisterComponent<PhysicsBody2D>();
 }
 
 

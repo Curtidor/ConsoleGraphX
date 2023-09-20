@@ -6,6 +6,7 @@
 #include "input_system.h"
 #include "debugger.h"
 #include "player_controller_system.h"
+#include "physics_system.h"
 #include "screen.h"
 
 class Engine

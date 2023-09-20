@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{5a7a9445-18d0-4bcc-bae3-2b627e407462}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components\Colliders">
+      <UniqueIdentifier>{69ae473d-c116-4a18-b1f6-9a5e5e17fb97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components\Colliders">
+      <UniqueIdentifier>{5a686656-552a-4c32-80b6-517239888d89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="screen.h">
@@ -107,6 +113,21 @@
     </ClInclude>
     <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_body2d.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="physics_system.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="box_collider2d.h">
+      <Filter>Header Files\Components\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="circle_collider2d.h">
+      <Filter>Header Files\Components\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="collider2d.h">
+      <Filter>Header Files\Components\Colliders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +190,18 @@
     </ClCompile>
     <ClCompile Include="player_controller_system.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_body2d.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_system.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="box_collider2d.cpp">
+      <Filter>Source Files\Components\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="circle_collider2d.cpp">
+      <Filter>Source Files\Components\Colliders</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

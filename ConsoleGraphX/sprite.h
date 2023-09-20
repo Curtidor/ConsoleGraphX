@@ -11,7 +11,6 @@ private:
 	CHAR_INFO* m_pixels;
 
 public:
-	Transform m_transform;
 
 	Sprite();
 	Sprite(int width, int height);
