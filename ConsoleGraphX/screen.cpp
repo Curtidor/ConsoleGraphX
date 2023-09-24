@@ -3,7 +3,7 @@
 Screen* Screen::s_active_screen = nullptr;
 
 Screen::Screen(short width, short height, short debugger_height, short fontWidth, short fontHeight)
-	: m_width(width), m_height(height), m_debugger_height(debugger_height)
+	: m_width(width), m_height(height), m_debugger_height(debugger_height), m_pixel_width(fontWidth), m_pixel_height(fontHeight)
 {
 	this->m_screenBuffer = new ScreenBuffer();
 
@@ -24,12 +24,12 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	this->m_screenBuffer->wHandle = GetConsoleWindow();
 
 	// Set the console screen buffer size
-	COORD totalBufferSize = { m_width , m_height };
+	COORD totalBufferSize = { m_width , total_height };
 	SetConsoleScreenBufferSize(m_screenBuffer->hConsole, totalBufferSize);
 
 	// Set the console font size and window size
 	SetConsoleFontSize(fontWidth, fontHeight);
-	SetConsoleWindowSize(m_width, m_height);
+	SetConsoleWindowSize(m_width, total_height);
 
 	FillScreen({ pixel , 0 });
 
@@ -195,11 +195,24 @@ void Screen::SetConsoleName(const std::string& name)
 /// </summary>
 /// <returns></returns>
 int Screen::GetWidth() { return this->m_width; }
+
 /// <summary>
 /// Get the height of the screen
 /// </summary>
 /// <returns></returns>
 int Screen::GetHeight() { return this->m_height; }
+
+/// <summary>
+/// Get the width of a pixel
+/// </summary>
+/// <returns></returns>
+int Screen::GetPixelWidth() { return this->m_pixel_width; }
+
+/// <summary>
+/// Get the height of a pixel
+/// </summary>
+/// <returns></returns>
+int Screen::GetPixelHeight() { return this->m_pixel_height; }
 
 int Screen::GetWidth_A() { return Screen::s_active_screen->m_width; }
 int Screen::GetHeight_A() { return Screen::s_active_screen->m_height; }

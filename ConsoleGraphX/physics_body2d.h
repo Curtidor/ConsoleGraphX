@@ -10,6 +10,7 @@ private:
     float _m_mass;
     float _m_friction;
     bool _m_gravity;
+    bool _m_is_static;
 
 public:
     PhysicsBody2D();

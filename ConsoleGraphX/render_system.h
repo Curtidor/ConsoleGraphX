@@ -12,4 +12,6 @@ public:
 
 	static void DrawSprites_SS(const std::vector<Entity*>& entities);
 	static void DrawSprites_SP(const std::vector<Entity*>& entities);
+
+	static void DrawLine(Vector2 origin, Vector2 end, int color);
 };

@@ -92,4 +92,31 @@ void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
     }
 }
 
+void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
+{
+    CHAR_INFO pixel{ Screen::pixel, color };
+
+    int dx = end.x - origin.x;
+    int dy = end.y - origin.y;
+
+    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+
+    float xIncrement = static_cast<float>(dx) / steps;
+    float yIncrement = static_cast<float>(dy) / steps;
+
+    float x = origin.x;
+    float y = origin.y;
+
+    for (int i = 0; i <= steps; i++) {
+        int ix = static_cast<int>(x);
+        int iy = static_cast<int>(y);
+        
+        Screen::SetPixel_A(ix, iy, pixel);
+        
+        x += xIncrement;
+        y += yIncrement;
+    }
+}
+
+
 

@@ -8,6 +8,7 @@
 #include "player_controller_system.h"
 #include "physics_system.h"
 #include "screen.h"
+#include "scene_system.h"
 
 class Engine
 {

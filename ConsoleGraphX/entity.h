@@ -6,11 +6,12 @@
 #include "component_system.h"
 #include "transform.h"
 #include "dispatcher.h"
+#include "game_object.h"
 
 /**
  * @brief A class representing an entity in the entity-component system (ECS).
  */
-class Entity
+class Entity 
 {
 private:
     std::string name;

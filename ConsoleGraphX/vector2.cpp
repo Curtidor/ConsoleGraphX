@@ -49,6 +49,15 @@ Vector2& Vector2::operator/=(float scalar) {
     return *this;
 }
 
+void Vector2::PerpendicularPoint(const Vector2& start, const Vector2& end, Vector2& o_perpendicular_point)
+{
+    o_perpendicular_point.x = end.y - start.y;
+    o_perpendicular_point.y = end.x - start.x;
+}
+
+
+
+
 double Vector2::Magnitude() const {
     return std::sqrt(x * x + y * y);
 }

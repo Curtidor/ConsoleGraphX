@@ -10,6 +10,8 @@ class Screen
 private:
 	const short m_width;
 	const short m_height;
+	const short m_pixel_width;
+	const short m_pixel_height;
 	const short m_debugger_height;
 	ScreenBuffer* m_screenBuffer;
 	
@@ -34,8 +36,10 @@ public:
 	void FillScreen(const CHAR_INFO& color);
 	void RandomFillScreen();
 
+	int GetPixelWidth();
 	int GetWidth();
 	int GetHeight();
+	int GetPixelHeight();
 
 	bool DrawScreen();
 	bool SetConsoleFontSize(short width, short height);

@@ -55,6 +55,12 @@
     <Filter Include="Source Files\Components\Colliders">
       <UniqueIdentifier>{5a686656-552a-4c32-80b6-517239888d89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{af56cb7f-edfb-4603-8656-bb1d56ad0078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\GameObjects">
+      <UniqueIdentifier>{93dbd3d9-c92b-438a-b45e-a939504918c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="screen.h">
@@ -128,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="collider2d.h">
       <Filter>Header Files\Components\Colliders</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

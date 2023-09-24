@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cctype>
 #include <windows.h>
-#include "Vector2.h"
-#include "Screen.h"
+#include "vector2.h"
+#include "screen.h"
 
 enum class Key : char
 {

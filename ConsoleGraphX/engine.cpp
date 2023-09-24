@@ -12,7 +12,7 @@ Engine::Engine(short screen_width, short screen_height, short pixel_width, short
     _m_system->RegisterSystem<SpriteSystem>();
     _m_system->RegisterSystem<PlayerControllerSystem>();
     _m_system->RegisterSystem<PhysicsSystem>();
-
+    
     ComponentSystem::RegisterComponent<Sprite>();
     ComponentSystem::RegisterComponent<Transform>();
     ComponentSystem::RegisterComponent<PlayerController>();
@@ -27,10 +27,13 @@ void Engine::Run()
     int frameCount = 0;
     auto lastTime = std::chrono::high_resolution_clock::now();
 
+    Screen* screen = Screen::GetActiveScreen();
+
+
     while (true)
     {
         InputSystem::GetPressedKeys();
-        // InputSystem::UpdateMousePosition();
+        InputSystem::UpdateMousePosition();
         RenderSystem::DrawSprites_SS(SpriteSystem::GetEntitySprites());
 
         if (this->_m_debugger != nullptr)
@@ -54,8 +57,9 @@ void Engine::Run()
         }
 
         active_screen->SetConsoleName("FPS: " + std::to_string(fps));
+        
+        Vector2 mouse_pos = InputSystem::GetMousePosition();
+        _m_debugger->LogMessage(std::to_string(mouse_pos.x / screen->GetPixelWidth()) + " : " + std::to_string(mouse_pos.y / screen->GetPixelHeight()));
 
-        // Sleep to control the frame rate (e.g., limit to 60 FPS)
-       //std::this_thread::sleep_for(std::chrono::milliseconds(16)); // 16 milliseconds for 60 FPS
     }
 }
