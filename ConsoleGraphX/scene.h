@@ -5,11 +5,16 @@
 class Scene
 {
 private:
-    std::unordered_set<Entity*> entities;
+    const std::string _m_scene_name;
+    std::unordered_set<Entity*> _m_entities;
 
 public:
+    Scene(std::string name);
+
     void RegisterEntity(Entity* entity);
     void DeregisterEntity(Entity* entity);
     bool InScene(Entity* entity);
+
     const std::unordered_set<Entity*>& GetEntities();
+    const std::string& GetSceneName();
 };

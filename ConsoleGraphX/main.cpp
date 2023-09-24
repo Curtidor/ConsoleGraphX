@@ -11,8 +11,9 @@ void StartGame()
 	Debugger debugger = Debugger(10);
 	Engine engine = Engine(270, 100, 3, 6, &debugger);
 	
-	Scene* scene = new Scene();
-	SceneSystem::LoadScene(scene);
+	Scene* scene = new Scene("main");
+	//SceneSystem::RegisterScene(scene);
+	//SceneSystem::LoadScene("main");
 
 	Entity* grass = new Entity("Grass");
 	grass->GetComponent<Transform>()->SetPosition(0, 90);
@@ -27,7 +28,6 @@ void StartGame()
 	player->AddComponent<Sprite>(7, 12, 6);
 	player->AddComponent<PlayerController>(player, 50.0f, 5, 9);
 	PhysicsBody2D* p_body = (PhysicsBody2D*)player->AddComponent<PhysicsBody2D>();
-
 
 
 	scene->RegisterEntity(grass);

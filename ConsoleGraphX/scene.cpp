@@ -1,10 +1,14 @@
 #include "scene.h"
 
+Scene::Scene(std::string name)
+    : _m_scene_name(name)
+{}
+
 void Scene::RegisterEntity(Entity* entity)
 {
-    entities.insert(entity);
+    _m_entities.insert(entity);
 
-    for (const auto& componentPair : entity->GetComponents())
+    for (auto& componentPair : entity->GetComponents())
     {
         std::string typeName = componentPair.first.name();
         std::string eventName = "AddComponent" + typeName;
@@ -14,25 +18,30 @@ void Scene::RegisterEntity(Entity* entity)
 
 void Scene::DeregisterEntity(Entity* entity)
 {
-    auto it = entities.find(entity);
+    auto it = _m_entities.find(entity);
 
-    if (it != entities.end())
+    if (it != _m_entities.end())
     {
-        for (const auto& componentPair : entity->GetComponents())
+        for (auto& componentPair : entity->GetComponents())
         {
             entity->RemoveComponent(componentPair.second);
         }
 
-        entities.erase(it);
+        _m_entities.erase(it);
     }
 }
 
 bool Scene::InScene(Entity* entity)
 {
-    return entities.find(entity) != entities.end();
+    return _m_entities.find(entity) != _m_entities.end();
 }
 
 const std::unordered_set<Entity*>& Scene::GetEntities()
 {
-    return entities;
+    return _m_entities;
+}
+
+const std::string& Scene::GetSceneName()
+{
+    return _m_scene_name;
 }

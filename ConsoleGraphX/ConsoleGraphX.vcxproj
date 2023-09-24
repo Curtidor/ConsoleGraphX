@@ -135,7 +135,6 @@
     <ClInclude Include="debugger.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="dispatcher.h" />
-    <ClInclude Include="game_object.h" />
     <ClInclude Include="input_system.h" />
     <ClInclude Include="physics_body2d.h" />
     <ClInclude Include="physics_system.h" />

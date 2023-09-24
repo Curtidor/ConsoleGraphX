@@ -31,12 +31,6 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{f3cd728d-8019-4d50-aff6-2647ac812827}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Input">
-      <UniqueIdentifier>{b44d432a-b05f-4a0f-9dd6-f710c6a1b24d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Input">
-      <UniqueIdentifier>{78db065d-dbd3-4ea8-a8d2-a31fa287b1bb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{04a42c38-ca92-4fcf-be38-1cd54e92f2c7}</UniqueIdentifier>
     </Filter>
@@ -60,6 +54,12 @@
     </Filter>
     <Filter Include="Header Files\Game\GameObjects">
       <UniqueIdentifier>{93dbd3d9-c92b-438a-b45e-a939504918c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{bd97b40a-8eb4-4744-aedc-7b2af5996e18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{4675e770-8b37-4546-8f30-c7b3486d1732}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,16 +93,7 @@
     <ClInclude Include="render_system.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="input_system.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="debugger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dispatcher.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="system.h">
@@ -110,9 +101,6 @@
     </ClInclude>
     <ClInclude Include="scene_system.h">
       <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player_controller.h">
       <Filter>Header Files\Components</Filter>
@@ -135,8 +123,17 @@
     <ClInclude Include="collider2d.h">
       <Filter>Header Files\Components\Colliders</Filter>
     </ClInclude>
-    <ClInclude Include="game_object.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="debugger.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="dispatcher.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="engine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,14 +167,8 @@
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="input_system.cpp">
       <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="debugger.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="component.cpp">
       <Filter>Source Files\Components</Filter>
@@ -190,9 +181,6 @@
     </ClCompile>
     <ClCompile Include="scene_system.cpp">
       <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="player_controller.cpp">
       <Filter>Source Files\Components</Filter>
@@ -211,6 +199,15 @@
     </ClCompile>
     <ClCompile Include="circle_collider2d.cpp">
       <Filter>Source Files\Components\Colliders</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="debugger.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #pragma once
-#include <unordered_set>
+#include <unordered_map>
+#include <stdexcept>
 #include "system.h"
 #include "scene.h"
 
@@ -7,13 +8,15 @@ class SceneSystem
 {
 private:
     static Scene* _s_active_scene;
-    static std::unordered_set<Scene*> _s_scenes;
+    static std::unordered_map<std::string, Scene*> _s_scenes;
 
 public:
     static void RegisterScene(Scene* scene);
-    static void DeregisterScene(Scene* scene);
-    static void LoadScene(Scene* scene);
-    static void DeleteScene(Scene* scene);
-    static bool IsSceneRegistered(Scene* scene);
-    static const std::unordered_set<Scene*>& GetScenes(); // Updated return type
+    static void DeregisterScene(const std::string& name);
+    static void LoadScene(const std::string& name);
+    static void DeleteScene(const std::string& name);
+    
+    static bool IsSceneRegistered(const std::string& name);
+    
+    static const std::unordered_map<std::string, Scene*>& GetScenes(); // Updated return type
 };

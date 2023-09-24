@@ -1,12 +1,9 @@
 #pragma once
-#include <unordered_set>
 #include <unordered_map>
 #include <typeindex>
-#include <stdexcept>
 #include "component_system.h"
 #include "transform.h"
 #include "dispatcher.h"
-#include "game_object.h"
 
 /**
  * @brief A class representing an entity in the entity-component system (ECS).
@@ -20,6 +17,7 @@ private:
     std::unordered_set<Entity*> children;
 
     std::unordered_map<std::type_index, Component*> components;
+
 
 public:
     /**
