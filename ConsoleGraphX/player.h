@@ -5,12 +5,9 @@
 
 struct Player : public Script
 {
-private:
-	
-
 public:
 	Player(Entity* entity);
 
 	void Awake() override;
-	bool Update() override;
+	void Update() override;
 };

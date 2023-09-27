@@ -26,18 +26,26 @@ public:
         this->AddComponent<Transform>();
     }
 
-    template <typename ComponentType, typename... Args>
-    Component* AddScript(Args&&... args) {
+    template <typename ComponentType>
+    Component* AddScript() {
         static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
 
         // Create a new instance of the component with arguments and add it to the components map
-        Component* component = new ComponentType(std::forward<Args>(args)...);
+        Component* component = new ComponentType(this);
         _m_components[typeid(ComponentType)] = component;
 
-        std::string event_name = "AddComponentstruct Script";
+        const std::string event_name = "AddScript";
         Dispatcher<Entity*>::Notify(event_name, this);
 
         return component;
+    }
+
+    void RemoveScript()
+    {
+        const std::string event_name = "RemoveScript";
+        Dispatcher<Entity*>::Notify(event_name, this);
+
+        this->RemoveComponent(GetComponentByID(ComponentID::script));
     }
 
     template <typename ComponentType, typename... Args>

@@ -4,8 +4,10 @@ std::unordered_set<Script*> ScriptSystem::_m_scripts;
 
 void ScriptSystem::Initalize() const 
 {
-	Dispatcher<Entity*>::RegisterListener("AddComponentstruct Script", RegisterScript);
-	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct Script", DeregisterScript);
+	Dispatcher<Entity*>::RegisterListener("AddScript", RegisterScript);
+	Dispatcher<Entity*>::RegisterListener("RunTimeAddScript", RunTimeRegisterScript);
+
+	Dispatcher<Entity*>::RegisterListener("RemoveScript", DeregisterScript);
 }
 
 void ScriptSystem::Update() const
@@ -20,18 +22,20 @@ void ScriptSystem::WarmUp()
 {
 	for (Script* script : _m_scripts)
 	{
-		script->Start();
+		StartScript(script);
 	}
+}
 
-	for (Script* script : _m_scripts)
+void ScriptSystem::StartScript(Script* script)
+{
+	script->Awake();
+	script->Start();
+
+	if (!script->IsEnabled())
 	{
-		// if the script has no update remove it from the script set as we are done with it
-		if(!script->Update())
-		{
-			auto it = _m_scripts.find(script);
+		auto it = _m_scripts.find(script);
 
-			_m_scripts.erase(it);
-		}
+		_m_scripts.erase(it);
 	}
 }
 
@@ -39,15 +43,23 @@ void ScriptSystem::RegisterScript(Entity* entity)
 {
 	if(Script* script = (Script*)entity->GetComponentByID(ComponentID::script))
 	{
-		script->Awake();
-
 		_m_scripts.insert(script);
+	}
+}
+
+void ScriptSystem::RunTimeRegisterScript(Entity* entity)
+{
+	if (Script* script = (Script*)entity->GetComponentByID(ComponentID::script))
+	{
+		_m_scripts.insert(script);
+
+		StartScript(script);
 	}
 }
 
 void ScriptSystem::DeregisterScript(Entity* entity)
 {
-	if (Script* script = entity->GetComponent<Script>())
+	if (Script* script = (Script*)entity->GetComponentByID(ComponentID::script))
 	{
 		auto it = _m_scripts.find(script);
 

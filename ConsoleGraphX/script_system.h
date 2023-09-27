@@ -13,8 +13,10 @@ public:
 	void Update() const override;
 
 	static void WarmUp();
+	static void StartScript(Script* script);
 
 	static void RegisterScript(Entity* entity_w_script);
+	static void RunTimeRegisterScript(Entity* entity_w_script);
 	static void DeregisterScript(Entity* entity_w_script);
 	
 };
