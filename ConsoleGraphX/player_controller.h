@@ -14,6 +14,9 @@ private:
 public:
 	PlayerController();
 	PlayerController(Entity* owner, float move_speed, float jump_speed, float gravity);
+
+	int GetID() const override;
+
 	void Update(float delta_time);
 	bool IsGrounded();
 };

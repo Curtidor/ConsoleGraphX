@@ -4,16 +4,17 @@ Scene::Scene(std::string name)
     : _m_scene_name(name)
 {}
 
+Entity* Scene::RegisterEntity(std::string name)
+{
+    Entity* entity = new Entity(name);
+    _m_entities.insert(entity);
+
+    return entity;
+}
+
 void Scene::RegisterEntity(Entity* entity)
 {
     _m_entities.insert(entity);
-
-    for (auto& componentPair : entity->GetComponents())
-    {
-        std::string typeName = componentPair.first.name();
-        std::string eventName = "AddComponent" + typeName;
-        Dispatcher<Entity*>::Notify(eventName, entity);
-    }
 }
 
 void Scene::DeregisterEntity(Entity* entity)

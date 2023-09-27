@@ -1,175 +1,111 @@
 #pragma once
 #include <unordered_map>
+#include <unordered_set>
 #include <typeindex>
-#include "component_system.h"
 #include "transform.h"
 #include "dispatcher.h"
 
 /**
  * @brief A class representing an entity in the entity-component system (ECS).
  */
-class Entity 
+class Entity
 {
 private:
-    std::string name;
+    std::string _m_name;
 
     Entity* parent;
-    std::unordered_set<Entity*> children;
+    std::unordered_set<Entity*> _m_children;
 
-    std::unordered_map<std::type_index, Component*> components;
+    std::unordered_map<std::type_index, Component*> _m_components;
 
 
 public:
-    /**
-     * @brief Constructs an entity with an optional name and adds a Transform component.
-     *
-     * @param entityName The name of the entity.
-     */
-    Entity(const std::string& entityName = "") : name(entityName), parent(nullptr)
+    Entity(std::string entityName = "") 
+        : _m_name(entityName), parent(nullptr)
     {
         this->AddComponent<Transform>();
     }
 
-    /**
-     * @brief Sets the parent of this entity.
-     *
-     * @param newParent The new parent entity.
-     */
-    void SetParent(Entity* newParent) {
-        if (parent) {
-            // Remove from the old parent's children list
-            parent->RemoveChild(this);
-        }
-
-        parent = newParent;
-
-        if (parent) {
-            // Add to the new parent's children list
-            parent->AddChild(this);
-        }
-    }
-
-    /**
-     * @brief Adds a child entity to this entity.
-     *
-     * @param child The child entity to add.
-     */
-    void AddChild(Entity* child) {
-        child->parent = this;
-        children.insert(child);
-    }
-
-    /**
-     * @brief Removes a child entity from this entity.
-     *
-     * @param child The child entity to remove.
-     */
-    void RemoveChild(Entity* child) {
-        auto it = children.find(child);
-        if (it != children.end()) {
-            children.erase(it);
-        }
-    }
-
-    /**
-     * @brief Adds a component of type T to this entity.
-     *
-     * @tparam T The type of the component to add.
-     * @tparam Args The types of arguments to pass to the component's constructor.
-     * @param args The arguments to pass to the component's constructor.
-     * @return A pointer to the newly added component.
-     */
-    template <typename T, typename... Args>
-    Component* AddComponent(Args&&... args) {
-        std::string component_name = typeid(T).name();
-
-        // Check if the component is registered
-        if (!ComponentSystem::IsComponentRegistered(component_name)) {
-            std::cerr << "Component " << component_name << " is not registered";
-            throw std::runtime_error("");
-        }
+    template <typename ComponentType, typename... Args>
+    Component* AddScript(Args&&... args) {
+        static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
 
         // Create a new instance of the component with arguments and add it to the components map
-        Component* component = new T(std::forward<Args>(args)...);
-        components[typeid(T)] = component;
+        Component* component = new ComponentType(std::forward<Args>(args)...);
+        _m_components[typeid(ComponentType)] = component;
+
+        std::string event_name = "AddComponentstruct Script";
+        Dispatcher<Entity*>::Notify(event_name, this);
 
         return component;
     }
 
-    /**
-     * @brief Removes a component of type T from this entity.
-     *
-     * @tparam T The type of the component to remove.
-     */
-    template <typename T>
+    template <typename ComponentType, typename... Args>
+    Component* AddComponent(Args&&... args) {
+        static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
+
+        std::string component_name = typeid(ComponentType).name();
+
+        // Create a new instance of the component with arguments and add it to the components map
+        Component* component = new ComponentType(std::forward<Args>(args)...);
+        _m_components[typeid(ComponentType)] = component;
+
+        std::string event_name = "AddComponent" + component_name;
+        Dispatcher<Entity*>::Notify(event_name, this);
+
+        return component;
+    }
+
+    template <typename ComponentType>
     void RemoveComponent() {
-        std::type_index type = typeid(T);
+        std::type_index type = typeid(ComponentType);
 
-        auto it = components.find(type);
-        if (it != components.end()) {
+        auto it = _m_components.find(type);
+        if (it != _m_components.end()) {
             std::string type_name = type.name();
             std::string event_name = "RemoveComponent" + type_name;
             Dispatcher<Entity*>::Notify(event_name, this);
 
             delete it->second;
-            components.erase(it);
+            _m_components.erase(it);
         }
     }
 
-    /**
-     * @brief Removes a specific component from this entity.
-     *
-     * @param component The component to remove.
-     */
-    void RemoveComponent(Component* component) {
-        std::type_index type = typeid(*component);
-
-        auto it = components.find(type);
-        if (it != components.end() && it->second == component) {
-            std::string type_name = type.name();
-            std::string event_name = "RemoveComponent" + type_name;
-
-            Dispatcher<Entity*>::Notify(event_name, this);
-
-            delete it->second;
-            components.erase(it);
-        }
-    }
-
-    /**
-     * @brief Checks if this entity has a component of type T.
-     *
-     * @tparam T The type of the component to check.
-     * @return True if the entity has the component, false otherwise.
-     */
-    template <typename T>
+    template <typename ComponentType>
     bool HasComponent() {
-        return components.find(typeid(T)) != components.end();
+        return _m_components.find(typeid(ComponentType)) != _m_components.end();
     }
 
-    /**
-     * @brief Gets a pointer to a component of type T if it exists in this entity.
-     *
-     * @tparam T The type of the component to retrieve.
-     * @return A pointer to the component if found, or nullptr if not found.
-     */
-    template <typename T>
-    T* GetComponent() {
-        auto it = components.find(typeid(T));
-        if (it != components.end()) {
-            return static_cast<T*>(it->second);
+    template <typename ComponentType>
+    ComponentType* GetComponent() {
+        auto it = _m_components.find(typeid(ComponentType));
+        if (it != _m_components.end()) {
+            return static_cast<ComponentType*>(it->second);
         }
         return nullptr;
     }
 
-    /**
-     * @brief Gets a reference to the components associated with this entity.
-     *
-     * @return A reference to the components map.
-     */
-    const std::unordered_map<std::type_index, Component*>& GetComponents()
+    Component* GetComponentByID(int id)
     {
-        return this->components;
+        for (std::pair<std::type_index, Component*> component_pair : _m_components)
+        {
+            if (component_pair.second->GetID() == id)
+            {
+                return component_pair.second;
+            }
+        }
+
+        return nullptr;
+    }
+
+    /**
+    * @brief Gets a reference to the components associated with this entity.
+    *
+    * @return A reference to the components map.
+    */
+    const std::unordered_map<std::type_index, Component*> GetComponents()
+    {
+        return this->_m_components;
     }
 
     /**
@@ -180,11 +116,58 @@ public:
     const Vector3 GetWorldPosition()
     {
         Vector3 world_position = this->GetComponent<Transform>()->GetPosition();
-        for (Entity* child : this->children)
+        for (Entity* child : this->_m_children)
         {
             world_position += child->GetWorldPosition();
         }
 
         return world_position;
+    }
+
+    void RemoveComponent(Component* component) {
+        std::type_index type = typeid(*component);
+
+        auto it = _m_components.find(type);
+        if (it != _m_components.end() && it->second == component) {
+            std::string type_name = type.name();
+            std::string event_name = "RemoveComponent" + type_name;
+
+            Dispatcher<Entity*>::Notify(event_name, this);
+
+            delete it->second;
+            _m_components.erase(it);
+        }
+    }
+
+    void SetParent(Entity* newParent) 
+    {
+        if (parent) 
+        {
+            // Remove from the old parent's children list
+            parent->RemoveChild(this);
+        }
+
+        parent = newParent;
+
+        if (parent) 
+        {
+            // Add to the new parent's children list
+            parent->AddChild(this);
+        }
+    }
+
+    void AddChild(Entity* child) 
+    {
+        child->parent = this;
+        _m_children.insert(child);
+    }
+
+
+    void RemoveChild(Entity* child) 
+    {
+        auto it = _m_children.find(child);
+        if (it != _m_children.end()) {
+            _m_children.erase(it);
+        }
     }
 };

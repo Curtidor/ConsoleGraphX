@@ -26,6 +26,11 @@ Sprite::~Sprite()
 	delete[] this->m_pixels;
 }
 
+int Sprite::GetID() const
+{
+	return ComponentID::sprite;
+}
+
 int Sprite::GetHeight() { return this->m_height; }
 int Sprite::GetWidth() { return this->m_width; }
 

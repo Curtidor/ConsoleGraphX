@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_map>
 #include <stdexcept>
-#include "system.h"
 #include "scene.h"
 
 class SceneSystem

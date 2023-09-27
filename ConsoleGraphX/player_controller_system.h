@@ -13,6 +13,7 @@ private:
 public:
 	void Initalize() const override;
 	void Update() const override;
+
 	static void RegisterController(Entity* owner);
 	static void DeregisterController(Entity* owner);
 };

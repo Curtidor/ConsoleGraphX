@@ -2,21 +2,19 @@
 
 Transform::Transform()
     : m_position(0.0f, 0.0f, 0.0f), m_world_position(0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f)
-{
-}
+{}
 
 Transform::Transform(float x, float y, float scaleX, float scaleY)
     : m_position(x, y, 0.0f), m_world_position(x, y, 0.0f), m_scale(scaleX, scaleY, 1.0f), m_rotation(0.0f)
-{
-}
+{}
 
 Transform::Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ)
     : m_position(x, y, z), m_world_position(x, y, z), m_scale(scaleX, scaleY, scaleZ), m_rotation(0.0f)
-{
-}
+{}
 
-Transform::~Transform()
+int Transform::GetID() const 
 {
+    return ComponentID::transform;
 }
 
 void Transform::SetPosition(float x, float y)

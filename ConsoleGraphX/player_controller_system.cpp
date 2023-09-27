@@ -8,7 +8,7 @@ void PlayerControllerSystem::Initalize() const
 	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct PlayerController", DeregisterController);
 }
 
-void PlayerControllerSystem::Update()const
+void PlayerControllerSystem::Update() const
 {
 	for (PlayerController* controller : _s_controllers)
 	{

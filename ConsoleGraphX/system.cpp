@@ -13,6 +13,8 @@ void System::Initalize() const {}
 
 void System::Update() const 
 {
+	//PREFORMANCE IDEA: 
+	// some systems can update in parallel so add threading for different systems
 	for (System* s : _s_systems)
 	{
 		s->Update();

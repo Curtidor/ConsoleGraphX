@@ -13,7 +13,8 @@ public:
     Transform();
     Transform(float x, float y, float scaleX, float scaleY);
     Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
-    ~Transform() override;
+
+    int GetID() const override;
 
     void SetPosition(float x, float y);
     void SetPosition(float x, float y, float z);

@@ -13,201 +13,243 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Graphics">
-      <UniqueIdentifier>{70e0add5-ebaf-453e-b8cc-601e0e6d26da}</UniqueIdentifier>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{181451c3-ed62-4708-b706-29c96a7e8a16}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Graphics\Screen">
-      <UniqueIdentifier>{513a6e6e-672b-49b4-96c1-bee44ed5fc9f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Graphics">
-      <UniqueIdentifier>{9465da6b-4e59-4e14-80a0-c16db140702f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Graphics\Screen">
-      <UniqueIdentifier>{363a1b59-47a6-488c-a28d-804b14521207}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Math">
-      <UniqueIdentifier>{51ccf120-4294-41f7-a8be-872f1231b1fb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Math">
-      <UniqueIdentifier>{f3cd728d-8019-4d50-aff6-2647ac812827}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Systems">
-      <UniqueIdentifier>{04a42c38-ca92-4fcf-be38-1cd54e92f2c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Systems">
-      <UniqueIdentifier>{6ff06f32-d0ac-4b0e-8867-5c4a8a27dc9a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Components">
-      <UniqueIdentifier>{17e73452-3736-4e17-8a14-ab69050eab22}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Components">
+    <Filter Include="Header Files\Engine\Components">
       <UniqueIdentifier>{5a7a9445-18d0-4bcc-bae3-2b627e407462}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Components\Colliders">
+    <Filter Include="Header Files\Engine\Components\Colliders">
       <UniqueIdentifier>{69ae473d-c116-4a18-b1f6-9a5e5e17fb97}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Components\Colliders">
-      <UniqueIdentifier>{5a686656-552a-4c32-80b6-517239888d89}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{af56cb7f-edfb-4603-8656-bb1d56ad0078}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Game\GameObjects">
-      <UniqueIdentifier>{93dbd3d9-c92b-438a-b45e-a939504918c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine">
+    <Filter Include="Header Files\Engine\Core">
       <UniqueIdentifier>{bd97b40a-8eb4-4744-aedc-7b2af5996e18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Game">
+      <UniqueIdentifier>{af56cb7f-edfb-4603-8656-bb1d56ad0078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Game\GameObjects">
+      <UniqueIdentifier>{93dbd3d9-c92b-438a-b45e-a939504918c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Graphics">
+      <UniqueIdentifier>{9465da6b-4e59-4e14-80a0-c16db140702f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Graphics\Screen">
+      <UniqueIdentifier>{363a1b59-47a6-488c-a28d-804b14521207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Math">
+      <UniqueIdentifier>{51ccf120-4294-41f7-a8be-872f1231b1fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Systems">
+      <UniqueIdentifier>{04a42c38-ca92-4fcf-be38-1cd54e92f2c7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{279d6cfb-2f05-4a10-8c0a-bd4e70d6b6a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Components">
+      <UniqueIdentifier>{17e73452-3736-4e17-8a14-ab69050eab22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Components\Colliders">
+      <UniqueIdentifier>{5a686656-552a-4c32-80b6-517239888d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core">
       <UniqueIdentifier>{4675e770-8b37-4546-8f30-c7b3486d1732}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics">
+      <UniqueIdentifier>{70e0add5-ebaf-453e-b8cc-601e0e6d26da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\Screen">
+      <UniqueIdentifier>{513a6e6e-672b-49b4-96c1-bee44ed5fc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Math">
+      <UniqueIdentifier>{f3cd728d-8019-4d50-aff6-2647ac812827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Systems">
+      <UniqueIdentifier>{6ff06f32-d0ac-4b0e-8867-5c4a8a27dc9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{22674c17-6d42-4f44-9bd0-a272d23f9997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{b0e4f118-575d-46c7-b943-ed740b6900d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Scenes">
+      <UniqueIdentifier>{bdf7356b-fdb4-49f7-b36e-c56d8078476b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Scripts">
+      <UniqueIdentifier>{17e3e630-339e-462f-9721-9232ad1927c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Scripts">
+      <UniqueIdentifier>{231b9781-d613-4b9c-8ed3-935e80c43056}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Scenes">
+      <UniqueIdentifier>{1ac6daf9-953d-4d9d-8bde-3265162629d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="screen.h">
-      <Filter>Header Files\Graphics\Screen</Filter>
+      <Filter>Header Files\Engine\Graphics\Screen</Filter>
     </ClInclude>
     <ClInclude Include="screen_buffer.h">
-      <Filter>Header Files\Graphics\Screen</Filter>
+      <Filter>Header Files\Engine\Graphics\Screen</Filter>
     </ClInclude>
     <ClInclude Include="vector2.h">
-      <Filter>Header Files\Math</Filter>
+      <Filter>Header Files\Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="vector3.h">
-      <Filter>Header Files\Math</Filter>
+      <Filter>Header Files\Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="transform.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="sprite.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="sprtite_system.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="component_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="render_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="input_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="scene_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="player_controller.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="player_controller_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="physics_body2d.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="physics_system.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="box_collider2d.h">
-      <Filter>Header Files\Components\Colliders</Filter>
+      <Filter>Header Files\Engine\Components\Colliders</Filter>
     </ClInclude>
     <ClInclude Include="circle_collider2d.h">
-      <Filter>Header Files\Components\Colliders</Filter>
+      <Filter>Header Files\Engine\Components\Colliders</Filter>
     </ClInclude>
     <ClInclude Include="collider2d.h">
-      <Filter>Header Files\Components\Colliders</Filter>
+      <Filter>Header Files\Engine\Components\Colliders</Filter>
     </ClInclude>
     <ClInclude Include="debugger.h">
-      <Filter>Header Files\Engine</Filter>
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="dispatcher.h">
-      <Filter>Header Files\Engine</Filter>
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="engine.h">
-      <Filter>Header Files\Engine</Filter>
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="scene.h">
-      <Filter>Header Files\Engine</Filter>
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="main_scene.h">
+      <Filter>Header Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header Files\Game\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="script_system.h">
+      <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen.cpp">
-      <Filter>Source Files\Graphics\Screen</Filter>
+      <Filter>Source Files\Engine\Graphics\Screen</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="screen_buffer.cpp">
-      <Filter>Source Files\Graphics\Screen</Filter>
+      <Filter>Source Files\Engine\Graphics\Screen</Filter>
     </ClCompile>
     <ClCompile Include="vector2.cpp">
-      <Filter>Source Files\Math</Filter>
+      <Filter>Source Files\Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="vector3.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="entity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\Engine\Math</Filter>
     </ClCompile>
     <ClCompile Include="sprite.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="transform.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="sprite_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="render_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="input_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="component.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="system.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="component_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="scene_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="player_controller.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="player_controller_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="physics_body2d.cpp">
-      <Filter>Source Files\Components</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="physics_system.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="box_collider2d.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
+      <Filter>Source Files\Engine\Components\Colliders</Filter>
     </ClCompile>
     <ClCompile Include="circle_collider2d.cpp">
-      <Filter>Source Files\Components\Colliders</Filter>
+      <Filter>Source Files\Engine\Components\Colliders</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp">
-      <Filter>Source Files\Engine</Filter>
+      <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="debugger.cpp">
-      <Filter>Source Files\Engine</Filter>
+      <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="scene.cpp">
-      <Filter>Source Files\Engine</Filter>
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="script_system.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>Source Files\Game\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="main_scene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

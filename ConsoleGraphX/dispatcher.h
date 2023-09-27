@@ -11,11 +11,11 @@
  * @brief A generic event dispatcher that supports event prioritization.
  * @tparam T The event data type.
  */
-template <typename T>
+template <typename ComponentType>
 class Dispatcher {
 private:
     struct Listener {
-        std::function<void(const T&)> callback;
+        std::function<void(const ComponentType&)> callback;
         int priority;
 
         bool operator<(const Listener& other) const {
@@ -32,7 +32,7 @@ public:
      * @param event_name The name of the event.
      * @param eventData The event data.
      */
-    static void Notify(const std::string& event_name, const T& eventData) {
+    static void Notify(const std::string& event_name, const ComponentType& eventData) {
         auto it = _s_event_registry.find(event_name);
 
         if (it != _s_event_registry.end()) {
@@ -52,7 +52,7 @@ public:
      * @param callback The listener callback.
      * @param priority The priority level (default is 0).
      */
-    static void RegisterListener(const std::string& event_name, std::function<void(const T&)> callback, int priority = 0) {
+    static void RegisterListener(const std::string& event_name, std::function<void(const ComponentType&)> callback, int priority = 0) {
         _s_event_registry[event_name].push({ callback, priority });
     }
 
@@ -62,7 +62,7 @@ public:
      * @param callback The listener callback to deregister.
      * @param priority The priority level (default is 0).
      */
-    static void DeregisterListener(const std::string& event_name, std::function<void(const T&)> callback, int priority = 0) {
+    static void DeregisterListener(const std::string& event_name, std::function<void(const ComponentType&)> callback, int priority = 0) {
         auto it_event = _s_event_registry.find(event_name);
 
         // No priority queue found for the given event name
@@ -86,5 +86,5 @@ public:
 };
 
 // Static member initialization
-template <typename T>
-std::unordered_map<std::string, std::priority_queue<typename Dispatcher<T>::Listener>> Dispatcher<T>::_s_event_registry;
+template <typename ComponentType>
+std::unordered_map<std::string, std::priority_queue<typename Dispatcher<ComponentType>::Listener>> Dispatcher<ComponentType>::_s_event_registry;

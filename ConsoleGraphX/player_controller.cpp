@@ -34,9 +34,15 @@ void PlayerController::Update(float delta_time)
    // m_owner->GetComponent<Transform>()->Translate(m_velocity * delta_time);
 }
 
+
 bool PlayerController::IsGrounded()
 {
     // Check if the player's position is at or near the ground (you can adjust this threshold)
     // For example, you can check if the player's Y position is less than a certain value
     return m_owner->GetComponent<Transform>()->GetPosition().y <= 68.0f;
+}
+
+int PlayerController::GetID() const 
+{
+    return ComponentID::player_controller;
 }

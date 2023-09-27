@@ -19,6 +19,8 @@ public:
 
 	~Sprite() override;
 
+	int GetID() const override;
+
 	int GetWidth();
 	int GetHeight();
 

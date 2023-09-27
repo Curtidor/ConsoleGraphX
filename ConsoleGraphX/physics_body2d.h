@@ -14,8 +14,9 @@ private:
 
 public:
     PhysicsBody2D();
-
     PhysicsBody2D(bool gravity);
+
+    int GetID() const override;
 
     Vector3 GetVelocity() const;
     void SetVelocity(const Vector3& velocity);

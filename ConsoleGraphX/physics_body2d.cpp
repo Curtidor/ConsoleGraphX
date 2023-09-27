@@ -2,14 +2,18 @@
 
 
 PhysicsBody2D::PhysicsBody2D()
-    : _m_velocity(Vector3::zero), _m_mass(1.0f), _m_friction(0.0f), _m_gravity(true)
+    : _m_velocity(Vector3::zero), _m_mass(1.0f), _m_friction(0.0f), _m_gravity(true), _m_is_static(false)
 {
 }
 
 
 PhysicsBody2D::PhysicsBody2D( bool gravity)
-    : _m_velocity(Vector3::zero), _m_mass(1.0f), _m_friction(0.0f), _m_gravity(gravity)
+    : _m_velocity(Vector3::zero), _m_mass(1.0f), _m_friction(0.0f), _m_gravity(gravity), _m_is_static(false)
+{}
+
+int PhysicsBody2D::GetID() const 
 {
+    return ComponentID::physics_body2d;
 }
 
 // Getter and setter functions for velocity

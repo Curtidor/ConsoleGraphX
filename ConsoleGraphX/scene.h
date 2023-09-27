@@ -11,8 +11,13 @@ private:
 public:
     Scene(std::string name);
 
+    virtual void Initalize() = 0;
+
+    Entity* RegisterEntity(std::string name = "");
+    
     void RegisterEntity(Entity* entity);
     void DeregisterEntity(Entity* entity);
+    
     bool InScene(Entity* entity);
 
     const std::unordered_set<Entity*>& GetEntities();

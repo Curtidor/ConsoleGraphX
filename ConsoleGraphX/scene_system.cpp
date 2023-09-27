@@ -29,6 +29,7 @@ void SceneSystem::LoadScene(const std::string& name)
         throw std::runtime_error("Scene must be registered");
     }
     _s_active_scene = _s_scenes[name];
+    _s_active_scene->Initalize();
 }
 
 void SceneSystem::DeleteScene(const std::string& name)
