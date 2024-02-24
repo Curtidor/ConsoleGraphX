@@ -15,7 +15,7 @@ void Engine::InitializeEngine(short screen_width, short screen_height, short pix
     int debugger_height = debugger != nullptr ? debugger->GetMaxMessages() : 0;
 
     Screen* screen = new Screen(screen_width, screen_height, debugger_height, pixel_width, pixel_height);
-    screen->FillScreen({ Screen::pixel, 0 });
+    screen->FillScreen({ Screen::s_pixel, 0 });
 
     _m_debugger = debugger;
 
@@ -60,7 +60,7 @@ void Engine::Run()
         UpdateFPS();
 
         active_screen->DrawScreen();
-        active_screen->FillScreen({ Screen::pixel, 0 });
+        active_screen->FillScreen({ Screen::s_pixel, 0 });
 
        //Sleep(4);
 
