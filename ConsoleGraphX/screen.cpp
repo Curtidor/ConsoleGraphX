@@ -110,10 +110,10 @@ void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	wchar_t noDrawChar = Screen::s_transparentPixel;
 
 	CHAR_INFO* destPrer = dest - 1;
-	std::transform(srcStart, srcStart + maxLength, dest, [noDrawChar, &dest](CHAR_INFO toCopyValue) 
+	std::transform(srcStart, srcStart + maxLength, dest, [noDrawChar, &destPrer](CHAR_INFO toCopyValue) 
 		{	
-			dest++;
-			return (toCopyValue.Char.UnicodeChar != noDrawChar) ? toCopyValue : *dest;
+			destPrer++;
+			return (toCopyValue.Char.UnicodeChar != noDrawChar) ? toCopyValue : *destPrer;
 		});
 	
 	//std::copy(srcStart, srcStart + maxLength, dest);
