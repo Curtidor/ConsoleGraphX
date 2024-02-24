@@ -18,10 +18,7 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
         if (sprite == NULL)
             throw new std::runtime_error("entity does not have the sprite component");
 
-        if (sprite->IsTransparent())
-            RenderSystem::DrawSprite_SP(position, sprite);
-        else
-            RenderSystem::DrawSprite_SS(position, sprite);
+        RenderSystem::DrawSprite_SS(position, sprite);
     }
 }
 
@@ -109,7 +106,7 @@ void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
 
 void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
 {
-    CHAR_INFO pixel{ Screen::pixel, color };
+    CHAR_INFO s_pixel{ Screen::s_pixel, color };
 
     int dx = end.x - origin.x;
     int dy = end.y - origin.y;
@@ -126,7 +123,7 @@ void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
         int ix = static_cast<int>(x);
         int iy = static_cast<int>(y);
         
-        Screen::SetPixel_A(ix, iy, pixel);
+        Screen::SetPixel_A(ix, iy, s_pixel);
         
         x += xIncrement;
         y += yIncrement;
