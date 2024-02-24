@@ -2,17 +2,17 @@
 
 std::unordered_set<PlayerController*> PlayerControllerSystem::_s_controllers;
 
-void PlayerControllerSystem::Initalize() const 
+void PlayerControllerSystem::Initialize() const 
 {
 	Dispatcher<Entity*>::RegisterListener("AddComponentstruct PlayerController", RegisterController);
 	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct PlayerController", DeregisterController);
 }
 
-void PlayerControllerSystem::Update() const
+void PlayerControllerSystem::Update(float delta_time) const
 {
 	for (PlayerController* controller : _s_controllers)
 	{
-		controller->Update(0.0367f);
+		controller->Update(delta_time);
 	}
 }
 

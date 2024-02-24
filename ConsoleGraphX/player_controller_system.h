@@ -11,8 +11,8 @@ private:
 	static std::unordered_set<PlayerController*> _s_controllers;
 
 public:
-	void Initalize() const override;
-	void Update() const override;
+	void Initialize() const override;
+	void Update(float delta_time) const override;
 
 	static void RegisterController(Entity* owner);
 	static void DeregisterController(Entity* owner);

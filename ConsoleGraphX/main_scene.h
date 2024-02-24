@@ -1,6 +1,7 @@
 #pragma once
 #include "engine.h"
 #include "player.h"
+#include "gui_element.h"
 
 // Register->Load->Initialize->Run
 
@@ -10,5 +11,5 @@ public:
 
 	MainScene(std::string name);
 
-	void Initalize() override;
+	void Initialize() override;
 };

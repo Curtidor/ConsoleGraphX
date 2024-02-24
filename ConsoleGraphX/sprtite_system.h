@@ -11,8 +11,8 @@ private:
 	static std::vector<Entity*> _s_entities_w_sprites;
 
 public:
-	void Initalize() const override;
-	void Update() const override;
+	void Initialize() const override;
+	void Update(float delta_time) const override;
 
 	static void RegisterEntitySprite(Entity* entity);
 

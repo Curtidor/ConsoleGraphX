@@ -7,18 +7,29 @@ For example, you could divide the screen into smaller regions and assign a separ
 to copy pixels for each region. This can improve performance, especially if you have a lot of sprites to render.
 */
 
-
-void RenderSystem::DrawSprite_SS(Entity* entity_w_sprite)
+void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
 {
-    if (!entity_w_sprite)
+
+    for (Entity* entity : entities)
+    {
+        Sprite* sprite = entity->GetComponent<Sprite>();
+        const Vector3 position = entity->GetWorldPosition();
+
+        if (sprite == NULL)
+            throw new std::runtime_error("entity does not have the sprite component");
+
+        RenderSystem::DrawSprite_SS(position, sprite);
+    }
+}
+
+
+
+void RenderSystem::DrawSprite_SS(const Vector3 position, Sprite* sprite)
+{
+    if (!sprite)
         return;
 
-    CHAR_INFO* buffer = Screen::GetBuffer();
-
-    const Vector3 position = entity_w_sprite->GetWorldPosition();
-    // if the entity has made it this far into the system we can safely assume it has a sprite
-    // without the need for checking
-    Sprite* sprite = entity_w_sprite->GetComponent<Sprite>();
+    CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
     CHAR_INFO* pixels = sprite->GetPixels();
 
     const int spriteWidth = sprite->GetWidth();
@@ -51,16 +62,11 @@ void RenderSystem::DrawSprite_SS(Entity* entity_w_sprite)
     }
 }
 
-void RenderSystem::DrawSprite_SP(Entity* entity_w_sprite)
+void RenderSystem::DrawSprite_SP(const Vector3 position, Sprite* sprite)
 {
-    if (!entity_w_sprite)
+    if (!sprite)
         return;
-
-
-    Vector3 position = entity_w_sprite->GetWorldPosition();
-    // if the entity has made it this far into the system we can safely assume it has a sprite
-    // without the need for checking
-    Sprite* sprite = entity_w_sprite->GetComponent<Sprite>();
+  
     CHAR_INFO* pixels = sprite->GetPixels();
 
     const int spriteWidth = sprite->GetWidth();
@@ -79,7 +85,10 @@ void RenderSystem::DrawSprites_SS(const std::vector<Entity*>& entities)
 {
     for (Entity* entity : entities)
     {
-        RenderSystem::DrawSprite_SS(entity);
+        Sprite* sprite = entity->GetComponent<Sprite>();
+        const Vector3 position = entity->GetWorldPosition();
+
+        RenderSystem::DrawSprite_SS(position, sprite);
     }
    
 }
@@ -88,13 +97,16 @@ void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
 {
     for (Entity* entity : entities)
     {
-        RenderSystem::DrawSprite_SP(entity);
+        Sprite* sprite = entity->GetComponent<Sprite>();
+        const Vector3 position = entity->GetWorldPosition();
+
+        RenderSystem::DrawSprite_SP(position, sprite);
     }
 }
 
 void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
 {
-    CHAR_INFO pixel{ Screen::pixel, color };
+    CHAR_INFO s_pixel{ Screen::s_pixel, color };
 
     int dx = end.x - origin.x;
     int dy = end.y - origin.y;
@@ -111,7 +123,7 @@ void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
         int ix = static_cast<int>(x);
         int iy = static_cast<int>(y);
         
-        Screen::SetPixel_A(ix, iy, pixel);
+        Screen::SetPixel_A(ix, iy, s_pixel);
         
         x += xIncrement;
         y += yIncrement;

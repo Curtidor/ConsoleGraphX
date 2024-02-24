@@ -1,5 +1,6 @@
 #include <iostream>
 #include "main_scene.h"
+#include "render_testing.h"
 
 /*
 Fastest Font:
@@ -14,6 +15,7 @@ int main()
 	MainScene* m = new MainScene("Main scene");
 
 	Engine::Run();
+
 
 	return 0;
 }

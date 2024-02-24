@@ -11,7 +11,7 @@
 class Entity
 {
 private:
-    std::string _m_name;
+    const std::string _m_name;
 
     Entity* parent;
     std::unordered_set<Entity*> _m_children;
@@ -20,7 +20,7 @@ private:
 
 
 public:
-    Entity(std::string entityName = "") 
+    Entity(const std::string& entityName = "") 
         : _m_name(entityName), parent(nullptr)
     {
         this->AddComponent<Transform>();

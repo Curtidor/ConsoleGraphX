@@ -3,8 +3,8 @@
 
 struct ScreenBuffer
 {
-	HANDLE hConsole;
 	HWND wHandle;
+	HANDLE hConsole;
 	CHAR_INFO* buffer;
 	COORD bufferSize;
 	COORD bufferCoord;
