@@ -1,9 +1,9 @@
 ﻿#include "screen.h"
 
-Screen* Screen::_s_active_screen = nullptr;
+Screen* Screen::_s_activeScreen = nullptr;
 
 Screen::Screen(short width, short height, short debugger_height, short fontWidth, short fontHeight)
-	: _m_width(width), _m_height(height), _m_debugger_height(debugger_height), _m_pixel_width(fontWidth), _m_pixel_height(fontHeight)
+	: _m_width(width), _m_height(height), _m_debuggerHeight(debugger_height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 {
 	this->_m_screenBuffer = new ScreenBuffer();
 
@@ -12,18 +12,15 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	if (this->_m_screenBuffer->hConsole == INVALID_HANDLE_VALUE)
 		throw std::runtime_error("Failed to get the console handle");
 
-
-	short total_height = _m_height + _m_debugger_height;
+	short total_height = _m_height + _m_debuggerHeight;
 
 	// Set the buffer size and allocate memory for the buffer
 	this->_m_screenBuffer->bufferSize = { _m_width, total_height };
-	this->_m_screenBuffer->buffer = new CHAR_INFO[_m_screenBuffer->bufferSize.X * _m_screenBuffer->bufferSize.Y];
 	this->_m_screenBuffer->bufferCoord = { 0, 0 };
+	this->_m_screenBuffer->buffer = new CHAR_INFO[_m_screenBuffer->bufferSize.X * _m_screenBuffer->bufferSize.Y];
 	this->_m_screenBuffer->writePosition = { 0, 0, (short)(_m_screenBuffer->bufferSize.X - 1), (short)(_m_screenBuffer->bufferSize.Y - 1) };
 
-	Sleep(40);
 	this->_m_screenBuffer->wHandle = GetConsoleWindow();
-	std::cout << this->_m_screenBuffer->wHandle << std::endl;
 	if (this->_m_screenBuffer->wHandle == NULL)
 		throw new std::runtime_error("no console window");
 
@@ -35,9 +32,9 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	SetConsoleFontSize(fontWidth, fontHeight);
 	SetConsoleWindowSize(_m_width, total_height);
 
-	FillScreen({ pixel , 0 });
+	FillScreen({ s_pixel , 0 });
 
-	Screen::_s_active_screen = this;
+	Screen::_s_activeScreen = this;
 }
 
 Screen::~Screen()
@@ -58,7 +55,7 @@ bool Screen::DrawScreen()
 
 void Screen::FillScreen(const CHAR_INFO& color)
 {
-	std::fill(_m_screenBuffer->buffer, _m_screenBuffer->buffer + (_m_width * (_m_height + _m_debugger_height)), color);
+	std::fill(_m_screenBuffer->buffer, _m_screenBuffer->buffer + (_m_width * (_m_height + _m_debuggerHeight)), color);
 }
 
 void Screen::RandomFillScreen()
@@ -67,7 +64,7 @@ void Screen::RandomFillScreen()
 
 		for (int j = 0; j < Screen::GetWidth(); j++) {
 
-			this->SetPixel(j, i, { pixel , Screen::RandomColor() });
+			this->SetPixel(j, i, { s_pixel , Screen::RandomColor() });
 
 		}
 	}
@@ -78,53 +75,53 @@ void Screen::RandomFillScreen()
 /// <param name="x"></param>
 /// <param name="y"></param>
 /// <param name="pixel"></param>
-void Screen::SetPixel(int x, int y, CHAR_INFO pixel)
+void Screen::SetPixel(int x, int y, CHAR_INFO s_pixel)
 {
 	// if the index is it side the screen buffer return
 	int index = y * _m_screenBuffer->bufferSize.X + x;
-	if (index < 0 || index >= _m_screenBuffer->bufferSize.X * (_m_screenBuffer->bufferSize.Y - _m_debugger_height))
+	if (index < 0 || index >= _m_screenBuffer->bufferSize.X * (_m_screenBuffer->bufferSize.Y - _m_debuggerHeight))
 		return;
 
-	_m_screenBuffer->buffer[index] = pixel;
+	_m_screenBuffer->buffer[index] = s_pixel;
 }
 
-void Screen::SetPixel_A(int x, int y, CHAR_INFO pixel)
+void Screen::SetPixel_A(int x, int y, CHAR_INFO s_pixel)
 {
-	if (pixel.Char.UnicodeChar == Screen::noDrawChar)
+	if (s_pixel.Char.UnicodeChar == Screen::s_noDrawChar)
 		return;
 
-	Screen::_s_active_screen->SetPixel(x, y, pixel);
+	Screen::_s_activeScreen->SetPixel(x, y, s_pixel);
 }
 
-void Screen::SetPixels(CHAR_INFO* src_start, CHAR_INFO* src_end, CHAR_INFO* dest)
+void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 {
 	// pointer to the end of the screen buffer
-	CHAR_INFO* buffer_end = _m_screenBuffer->buffer + (_m_width * _m_height);
+	CHAR_INFO* bufferEnd = _m_screenBuffer->buffer + (_m_width * _m_height);
 
 	// remaining space in the screen buffer
-	std::size_t buffer_length = buffer_end - dest;
-	// remaining amount of source elements
-	std::size_t source_length = src_end - src_start;
+	std::size_t remainingBufferLength = bufferEnd - dest;
+	// size of source elements
+	std::size_t sourceLength = srcEnd - srcStart;
 
 	// if there is less space in the screen buffer then n source elements use the buffer length, if 
 	// there is more buffer space then n source elements use the source length so we only use what we need
-	//NOTE: we use max and min instead of if else to avoid CPU branching
-	std::size_t max_length = std::max<size_t>(0, std::min<std::size_t>(buffer_length, source_length));
+	std::size_t maxLength = std::max<size_t>(0, std::min<std::size_t>(remainingBufferLength, sourceLength));
+	
+	wchar_t noDrawChar = Screen::s_noDrawChar;
 
-	// Define the predicate function to check if CHAR_INFO is equal to Screen::noDrawChar
-	auto isEqualToNoDrawChar = [](const CHAR_INFO& charInfo) {
-		return charInfo.Char.UnicodeChar == Screen::noDrawChar;
-	};
-
-	std::copy_if(src_start, src_start + max_length, dest,
-		[isEqualToNoDrawChar](const CHAR_INFO& charInfo) {
-			return !isEqualToNoDrawChar(charInfo);
+	CHAR_INFO* destPrer = dest - 1;
+	std::transform(srcStart, srcStart + maxLength, dest, [noDrawChar, &dest](CHAR_INFO toCopyValue) 
+		{	
+			dest++;
+			return (toCopyValue.Char.UnicodeChar != noDrawChar) ? toCopyValue : *dest;
 		});
+	
+	//std::copy(srcStart, srcStart + maxLength, dest);
 }
 
-void Screen::SetPixels_A(CHAR_INFO* src_start, CHAR_INFO* src_end, CHAR_INFO* dest)
+void Screen::SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 {
-	Screen::_s_active_screen->SetPixels(src_start, src_end, dest);
+	Screen::_s_activeScreen->SetPixels(srcStart, srcEnd, dest);
 }
 
 void Screen::SetText(int x, int y, const std::string& text)
@@ -221,16 +218,16 @@ int Screen::GetHeight() { return this->_m_height; }
 /// Get the width of a pixel
 /// </summary>
 /// <returns></returns>
-int Screen::GetPixelWidth() { return this->_m_pixel_width; }
+int Screen::GetPixelWidth() { return this->_m_pixelWidth; }
 
 /// <summary>
 /// Get the height of a pixel
 /// </summary>
 /// <returns></returns>
-int Screen::GetPixelHeight() { return this->_m_pixel_height; }
+int Screen::GetPixelHeight() { return this->_m_pixelHeight; }
 
-int Screen::GetWidth_A() { return Screen::_s_active_screen->_m_width; }
-int Screen::GetHeight_A() { return Screen::_s_active_screen->_m_height; }
+int Screen::GetWidth_A() { return Screen::_s_activeScreen->_m_width; }
+int Screen::GetHeight_A() { return Screen::_s_activeScreen->_m_height; }
 
 HWND Screen::GetConsoleWindowHandle() { return this->_m_screenBuffer->wHandle; }
 
@@ -239,6 +236,6 @@ WORD Screen::RandomColor()
 	return rand() % 16;
 }
 
-Screen* Screen::GetActiveScreen_A() { return Screen::_s_active_screen; }
-void Screen::SetActiveScreen_A(Screen* screen) { Screen::_s_active_screen = screen; }
-CHAR_INFO* Screen::GetActiveScreenBuffer_A() { return Screen::_s_active_screen->_m_screenBuffer->buffer; }
+Screen* Screen::GetActiveScreen_A() { return Screen::_s_activeScreen; }
+void Screen::SetActiveScreen_A(Screen* screen) { Screen::_s_activeScreen = screen; }
+CHAR_INFO* Screen::GetActiveScreenBuffer_A() { return Screen::_s_activeScreen->_m_screenBuffer->buffer; }
