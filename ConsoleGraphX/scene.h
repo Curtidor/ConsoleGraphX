@@ -11,7 +11,7 @@ private:
 public:
     Scene(std::string name);
 
-    virtual void Initalize() = 0;
+    virtual void Initialize() = 0;
 
     Entity* RegisterEntity(std::string name = "");
     

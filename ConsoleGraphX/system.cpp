@@ -9,14 +9,14 @@ System::~System()
 		delete s;
 	}
 }
-void System::Initalize() const {}
+void System::Initialize() const {}
 
-void System::Update() const 
+void System::Update(float delta_time) const 
 {
 	//PREFORMANCE IDEA: 
 	// some systems can update in parallel so add threading for different systems
 	for (System* s : _s_systems)
 	{
-		s->Update();
+		s->Update(delta_time);
 	}
 }

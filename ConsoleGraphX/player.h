@@ -1,5 +1,6 @@
 #pragma once
 #include "player_controller.h"
+#include "sprite.h"
 #include "script.h"
 
 

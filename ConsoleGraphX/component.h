@@ -16,9 +16,8 @@ public:
 enum ComponentID
 {
     base = 0,
-    physics_body2d = 1,
-    player_controller = 2,
-    script = 3,
-    sprite = 4,
-    transform = 5
+    player_controller = 1,
+    script = 2,
+    sprite = 3,
+    transform = 4
 };

@@ -1,12 +1,9 @@
 #pragma once
-#include <vector>
-#include <Windows.h>
-#include "sprite.h"
-#include "screen.h"
-
-#pragma once
+#include <chrono>
+#include <ctime>
 #include <string>
 #include <deque>
+#include "screen.h"
 
 class Debugger
 {

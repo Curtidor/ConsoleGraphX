@@ -8,28 +8,31 @@
 class Screen
 {
 private:
-	const short m_width;
-	const short m_height;
-	const short m_pixel_width;
-	const short m_pixel_height;
-	const short m_debugger_height;
-	ScreenBuffer* m_screenBuffer;
+	const short _m_width;
+	const short _m_height;
+	const short _m_pixel_width;
+	const short _m_pixel_height;
+	const short _m_debugger_height;
+	ScreenBuffer* _m_screenBuffer;
 	
-	static Screen* s_active_screen;
+	static Screen* _s_active_screen;
 
 
 public:
 	static const wchar_t pixel = L'█';
+	static const wchar_t noDrawChar = L'‎‎';
 
 	Screen(short width, short height, short debugger_height, short fontWidth, short fontHeight);
 	~Screen();
 
 	void SetPixel(int x, int y, CHAR_INFO pixel);
 	void SetPixels(CHAR_INFO* src_start, CHAR_INFO* src_end, CHAR_INFO* dest);
+	void SetText(int x, int y, const std::string& text);
+	
 	static void SetPixel_A(int x, int y, CHAR_INFO pixel);
 	static void SetPixels_A(CHAR_INFO* src_start, CHAR_INFO* src_end, CHAR_INFO* dest);
-	void SetText(int x, int y, const std::string& text);
 	static void SetText_A(int x, int y, const std::string& text);
+
 	void SetCursorPosition(short x, short y);
 	void SetConsoleName(const std::string& name);
 	void SetConsoleWindowSize(short width, short height);
@@ -37,20 +40,21 @@ public:
 	void RandomFillScreen();
 
 	int GetPixelWidth();
+	int GetPixelHeight();
 	int GetWidth();
 	int GetHeight();
-	int GetPixelHeight();
+
+	static int GetWidth_A();
+	static int GetHeight_A();
 
 	bool DrawScreen();
 	bool SetConsoleFontSize(short width, short height);
 
 	HWND GetConsoleWindowHandle();
-
-	static int GetWidth_A();
-	static int GetHeight_A();
 	
-	static Screen* GetActiveScreen();
-	static CHAR_INFO* GetBuffer();
+	static Screen* GetActiveScreen_A();
+	static void SetActiveScreen_A(Screen* screen);
+	static CHAR_INFO* GetActiveScreenBuffer_A();
 	static WORD RandomColor();
 
 };

@@ -28,23 +28,33 @@ enum Color
 struct Sprite : Component
 {
 private:
-	int m_width;
-	int m_height;
-	CHAR_INFO* m_pixels;
+	int _m_width;
+	int _m_height;
+    bool _m_isVisible;
+    bool _m_isTransparent;
+	CHAR_INFO* _m_pixels;
 
 public:
 
 	Sprite();
-	Sprite(int width, int height);
-	Sprite(int width, int height, int color);
-	Sprite(int width, int height, CHAR_INFO* pixels);
+    Sprite(int width, int height, bool isTransparent = false);
+	Sprite(int width, int height, int color, bool isTransparent = false);
+	Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
+    Sprite(Sprite& other);
 
 	~Sprite() override;
 
 	int GetID() const override;
 
+    void HideSprite();
+    void ShowSprite();
+
+    bool IsSpriteHidden();
+    bool IsTransparent();
+
 	int GetWidth();
 	int GetHeight();
+
 
 	CHAR_INFO* GetPixels();
 };

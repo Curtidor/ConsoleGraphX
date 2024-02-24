@@ -16,11 +16,11 @@ public:
 
 		System* system = new SystemType();
 
-		system->Initalize();
+		system->Initialize();
 
 		_s_systems.insert(system);
 
 	}
-	virtual void Initalize() const;
-	virtual void Update() const;
+	virtual void Initialize() const;
+	virtual void Update(float delta_time) const;
 };

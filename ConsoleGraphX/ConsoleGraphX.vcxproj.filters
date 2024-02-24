@@ -19,17 +19,8 @@
     <Filter Include="Header Files\Engine\Components">
       <UniqueIdentifier>{5a7a9445-18d0-4bcc-bae3-2b627e407462}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Components\Colliders">
-      <UniqueIdentifier>{69ae473d-c116-4a18-b1f6-9a5e5e17fb97}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Core">
       <UniqueIdentifier>{bd97b40a-8eb4-4744-aedc-7b2af5996e18}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Game">
-      <UniqueIdentifier>{af56cb7f-edfb-4603-8656-bb1d56ad0078}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Game\GameObjects">
-      <UniqueIdentifier>{93dbd3d9-c92b-438a-b45e-a939504918c0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Engine\Graphics">
       <UniqueIdentifier>{9465da6b-4e59-4e14-80a0-c16db140702f}</UniqueIdentifier>
@@ -48,9 +39,6 @@
     </Filter>
     <Filter Include="Source Files\Engine\Components">
       <UniqueIdentifier>{17e73452-3736-4e17-8a14-ab69050eab22}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Components\Colliders">
-      <UniqueIdentifier>{5a686656-552a-4c32-80b6-517239888d89}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Engine\Core">
       <UniqueIdentifier>{4675e770-8b37-4546-8f30-c7b3486d1732}</UniqueIdentifier>
@@ -84,6 +72,18 @@
     </Filter>
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{1ac6daf9-953d-4d9d-8bde-3265162629d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Graphics\GUI">
+      <UniqueIdentifier>{a0830887-746a-4b4c-a329-f8f59fa76377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\GUI">
+      <UniqueIdentifier>{d17b0aab-b564-47df-89ce-baddcccfdfa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Testing">
+      <UniqueIdentifier>{8419b283-a08a-4a96-86f4-680bb268184e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{698166f8-7050-4415-bba7-93cf5ab7636a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -129,21 +129,6 @@
     <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="physics_body2d.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="physics_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="box_collider2d.h">
-      <Filter>Header Files\Engine\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="circle_collider2d.h">
-      <Filter>Header Files\Engine\Components\Colliders</Filter>
-    </ClInclude>
-    <ClInclude Include="collider2d.h">
-      <Filter>Header Files\Engine\Components\Colliders</Filter>
-    </ClInclude>
     <ClInclude Include="debugger.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
@@ -167,6 +152,21 @@
     </ClInclude>
     <ClInclude Include="script_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="interactable.h">
+      <Filter>Header Files\Engine\Graphics\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_element.h">
+      <Filter>Header Files\Engine\Graphics\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="text_box.h">
+      <Filter>Header Files\Engine\Graphics\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="text_sprite.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="render_testing.h">
+      <Filter>Header Files\Testing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -215,18 +215,6 @@
     <ClCompile Include="player_controller_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="physics_body2d.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="physics_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="box_collider2d.cpp">
-      <Filter>Source Files\Engine\Components\Colliders</Filter>
-    </ClCompile>
-    <ClCompile Include="circle_collider2d.cpp">
-      <Filter>Source Files\Engine\Components\Colliders</Filter>
-    </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
@@ -250,6 +238,15 @@
     </ClCompile>
     <ClCompile Include="main_scene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="gui_element.cpp">
+      <Filter>Source Files\Engine\Graphics\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="text_box.cpp">
+      <Filter>Source Files\Engine\Graphics\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="rendering_test.cpp">
+      <Filter>Source Files\Testing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

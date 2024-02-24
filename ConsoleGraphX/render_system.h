@@ -7,8 +7,10 @@
 class RenderSystem
 {
 public:
-	static void DrawSprite_SS(Entity* entity);
-	static void DrawSprite_SP(Entity* entity);
+	static void DrawSprites(const std::vector<Entity*>& entities);
+
+	static void DrawSprite_SS(const Vector3 position, Sprite* sprite);
+	static void DrawSprite_SP(const Vector3 position, Sprite* sprite);
 
 	static void DrawSprites_SS(const std::vector<Entity*>& entities);
 	static void DrawSprites_SP(const std::vector<Entity*>& entities);

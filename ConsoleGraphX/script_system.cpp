@@ -2,7 +2,7 @@
 
 std::unordered_set<Script*> ScriptSystem::_m_scripts;
 
-void ScriptSystem::Initalize() const 
+void ScriptSystem::Initialize() const 
 {
 	Dispatcher<Entity*>::RegisterListener("AddScript", RegisterScript);
 	Dispatcher<Entity*>::RegisterListener("RunTimeAddScript", RunTimeRegisterScript);
@@ -10,7 +10,7 @@ void ScriptSystem::Initalize() const
 	Dispatcher<Entity*>::RegisterListener("RemoveScript", DeregisterScript);
 }
 
-void ScriptSystem::Update() const
+void ScriptSystem::Update(float delta_time) const
 {
 	for (Script* entity : _m_scripts)
 	{
@@ -33,9 +33,7 @@ void ScriptSystem::StartScript(Script* script)
 
 	if (!script->IsEnabled())
 	{
-		auto it = _m_scripts.find(script);
-
-		_m_scripts.erase(it);
+		DeregisterScriptWS(script);
 	}
 }
 
@@ -61,8 +59,18 @@ void ScriptSystem::DeregisterScript(Entity* entity)
 {
 	if (Script* script = (Script*)entity->GetComponentByID(ComponentID::script))
 	{
-		auto it = _m_scripts.find(script);
+		DeregisterScriptWS(script);
+	}
+}
 
+
+
+void ScriptSystem::DeregisterScriptWS(Script* script)
+{
+	auto it = _m_scripts.find(script);
+		
+	if (it != _m_scripts.end()) 
+	{
 		_m_scripts.erase(it);
 	}
 }

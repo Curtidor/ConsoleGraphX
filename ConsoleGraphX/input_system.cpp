@@ -69,7 +69,7 @@ void InputSystem::UpdateMousePosition()
 {
     POINT cursorPos;
     GetCursorPos(&cursorPos);
-    ScreenToClient(Screen::GetActiveScreen()->GetConsoleWindowHandle(), &cursorPos);
+    ScreenToClient(Screen::GetActiveScreen_A()->GetConsoleWindowHandle(), &cursorPos);
 
     InputSystem::mousePos.x = cursorPos.x;
     InputSystem::mousePos.y = cursorPos.y;

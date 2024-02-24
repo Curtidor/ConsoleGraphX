@@ -1,0 +1,17 @@
+When you add a componet to a entity the entity will notify the appriate system of the new component 
+
+Engine InitializeEngine:
+	* Screen Setup
+	* Regiseter Systems
+
+Engine Run:
+	*Script Warmup
+	-Loop:
+		*Get Pressed Keys
+		*Update Mouse postion
+		*Draw Sprites to the screen buffer
+		*Display any debugger messages
+		*Update all the systems
+		*Draw the screen
+
+	
