@@ -10,7 +10,7 @@ Fastest Font:
 int main()
 {
 	Debugger debugger = Debugger(10);
-	Engine::InitializeEngine(300, 150, 3, 6, &debugger);
+	Engine::InitializeEngine(270, 100, 3, 6, &debugger);
 
 	MainScene* m = new MainScene("Main scene");
 
