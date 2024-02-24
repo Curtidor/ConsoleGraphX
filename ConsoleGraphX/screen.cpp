@@ -87,7 +87,7 @@ void Screen::SetPixel(int x, int y, CHAR_INFO s_pixel)
 
 void Screen::SetPixel_A(int x, int y, CHAR_INFO s_pixel)
 {
-	if (s_pixel.Char.UnicodeChar == Screen::s_noDrawChar)
+	if (s_pixel.Char.UnicodeChar == Screen::s_transparentPixel)
 		return;
 
 	Screen::_s_activeScreen->SetPixel(x, y, s_pixel);
@@ -107,7 +107,7 @@ void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	// there is more buffer space then n source elements use the source length so we only use what we need
 	std::size_t maxLength = std::max<size_t>(0, std::min<std::size_t>(remainingBufferLength, sourceLength));
 	
-	wchar_t noDrawChar = Screen::s_noDrawChar;
+	wchar_t noDrawChar = Screen::s_transparentPixel;
 
 	CHAR_INFO* destPrer = dest - 1;
 	std::transform(srcStart, srcStart + maxLength, dest, [noDrawChar, &dest](CHAR_INFO toCopyValue) 
