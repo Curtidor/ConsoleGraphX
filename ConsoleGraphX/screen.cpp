@@ -107,15 +107,18 @@ void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	// there is more buffer space then n source elements use the source length so we only use what we need
 	std::size_t maxLength = std::max<size_t>(0, std::min<std::size_t>(remainingBufferLength, sourceLength));
 	
-	wchar_t noDrawChar = Screen::s_transparentPixel;
+	wchar_t transparentChar = Screen::s_transparentPixel;
 
 	CHAR_INFO* destPrer = dest - 1;
-	std::transform(srcStart, srcStart + maxLength, dest, [noDrawChar, &destPrer](CHAR_INFO toCopyValue) 
-		{	
+
+	std::transform(srcStart, srcStart + maxLength, dest, [transparentChar, &destPrer](CHAR_INFO toCopyValue)
+		{
 			destPrer++;
-			return (toCopyValue.Char.UnicodeChar != noDrawChar) ? toCopyValue : *destPrer;
+
+			// If the Unicode character of toCopyValue is not equal to the transparentChar,
+			// use the toCopyValue; otherwise, use the value from the previous position in the buffer (behind the transparentChar).
+			return (toCopyValue.Char.UnicodeChar != transparentChar) ? toCopyValue : *destPrer;
 		});
-	
 	//std::copy(srcStart, srcStart + maxLength, dest);
 }
 
