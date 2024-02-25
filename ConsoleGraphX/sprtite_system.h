@@ -1,14 +1,18 @@
 #pragma once
-#include <vector>
+#include <set>
+#include <stdexcept>
 #include "sprite.h"
 #include "system.h"
 #include "entity.h"
 
+struct SpriteComparator {
+	bool operator()(const Entity* entityA, const Entity* entityB) const;
+};
 
 class SpriteSystem : public System
 {
 private:
-	static std::vector<Entity*> _s_entities_w_sprites;
+	static std::multiset<Entity*, SpriteComparator> _s_entities_w_sprites;
 
 public:
 	void Initialize() const override;
@@ -18,5 +22,6 @@ public:
 
 	static void DeregisterEntitySprite(Entity* entity);
 
-	static const std::vector<Entity*>& GetEntitySprites(bool layer_sort = false);
+	static std::vector<Entity*> GetEntitySprites();
+
 };
