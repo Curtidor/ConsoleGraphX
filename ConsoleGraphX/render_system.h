@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include "screen.h"
 #include "sprite.h"
 #include "entity.h"
+
 
 class RenderSystem
 {
