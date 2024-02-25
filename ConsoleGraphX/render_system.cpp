@@ -1,5 +1,4 @@
 #include "render_system.h"
-#include <iostream>
 
 /*
 Parallelization: If you have a multi-core CPU, you could explore parallelizing the rendering process.
