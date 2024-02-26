@@ -48,10 +48,12 @@ void Engine::Run()
 
         InputSystem::GetPressedKeys();
         InputSystem::UpdateMousePosition();
+
+        _m_system->Update(_m_delta_time);
+
         RenderSystem::DrawSprites(SpriteSystem::GetEntitySprites());
 
-        // Call update on all the systems
-        _m_system->Update(_m_delta_time);
+        SceneSystem::GetActiveScene()->DeleteEntities();
 
         if (_m_debugger != nullptr)
             _m_debugger->DisplayMessages();
