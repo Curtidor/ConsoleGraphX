@@ -15,6 +15,11 @@ void Player::Awake()
 
 void Player::Update()
 {
+	Debugger::S_LogMessage("PLAYERRRRR ALIVE!!", Debugger::LogLevel::INFO);
+	if (InputSystem::IsKeyPressed(Key::B))
+	{
+		this->m_entity->KillEntity();
+	}
 }
 
 
