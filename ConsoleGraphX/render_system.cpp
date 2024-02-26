@@ -12,10 +12,14 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
     for (Entity* entity : entities)
     {
         Sprite* sprite = entity->GetComponent<Sprite>();
-        const Vector3 position = entity->GetWorldPosition();
 
         if (sprite == NULL)
-            throw new std::runtime_error("entity does not have the sprite component");
+        {
+            Debugger::S_LogMessage("entity does not have the sprite component DRAW SPRITES", Debugger::LogLevel::WARNING);
+            continue;
+        }
+           
+        const Vector3 position = entity->GetWorldPosition();
 
         RenderSystem::DrawSprite_SS(position, sprite);
     }
