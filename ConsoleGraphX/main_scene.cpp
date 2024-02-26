@@ -33,9 +33,9 @@ void MainScene::Initialize()
 	spritetE2->m_layer = 1;
 	tE2->GetComponent<Transform>()->SetPosition(10, 77);
 
-	//this->RegisterEntity(grass);
-	this->RegisterEntity(sky);
+	this->RegisterEntity(grass);
 	this->RegisterEntity(player);
+	this->RegisterEntity(sky);
 	this->RegisterEntity(tE);
 	this->RegisterEntity(tE2);
 }
