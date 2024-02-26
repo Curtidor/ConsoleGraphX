@@ -16,6 +16,8 @@ public:
 
 	void SetStatus(bool state);
 
+	const Entity* GetOwner();
+
 	virtual void Awake();
 	virtual void Start();
 	virtual void Update();

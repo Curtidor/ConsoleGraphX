@@ -23,6 +23,11 @@ void Script::SetStatus(bool state)
 	Dispatcher<Entity*>::Notify(event_name, this->m_entity);
 }
 
+const Entity* Script::GetOwner()
+{
+	return this->m_entity;
+}
+
 
 int Script::GetID() const 
 {
