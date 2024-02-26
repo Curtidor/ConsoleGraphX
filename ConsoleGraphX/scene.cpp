@@ -19,18 +19,30 @@ void Scene::RegisterEntity(Entity* entity)
 
 void Scene::DeregisterEntity(Entity* entity)
 {
-    auto it = _m_entities.find(entity);
-
-    if (it != _m_entities.end())
-    {
-        for (auto& componentPair : entity->GetComponents())
-        {
-            entity->RemoveComponent(componentPair.second);
-        }
-
-        _m_entities.erase(it);
-    }
+    this->_m_entitiesToDelete.insert(entity);
 }
+
+void Scene::DeleteEntities()
+{
+
+    for (Entity* entity : this->_m_entitiesToDelete)
+    {
+        auto it = _m_entities.find(entity);
+
+        if (it != _m_entities.end())
+        {
+            for (auto& componentPair : entity->GetComponents())
+            {
+                entity->RemoveComponent(componentPair.second);
+            }
+            _m_entities.erase(it);
+
+            delete entity;
+        }
+    }
+    this->_m_entitiesToDelete.clear();
+}
+
 
 bool Scene::InScene(Entity* entity)
 {
