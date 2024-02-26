@@ -12,7 +12,7 @@ struct SpriteComparator {
 class SpriteSystem : public System
 {
 private:
-	static std::multiset<Entity*, SpriteComparator> _s_entities_w_sprites;
+	static std::multiset<Entity*, SpriteComparator> _s_entitySprites;
 
 public:
 	void Initialize() const override;
