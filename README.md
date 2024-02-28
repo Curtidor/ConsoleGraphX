@@ -13,5 +13,5 @@ Welcome to ConsoleGraphX, a minimalistic game engine designed to create retro-st
 
 * **Sprite Rendering:** Display sprites and animations (WIP) with customizable layers for a polished visual presentation.
 
-* **Multi-Layer Rendering (WIP):** Create depth in your games by organizing sprites into different layers.
+* **Multi-Layer Rendering:** Create depth in your games by organizing sprites into different layers.
 ![Screenshot (28)](https://github.com/Curtidor/ConsoleGraphX/assets/103538997/6cc061ea-79d0-41e6-b3f2-f4d2a7d2e323)
