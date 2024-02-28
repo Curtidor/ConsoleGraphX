@@ -65,10 +65,6 @@ void Engine::Run()
         active_screen->FillScreen({ Screen::s_pixel, 0 });
 
        //Sleep(4);
-
-        _m_debugger->LogMessage(std::to_string(_m_delta_time));
-
-
     }
 }
 
