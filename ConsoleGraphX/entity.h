@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include <unordered_map>
 #include <unordered_set>
 #include <typeindex>
@@ -246,4 +247,3 @@ public:
 };
 
 std::atomic<long> Entity::_s_totalEntities(0);
-
