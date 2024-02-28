@@ -85,6 +85,15 @@
     <Filter Include="Source Files\Testing">
       <UniqueIdentifier>{698166f8-7050-4415-bba7-93cf5ab7636a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Components\EntityR">
+      <UniqueIdentifier>{04692363-66df-4e15-9d1d-4c6ab24fe197}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="screen.h">
@@ -123,9 +132,6 @@
     <ClInclude Include="scene_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="player_controller.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
     <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
@@ -147,9 +153,6 @@
     <ClInclude Include="player.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="script.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
     <ClInclude Include="script_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
@@ -167,6 +170,21 @@
     </ClInclude>
     <ClInclude Include="render_testing.h">
       <Filter>Header Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="random_numbers.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="snow.h">
+      <Filter>Header Files\Game\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="spawner.h">
+      <Filter>Header Files\Engine\Components\EntityR</Filter>
+    </ClInclude>
+    <ClInclude Include="player_controller.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +265,15 @@
     </ClCompile>
     <ClCompile Include="rendering_test.cpp">
       <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="spawner.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="random_numbers.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="snow.cpp">
+      <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

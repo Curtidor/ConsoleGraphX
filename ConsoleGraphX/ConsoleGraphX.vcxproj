@@ -138,6 +138,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="player_controller.h" />
     <ClInclude Include="player_controller_system.h" />
+    <ClInclude Include="random_numbers.h" />
     <ClInclude Include="render_system.h" />
     <ClInclude Include="render_testing.h" />
     <ClInclude Include="scene.h" />
@@ -146,6 +147,8 @@
     <ClInclude Include="screen_buffer.h" />
     <ClInclude Include="script.h" />
     <ClInclude Include="script_system.h" />
+    <ClInclude Include="snow.h" />
+    <ClInclude Include="spawner.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system.h" />
@@ -167,6 +170,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_controller.cpp" />
     <ClCompile Include="player_controller_system.cpp" />
+    <ClCompile Include="random_numbers.cpp" />
     <ClCompile Include="rendering_test.cpp" />
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -175,6 +179,8 @@
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="script.cpp" />
     <ClCompile Include="script_system.cpp" />
+    <ClCompile Include="snow.cpp" />
+    <ClCompile Include="spawner.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system.cpp" />
