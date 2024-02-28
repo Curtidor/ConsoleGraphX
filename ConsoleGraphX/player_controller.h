@@ -5,18 +5,15 @@
 
 struct PlayerController: Component
 {
-private:
-	Entity* m_owner;
-	float m_move_speed;
-	float m_jump_speed;
+public:
+	float m_moveSpeed;
+	float m_jumpSpeed;
 	float m_gravity;
 	Vector3 m_velocity;
+
 public:
 	PlayerController();
-	PlayerController(Entity* owner, float move_speed, float jump_speed, float gravity);
+	PlayerController(float moveSpeed, float jumpSpeed, float gravity);
 
 	int GetID() const override;
-
-	void Update(float delta_time);
-	bool IsGrounded();
 };

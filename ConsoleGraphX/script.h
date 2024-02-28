@@ -6,21 +6,16 @@
 struct Script : public Component
 {
 protected:
-	Entity* m_entity;
 	bool m_is_enabled;
 
 public:
-	Script(Entity* entity);
+	Script();
+
+	virtual void Awake(Entity* owner);
+	virtual void Start(Entity* owner);
+	virtual void Update(Entity* owner);
 
 	bool IsEnabled();
-
-	void SetStatus(bool state);
-
-	const Entity* GetOwner();
-
-	virtual void Awake();
-	virtual void Start();
-	virtual void Update();
 
 	int GetID() const override;
 };

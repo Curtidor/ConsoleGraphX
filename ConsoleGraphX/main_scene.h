@@ -1,6 +1,8 @@
 #pragma once
 #include "engine.h"
 #include "player.h"
+#include "spawner.h"
+#include "snow.h"
 #include "gui_element.h"
 
 // Register->Load->Initialize->Run

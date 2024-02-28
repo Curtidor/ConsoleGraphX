@@ -1,24 +1,23 @@
 ﻿#include "player.h"
 
-Player::Player(Entity* entity) 
-	: Script(entity) 
+Player::Player() : Script() 
 {}
 
-void Player::Awake()
+void Player::Awake(Entity* owner)
 {
-	this->m_entity->AddComponent<Sprite>(7, 12, DarkYellow);
-	this->m_entity->GetComponent<Transform>()->SetPosition(22, 78);
-	this->m_entity->AddComponent<PlayerController>(this->m_entity, 25, 5, 9);
+	Sprite* sprite = (Sprite*)owner->AddComponent<Sprite>(7, 12, DarkYellow);
+	sprite->m_layer = 1;
+	owner->GetComponent<Transform>()->SetPosition(22, 78);
+	owner->AddComponent<PlayerController>(25, 5, 9);
 
 	this->m_is_enabled = true;
 }
 
-void Player::Update()
+void Player::Update(Entity* owner)
 {
-	Debugger::S_LogMessage("PLAYERRRRR ALIVE!!", Debugger::LogLevel::INFO);
 	if (InputSystem::IsKeyPressed(Key::B))
 	{
-		this->m_entity->KillEntity();
+		owner->KillEntity();
 	}
 }
 
