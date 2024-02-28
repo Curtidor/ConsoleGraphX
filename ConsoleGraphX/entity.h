@@ -12,12 +12,12 @@
 class Entity
 {
 private:    
-    static long _s_totalEntities;
+    static std::atomic<long> _s_totalEntities;
+
+    const std::string _m_name;
+    const long _m_id;
 
     Entity* _m_parent;
-    const std::string _m_name;
-    int _m_id;
-
     std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
 
@@ -27,7 +27,7 @@ public:
         this->AddComponent<Transform>();
     }
 
-    int GetId()
+    long GetId()
     {
         return this->_m_id;
     }
@@ -241,6 +241,9 @@ public:
     void KillEntity()
     {
         Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
+        Entity::_s_totalEntities--;
     }
 };
+
+std::atomic<long> Entity::_s_totalEntities(0);
 
