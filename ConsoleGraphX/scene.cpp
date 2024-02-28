@@ -4,9 +4,10 @@ Scene::Scene(std::string name)
     : _m_scene_name(name)
 {}
 
-Entity* Scene::RegisterEntity(std::string name)
+Entity* Scene::RegisterEntityN(std::string name)
 {
     Entity* entity = new Entity(name);
+
     _m_entities.insert(entity);
 
     return entity;
