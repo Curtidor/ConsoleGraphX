@@ -13,10 +13,9 @@ bool SpriteComparator::operator()(const Entity* entityAC, const Entity* entityBC
 
 	if (spriteA->m_layer != spriteB->m_layer) {
 		return spriteA->m_layer < spriteB->m_layer;
-	}
+	} 
 	else {
-		// Use memory addresses as tie-breaker
-		return entityA < entityB;
+		return entityA->GetId() < entityB->GetId();
 	}
 }
 
