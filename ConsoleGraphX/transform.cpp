@@ -4,6 +4,10 @@ Transform::Transform()
     : m_position(0.0f, 0.0f, 0.0f), m_world_position(0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f)
 {}
 
+Transform::Transform(const Transform& transform)
+    : m_position(Vector3(transform.m_position)), m_world_position(Vector3(transform.m_world_position)), m_scale(Vector3(transform.m_scale)), m_rotation(transform.m_rotation)
+{}
+
 Transform::Transform(float x, float y, float scaleX, float scaleY)
     : m_position(x, y, 0.0f), m_world_position(x, y, 0.0f), m_scale(scaleX, scaleY, 1.0f), m_rotation(0.0f)
 {}
@@ -48,7 +52,7 @@ void Transform::SetScale(float x, float y, float z)
     m_scale.z = z;
 }
 
-const Vector3 Transform::GetPosition()
+const Vector3 Transform::GetPosition() const
 {
     return m_position;
 }

@@ -20,8 +20,8 @@ Sprite::Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent) : _
 {
 }
 
-Sprite::Sprite(Sprite& other)
-	: _m_width(other._m_width), _m_height(other._m_height), _m_isVisible(other._m_isVisible), _m_isTransparent(other._m_isTransparent)
+Sprite::Sprite(const Sprite& other)
+	: _m_width(other._m_width), _m_height(other._m_height), _m_isVisible(other._m_isVisible), _m_isTransparent(other._m_isTransparent), m_layer(other.m_layer)
 {
 	_m_pixels = new CHAR_INFO[_m_width * _m_height];
 
