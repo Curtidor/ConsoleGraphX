@@ -114,9 +114,9 @@ void ScriptSystem::DeregisterScripts(Entity* entity)
 		return;
 	}
 
-	for (Script* script : it->second)
-	{
-		DeregisterScriptWS(entity, script);
+	std::vector<Script*> scriptsToRemove(it->second.begin(), it->second.end());
+	for (auto it = scriptsToRemove.rbegin(); it != scriptsToRemove.rend(); ++it) {
+		DeregisterScriptWS(entity, *it);
 	}
 }
 
