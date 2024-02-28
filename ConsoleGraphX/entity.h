@@ -5,25 +5,32 @@
 #include "transform.h"
 #include "dispatcher.h"
 
+
 /**
  * @brief A class representing an entity in the entity-component system (ECS).
  */
 class Entity
 {
-private:
-    const std::string _m_name;
+private:    
+    static long _s_totalEntities;
 
-    Entity* parent;
+    Entity* _m_parent;
+    const std::string _m_name;
+    int _m_id;
 
     std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
 
 public:
-    Entity(const std::string& entityName = "") : _m_name(entityName), parent(nullptr)
+    Entity(const std::string& entityName = "") : _m_name(entityName), _m_parent(nullptr), _m_id(_s_totalEntities++)
     {
         this->AddComponent<Transform>();
     }
 
+    int GetId()
+    {
+        return this->_m_id;
+    }
 
     template <typename ComponentType, typename... Args>
     Component* AddComponent(Args&&... args) {
@@ -201,24 +208,24 @@ public:
 
     void SetParent(Entity* newParent) 
     {
-        if (parent) 
+        if (_m_parent) 
         {
             // Remove from the old parent's children list
-            parent->RemoveChild(this);
+            _m_parent->RemoveChild(this);
         }
 
-        parent = newParent;
+        _m_parent = newParent;
 
-        if (parent) 
+        if (_m_parent) 
         {
             // Add to the new parent's children list
-            parent->AddChild(this);
+            _m_parent->AddChild(this);
         }
     }
 
     void AddChild(Entity* child) 
     {
-        child->parent = this;
+        child->_m_parent = this;
         _m_children.insert(child);
     }
 
@@ -236,3 +243,4 @@ public:
         Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
     }
 };
+
