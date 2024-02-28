@@ -35,6 +35,7 @@ private:
 	CHAR_INFO* _m_pixels;
 
 public:
+    int m_layer;
 
 	Sprite();
     Sprite(int width, int height, bool isTransparent = false);
@@ -54,7 +55,6 @@ public:
 
 	int GetWidth();
 	int GetHeight();
-
 
 	CHAR_INFO* GetPixels();
 };

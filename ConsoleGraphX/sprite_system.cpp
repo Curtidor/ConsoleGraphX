@@ -1,6 +1,26 @@
 #include "sprtite_system.h"
 
-std::vector<Entity*> SpriteSystem::_s_entities_w_sprites;
+bool SpriteComparator::operator()(const Entity* entityAC, const Entity* entityBC) const {
+	Entity* entityA = const_cast<Entity*>(entityAC);
+	Entity* entityB = const_cast<Entity*>(entityBC);
+	
+	Sprite* spriteA = entityA->GetComponent<Sprite>();
+	Sprite* spriteB = entityB->GetComponent<Sprite>();
+
+	if (!spriteA || !spriteB) {
+		throw std::runtime_error("Null sprite encountered in SpriteComparator");
+	}
+
+	if (spriteA->m_layer != spriteB->m_layer) {
+		return spriteA->m_layer < spriteB->m_layer;
+	}
+	else {
+		// Use memory addresses as tie-breaker
+		return entityA < entityB;
+	}
+}
+
+std::multiset<Entity*, SpriteComparator> SpriteSystem::_s_entitySprites;
 
 void SpriteSystem::Initialize() const
 {
@@ -16,24 +36,26 @@ void SpriteSystem::Update(float delta_time) const
 
 void SpriteSystem::RegisterEntitySprite(Entity* entity)
 {
-	_s_entities_w_sprites.push_back(entity);
+	_s_entitySprites.insert(entity);
 }
 
 void SpriteSystem::DeregisterEntitySprite(Entity* entity)
 {
-	auto it = std::find(_s_entities_w_sprites.begin(), _s_entities_w_sprites.end(), entity);
+	auto it = _s_entitySprites.find(entity);
 
-	if (it != _s_entities_w_sprites.end()) {
-		_s_entities_w_sprites.erase(it);
+	if (it != _s_entitySprites.end()) {
+		_s_entitySprites.erase(it);
 	}
 }
 
-const std::vector<Entity*>& SpriteSystem::GetEntitySprites(bool layer_sort)
+
+std::vector<Entity*> SpriteSystem::GetEntitySprites()
 {
-	if (layer_sort)
-	{
-		// do layer sort
-	}
-	return _s_entities_w_sprites;
+	std::vector<Entity*> entitiesVector;
+	entitiesVector.reserve(_s_entitySprites.size()); 
+
+	entitiesVector.insert(entitiesVector.end(), _s_entitySprites.begin(), _s_entitySprites.end());
+
+	return entitiesVector;
 }
 

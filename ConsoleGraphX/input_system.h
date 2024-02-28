@@ -8,6 +8,7 @@
 
 enum class Key : char
 {
+    Enter = 10,
     Space = 32,
     ExclamationMark = 33,
     DoubleQuote = 34,

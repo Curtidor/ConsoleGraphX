@@ -7,6 +7,7 @@ class Scene
 private:
     const std::string _m_scene_name;
     std::unordered_set<Entity*> _m_entities;
+    std::unordered_set<Entity*> _m_entitiesToDelete;
 
 public:
     Scene(std::string name);
@@ -14,9 +15,11 @@ public:
     virtual void Initialize() = 0;
 
     Entity* RegisterEntity(std::string name = "");
-    
     void RegisterEntity(Entity* entity);
+
     void DeregisterEntity(Entity* entity);
+
+    void DeleteEntities();
     
     bool InScene(Entity* entity);
 

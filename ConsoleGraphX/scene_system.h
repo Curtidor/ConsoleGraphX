@@ -6,7 +6,7 @@
 class SceneSystem
 {
 private:
-    static Scene* _s_active_scene;
+    static Scene* _s_activeScene;
     static std::unordered_map<std::string, Scene*> _s_scenes;
 
 public:
@@ -17,5 +17,6 @@ public:
     
     static bool IsSceneRegistered(const std::string& name);
     
+    static Scene* GetActiveScene();
     static const std::unordered_map<std::string, Scene*>& GetScenes(); // Updated return type
 };

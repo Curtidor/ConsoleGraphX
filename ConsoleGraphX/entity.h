@@ -14,14 +14,12 @@ private:
     const std::string _m_name;
 
     Entity* parent;
-    std::unordered_set<Entity*> _m_children;
 
+    std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
 
-
 public:
-    Entity(const std::string& entityName = "") 
-        : _m_name(entityName), parent(nullptr)
+    Entity(const std::string& entityName = "") : _m_name(entityName), parent(nullptr)
     {
         this->AddComponent<Transform>();
     }
@@ -52,13 +50,18 @@ public:
     Component* AddComponent(Args&&... args) {
         static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
 
-        std::string component_name = typeid(ComponentType).name();
+        std::string componentName = typeid(ComponentType).name();
 
         // Create a new instance of the component with arguments and add it to the components map
         Component* component = new ComponentType(std::forward<Args>(args)...);
         _m_components[typeid(ComponentType)] = component;
 
-        std::string event_name = "AddComponent" + component_name;
+        if (component->GetID() == ComponentID::script)
+        {
+            componentName = "Struct script";
+        }
+
+        std::string event_name = "AddComponent" + componentName;
         Dispatcher<Entity*>::Notify(event_name, this);
 
         return component;
@@ -93,11 +96,11 @@ public:
         return nullptr;
     }
 
-    Component* GetComponentByID(int id)
+    Component* GetComponentByID(int _m_id)
     {
         for (std::pair<std::type_index, Component*> component_pair : _m_components)
         {
-            if (component_pair.second->GetID() == id)
+            if (component_pair.second->GetID() == _m_id)
             {
                 return component_pair.second;
             }
@@ -137,8 +140,14 @@ public:
 
         auto it = _m_components.find(type);
         if (it != _m_components.end() && it->second == component) {
-            std::string type_name = type.name();
-            std::string event_name = "RemoveComponent" + type_name;
+            std::string componentName = type.name();
+
+            if (component->GetID() == ComponentID::script)
+            {
+                componentName = "Struct script";
+            }
+
+            std::string event_name = "RemoveComponent" + componentName;
 
             Dispatcher<Entity*>::Notify(event_name, this);
 
@@ -177,5 +186,10 @@ public:
         if (it != _m_children.end()) {
             _m_children.erase(it);
         }
+    }
+
+    void KillEntity()
+    {
+        Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
     }
 };
