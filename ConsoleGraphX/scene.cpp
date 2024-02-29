@@ -25,7 +25,6 @@ void Scene::DeregisterEntity(Entity* entity)
 
 void Scene::DeleteEntities()
 {
-
     for (Entity* entity : this->_m_entitiesToDelete)
     {
         auto it = _m_entities.find(entity);
@@ -34,7 +33,7 @@ void Scene::DeleteEntities()
         {
             for (auto& componentPair : entity->GetComponents())
             {
-                entity->RemoveComponent(componentPair.second);
+                entity->RemoveComponentC(componentPair.second);
             }
             _m_entities.erase(it);
 
