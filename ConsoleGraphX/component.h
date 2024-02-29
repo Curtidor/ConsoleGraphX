@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <typeinfo>
 
 /*
 Base class for all components
@@ -9,7 +11,10 @@ public:
     Component();
 
     virtual ~Component();
+    virtual Component* Clone() const = 0;
     virtual int GetID() const = 0;
+
+    const std::string ComponentName() const;
 };
 
 
