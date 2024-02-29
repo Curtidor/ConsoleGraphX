@@ -11,3 +11,12 @@ int PlayerController::GetID() const
 {
     return ComponentID::playerController;
 }
+
+Component* PlayerController::Clone() const
+{
+    PlayerController* clone = new PlayerController(*this);
+
+    return clone;
+}
+
+

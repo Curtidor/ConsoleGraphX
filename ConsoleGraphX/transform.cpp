@@ -21,6 +21,13 @@ int Transform::GetID() const
     return ComponentID::transform;
 }
 
+Component* Transform::Clone() const 
+{
+    Transform* clone = new Transform(*this);
+
+    return clone;
+}
+
 void Transform::SetPosition(float x, float y)
 {
     m_position.x = x;

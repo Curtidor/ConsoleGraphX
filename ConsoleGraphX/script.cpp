@@ -17,3 +17,10 @@ int Script::GetID() const
 	return ComponentID::script;
 }
 
+Component* Script::Clone() const 
+{
+	Script* clone = new Script(*this);
+
+	return clone;
+}
+

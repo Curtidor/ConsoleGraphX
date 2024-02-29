@@ -15,6 +15,7 @@ public:
     Transform(float x, float y, float scaleX, float scaleY);
     Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
+    Component* Clone() const override;
     int GetID() const override;
 
     void SetPosition(float x, float y);

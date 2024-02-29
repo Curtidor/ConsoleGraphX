@@ -1,6 +1,6 @@
 #pragma once
-#include "entity.h"
 #include "component.h"
+#include "vector3.h"
 #include "input_system.h"
 
 struct PlayerController: Component
@@ -14,6 +14,7 @@ public:
 public:
 	PlayerController();
 	PlayerController(float moveSpeed, float jumpSpeed, float gravity);
-
+	
+	Component* Clone() const override;
 	int GetID() const override;
 };

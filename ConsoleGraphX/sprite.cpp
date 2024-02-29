@@ -35,6 +35,13 @@ Sprite::~Sprite()
 
 int Sprite::GetID() const { return ComponentID::sprite; }
 
+Component* Sprite::Clone() const
+{
+	Sprite* clone = new Sprite(*this);
+
+	return clone;
+}
+
 void Sprite::HideSprite() { this->_m_isVisible = false; }
 void Sprite::ShowSprite() { this->_m_isVisible = true; }
 

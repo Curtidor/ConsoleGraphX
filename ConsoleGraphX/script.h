@@ -17,5 +17,7 @@ public:
 
 	bool IsEnabled();
 
+	Component* Clone() const override;
 	int GetID() const override;
+
 };
