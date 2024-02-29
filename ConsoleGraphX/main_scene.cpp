@@ -10,17 +10,20 @@ MainScene::MainScene(std::string name) : Scene(name)
 void MainScene::Initialize()
 {
 	Entity* snowPrefab = this->RegisterEntityN("snow");
-	snowPrefab->AddComponent<Snow>();
+	//snowPrefab->AddComponent<Snow>();
+	Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(4, 4, Color::DarkRed);
+	snowSprite->m_layer = 5;
 	snowPrefab->GetComponent<Transform>()->SetPosition(Screen::GetWidth_A() / 2, 0);
+	Spawner* spawner = (Spawner*)snowPrefab->AddComponent<Spawner>();
 
-	Entity* spawnerEntity = this->RegisterEntityN();
-	Spawner* spawner = (Spawner*)spawnerEntity->AddComponent<Spawner>(snowPrefab);
+	spawner->minSpread = Vector3(-60, 0,0);
+	spawner->maxSpread = Vector3(60, 50, 0);
 
-	spawner->minSpread = Vector3(-50, 0,0);
-	spawner->maxSpread = Vector3(50, 0, 0);
+	for (int i = 0; i < 20; i++)
+	{
+		spawner->Spawn();
+	}
 
-	//spawner->Spawn(true);
-	//spawner->Spawn(true);
 
 	Entity* grass = this->RegisterEntityN("Grass");
 	grass->GetComponent<Transform>()->SetPosition(0, 90);
