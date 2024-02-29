@@ -149,11 +149,11 @@
     <ClInclude Include="script_system.h" />
     <ClInclude Include="snow.h" />
     <ClInclude Include="spawner.h" />
+    <ClInclude Include="spawner_system.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="text_box.h" />
-    <ClInclude Include="text_sprite.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="vector2.h" />
     <ClInclude Include="vector3.h" />
@@ -162,6 +162,7 @@
     <ClCompile Include="component.cpp" />
     <ClCompile Include="debugger.cpp" />
     <ClCompile Include="engine.cpp" />
+    <ClCompile Include="entity.cpp" />
     <ClCompile Include="entity.h" />
     <ClCompile Include="gui_element.cpp" />
     <ClCompile Include="input_system.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="script_system.cpp" />
     <ClCompile Include="snow.cpp" />
     <ClCompile Include="spawner.cpp" />
+    <ClCompile Include="spawner_system.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system.cpp" />
