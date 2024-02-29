@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <algorithm>
 #include "transform.h"
 
@@ -45,6 +45,7 @@ public:
 
 	~Sprite() override;
 
+    Component* Clone() const override;
 	int GetID() const override;
 
     void HideSprite();
