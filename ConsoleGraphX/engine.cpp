@@ -23,6 +23,7 @@ void Engine::InitializeEngine(short screen_width, short screen_height, short pix
     _m_system->RegisterSystem<ScriptSystem>();
     _m_system->RegisterSystem<SpriteSystem>();
     _m_system->RegisterSystem<PlayerControllerSystem>();
+    _m_system->RegisterSystem<SpawnerSystem>();
 
     // Initialize the previous frame time to the current time
     _m_prev_frame_time = std::chrono::high_resolution_clock::now();
@@ -39,7 +40,6 @@ void Engine::Run()
     Screen* active_screen = Screen::GetActiveScreen_A();
     while (true)
     {
-        // Calculate delta time
         _m_current_frame_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<float> frame_duration = _m_current_frame_time - _m_prev_frame_time;
 
@@ -49,10 +49,13 @@ void Engine::Run()
         InputSystem::GetPressedKeys();
         InputSystem::UpdateMousePosition();
 
+        // kill entity event happens here
         _m_system->Update(_m_delta_time);
 
+        // entity is still alive here, but in processes list of entities to kill
         RenderSystem::DrawSprites(SpriteSystem::GetEntitySprites());
 
+        // entity is killed here
         SceneSystem::GetActiveScene()->DeleteEntities();
 
         if (_m_debugger != nullptr)
