@@ -15,33 +15,53 @@ class Entity
 private:    
     static std::atomic<long> _s_totalEntities;
 
-    const std::string _m_name;
-    const long _m_id;
-
     Entity* _m_parent;
     std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
 
 public:
-    Entity(const std::string& entityName = "") : _m_name(entityName), _m_parent(nullptr), _m_id(_s_totalEntities++)
-    {
-        this->AddComponent<Transform>();
-    }
+    const long m_id;
+    const std::string m_name;
 
-    long GetId()
-    {
-        return this->_m_id;
-    }
+    Entity();
+    Entity(const std::string& entityName);
 
-    template <typename ComponentType, typename... Args>
+    Component* AddComponentClone(Component* comp, std::string& componentName, std::type_index typeIndex);
+    Component* GetComponentByID(int id);
+
+    void RemoveComponentById(int id, bool deleteComponent = true);
+    void RemoveComponentC(Component* component);
+    
+    void SetParent(Entity* newParent);
+    void AddChild(Entity* child);
+    void RemoveChild(Entity* child);
+
+    void KillEntity();
+    /**
+   * @brief Gets a reference to the components associated with this entity.
+   *
+   * @return A reference to the components map.
+   */
+    const std::unordered_map<std::type_index, Component*> GetComponents();
+
+    /**
+    * @brief Gets the world position of this entity by combining its local position with that of its children.
+    *
+    * @return The world position as a Vector3.
+    */
+    const Vector3 GetWorldPosition();
+
+    long GetId();
+
+    template <typename T, typename... Args>
     Component* AddComponent(Args&&... args) {
-        static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
+        static_assert(std::is_base_of<Component, T>::value, "The passed type must be derived from Component.");
 
-        std::string componentName = typeid(ComponentType).name();
+        std::string componentName = typeid(T).name();
 
         // Create a new instance of the component with arguments and add it to the components map
-        Component* component = new ComponentType(std::forward<Args>(args)...);
-        _m_components[typeid(ComponentType)] = component;
+        Component* component = new T(std::forward<Args>(args)...);
+        _m_components[typeid(T)] = component;
 
         if (component->GetID() == ComponentID::script)
         {
@@ -54,28 +74,9 @@ public:
         return component;
     }
 
-    Component* AddComponentCopy(Component* comp)
-    {
-        std::type_index typeIndex = typeid(comp);
-        std::string componentName = typeIndex.name();
-
-        _m_components[typeIndex] = comp;
-
-        if (comp->GetID() == ComponentID::script)
-        {
-            componentName = "Struct script";
-        }
-
-        // Possible bug maybe not i assume you should not aleart system as this component is probably already used under another entity
-        //std::string event_name = "AddComponent" + componentName;
-       // Dispatcher<Entity*>::Notify(event_name, this);
-
-        return comp;
-    }
-
-    template <typename ComponentType>
+    template <typename T>
     void RemoveComponent(bool deleteComponent = true) {
-        std::type_index type = typeid(ComponentType);
+        std::type_index type = typeid(T);
 
         auto it = _m_components.find(type);
 
@@ -102,148 +103,28 @@ public:
         }
     }
 
-    void RemoveComponentById(int id, bool deleteComponent = true)
-    {
-        for (std::pair<std::type_index, Component*> componentPair : _m_components)
-        {
-            if (componentPair.second->GetID() != id)
-                continue;
-
-            std::string componentName = componentPair.first.name();
-
-            if (componentPair.second->GetID() == ComponentID::script)
-            {
-                componentName = "Struct script";
-            }
-
-            if (componentPair.second->GetID() == ComponentID::transform)
-            {
-                throw new std::runtime_error("Entity transforms can not be removed!");
-            }
-
-            std::string event_name = "RemoveComponent" + componentName;
-
-            Dispatcher<Entity*>::Notify(event_name, this);
-
-            _m_components.erase(componentPair.first);
-
-            if (deleteComponent)
-                delete componentPair.second;
-        }
-    }
-
-    template <typename ComponentType>
+    template <typename T>
     bool HasComponent() {
-        return _m_components.find(typeid(ComponentType)) != _m_components.end();
+        return _m_components.find(typeid(T)) != _m_components.end();
     }
 
-    template <typename ComponentType>
-    ComponentType* GetComponent() {
-        auto it = _m_components.find(typeid(ComponentType));
+    template <typename T>
+    T* GetComponent() {
+        auto it = _m_components.find(typeid(T));
         if (it != _m_components.end()) {
-            return static_cast<ComponentType*>(it->second);
-        }
-
-        return nullptr;
-    }
-
-    Component* GetComponentByID(int id)
-    {
-        for (std::pair<std::type_index, Component*> component_pair : _m_components)
-        {
-            if (component_pair.second->GetID() == id)
-            {
-                return component_pair.second;
+            T* component = dynamic_cast<T*>(it->second);
+            if (component) {
+                return component;
             }
         }
 
         return nullptr;
     }
 
-    /**
-     * @brief Gets the world position of this entity by combining its local position with that of its children.
-     *
-     * @return The world position as a Vector3.
-     */
-    const Vector3 GetWorldPosition()
-    {
-        Vector3 world_position = this->GetComponent<Transform>()->GetPosition();
-        for (Entity* child : this->_m_children)
-        {
-            world_position += child->GetWorldPosition();
-        }
 
-        return world_position;
-    }
+    size_t hash() const;
 
-    void RemoveComponent(Component* component) {
-        std::type_index type = typeid(*component);
+    bool operator==(const Entity& other) const;
 
-        auto it = _m_components.find(type);
-        if (it != _m_components.end() && it->second == component) {
-            std::string componentName = type.name();
-
-            if (component->GetID() == ComponentID::script)
-            {
-                componentName = "Struct script";
-            }
-
-            std::string event_name = "RemoveComponent" + componentName;
-
-            Dispatcher<Entity*>::Notify(event_name, this);
-
-            delete it->second;
-            _m_components.erase(it);
-        }
-    }
-
-    /**
-    * @brief Gets a reference to the components associated with this entity.
-    *
-    * @return A reference to the components map.
-    */
-    const std::unordered_map<std::type_index, Component*> GetComponents()
-    {
-        return this->_m_components;
-    }
-
-    void SetParent(Entity* newParent) 
-    {
-        if (_m_parent) 
-        {
-            // Remove from the old parent's children list
-            _m_parent->RemoveChild(this);
-        }
-
-        _m_parent = newParent;
-
-        if (_m_parent) 
-        {
-            // Add to the new parent's children list
-            _m_parent->AddChild(this);
-        }
-    }
-
-    void AddChild(Entity* child) 
-    {
-        child->_m_parent = this;
-        _m_children.insert(child);
-    }
-
-
-    void RemoveChild(Entity* child) 
-    {
-        auto it = _m_children.find(child);
-        if (it != _m_children.end()) {
-            _m_children.erase(it);
-        }
-    }
-
-    void KillEntity()
-    {
-        Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
-        Entity::_s_totalEntities--;
-    }
+    bool operator!=(const Entity& other) const;
 };
-
-std::atomic<long> Entity::_s_totalEntities(0);
