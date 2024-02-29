@@ -21,8 +21,8 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	this->_m_screenBuffer->writePosition = { 0, 0, (short)(_m_screenBuffer->bufferSize.X - 1), (short)(_m_screenBuffer->bufferSize.Y - 1) };
 
 	this->_m_screenBuffer->wHandle = GetConsoleWindow();
-	if (this->_m_screenBuffer->wHandle == NULL)
-		throw new std::runtime_error("no console window");
+	if (this->_m_screenBuffer->wHandle == nullptr)
+		throw std::runtime_error("no console window");
 
 	// Set the console screen buffer size
 	COORD totalBufferSize = { _m_width , total_height };
