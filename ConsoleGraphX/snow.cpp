@@ -1,6 +1,6 @@
 #include "snow.h"
 
-Snow::Snow(): Script(), _m_transform(NULL)
+Snow::Snow(): Script(), _m_transform(nullptr)
 {}
 
 void Snow::Awake(Entity* owner)
