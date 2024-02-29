@@ -2,9 +2,10 @@
 #include <iostream>
 #include <random>
 
-class RngGenerator 
+class RandomNumberGenerator 
 {
 public:
-	static int getRandomNumber(int min, int max);
+	static int GenerateRandomIntInRange(int min, int max);
+	static float GenerateRandomFloatInRange(float min, float max);
 		
 };

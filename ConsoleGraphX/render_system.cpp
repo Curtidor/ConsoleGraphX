@@ -13,7 +13,7 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
     {
         Sprite* sprite = entity->GetComponent<Sprite>();
 
-        if (sprite == NULL)
+        if (sprite == nullptr)
         {
             Debugger::S_LogMessage("entity does not have the sprite component DRAW SPRITES", Debugger::LogLevel::WARNING);
             continue;
