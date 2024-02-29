@@ -34,18 +34,17 @@ void PlayerControllerSystem::Update(float delta_time) const
         {
             transform->Translate(Vector3::right * controller->m_moveSpeed * delta_time);
         }
-
 	}
 }
 
 void PlayerControllerSystem::RegisterController(Entity* owner)
 {
-	PlayerController* controller = owner->GetComponent<PlayerController>();
+    PlayerController* controller = owner->GetComponent<PlayerController>();
 
-	if (controller == nullptr)
-		return;
+    if (controller == nullptr)
+        return;
 
-	_s_controllerPairs.insert(std::make_pair(owner, controller));
+    _s_controllerPairs.insert(std::make_pair(owner, controller));
 }
 
 void PlayerControllerSystem::DeregisterController(Entity* owner)
