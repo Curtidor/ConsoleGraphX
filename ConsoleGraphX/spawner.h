@@ -15,7 +15,6 @@ public:
 	Spawner();
 
 	void SetEnableState(bool state);
-	void SetPrefab(Entity* entiy);
 	void Spawn();
 
 	Component* Clone() const override;
