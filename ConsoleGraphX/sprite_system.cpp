@@ -15,7 +15,7 @@ bool SpriteComparator::operator()(const Entity* entityAC, const Entity* entityBC
 		return spriteA->m_layer < spriteB->m_layer;
 	} 
 	else {
-		return entityA->GetId() < entityB->GetId();
+		return entityA->m_id < entityB->m_id;
 	}
 }
 
@@ -40,13 +40,19 @@ void SpriteSystem::RegisterEntitySprite(Entity* entity)
 
 void SpriteSystem::DeregisterEntitySprite(Entity* entity)
 {
-	auto it = _s_entitySprites.find(entity);
+	// TEMP
+	// when using .find on _s_entitySprite it sometimes returns "end" even though the entity is present
+	// until we fix the SpriteComparator we will use this code for removing entities from the multiset
+	auto equalsEntity = [entity](Entity* entry) {
+		return entry == entity;
+	};
+
+	auto it = std::find_if(_s_entitySprites.begin(), _s_entitySprites.end(), equalsEntity);
 
 	if (it != _s_entitySprites.end()) {
 		_s_entitySprites.erase(it);
 	}
 }
-
 
 std::vector<Entity*> SpriteSystem::GetEntitySprites()
 {
