@@ -1,5 +1,3 @@
-
-https://github.com/Curtidor/ConsoleGraphX/assets/103538997/0df1f42f-07cc-4764-ac8d-07ea05d76cd7
 # ConsoleGraphX
 
 ### NOTE: As of March 15 2024 this project will not receive any updates for a few months
@@ -18,4 +16,4 @@ Welcome to ConsoleGraphX, a minimalistic game engine designed to create retro-st
 * **Multi-Layer Rendering:** Create depth in your games by organizing sprites into different layers.
 ![Screenshot (28)](https://github.com/Curtidor/ConsoleGraphX/assets/103538997/6cc061ea-79d0-41e6-b3f2-f4d2a7d2e323)
 
-Uploading SnowSceneDemo.mp4…
+https://github.com/Curtidor/ConsoleGraphX/assets/103538997/0df1f42f-07cc-4764-ac8d-07ea05d76cd7
