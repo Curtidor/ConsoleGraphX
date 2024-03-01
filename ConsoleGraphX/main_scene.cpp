@@ -10,18 +10,18 @@ MainScene::MainScene(std::string name) : Scene(name)
 void MainScene::Initialize()
 {
 	Entity* snowPrefab = this->RegisterEntityN("snow");
-	//snowPrefab->AddComponent<Snow>();
-	Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(4, 4, Color::DarkRed);
-	snowSprite->m_layer = 5;
+	Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(2, 1, Color::White);
 	snowPrefab->GetComponent<Transform>()->SetPosition(Screen::GetWidth_A() / 2, 0);
-	Spawner* spawner = (Spawner*)snowPrefab->AddComponent<Spawner>();
+	snowPrefab->AddComponent<Snow>();
 
-	spawner->minSpread = Vector3(-60, 0,0);
-	spawner->maxSpread = Vector3(60, 50, 0);
+	snowSprite->m_layer = 2;
 
-	for (int i = 0; i < 20; i++)
+	Vector3 minSpread = Vector3(-135, 0,0);
+	Vector3 maxSpread = Vector3(135, 90, 0);
+
+	for (int i = 0; i < 800; i++)
 	{
-		spawner->Spawn();
+		snowPrefab->CloneEntity(minSpread, maxSpread);
 	}
 
 
@@ -46,15 +46,11 @@ void MainScene::Initialize()
 	spritetE1->m_layer = 1;
 	tE->GetComponent<Transform>()->SetPosition(Screen::GetWidth_A() / 2 - (119 / 2), 10);
 
-	Entity* tE2 = new Entity();
-	Sprite* spritetE2 = (Sprite*)tE2->AddComponent<Sprite>(119, 5, consoleGraphXPixels);
-	spritetE2->m_layer = 1;
-	tE2->GetComponent<Transform>()->SetPosition(10, 77);
-	// console graph-x pixels
-
 
 	this->RegisterEntity(tE);
-	this->RegisterEntity(tE2);
 
+	Entity* wall = this->RegisterEntityN("wooden wall");
+	wall->AddComponent<Sprite>(5, 30, Color::Yellow + Color::Gray);
+	wall->GetComponent<Transform>()->SetPosition(12, 60);
 	
 }
