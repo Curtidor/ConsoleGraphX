@@ -1,6 +1,6 @@
 #include "player_controller_system.h"
 
-std::unordered_set<PlayerController*> PlayerControllerSystem::_s_controllers;
+std::unordered_map<Entity*, PlayerController*> PlayerControllerSystem::_s_controllerPairs;
 
 void PlayerControllerSystem::Initialize() const 
 {
@@ -10,24 +10,53 @@ void PlayerControllerSystem::Initialize() const
 
 void PlayerControllerSystem::Update(float delta_time) const
 {
-	for (PlayerController* controller : _s_controllers)
+	for (std::pair<Entity*, PlayerController*> controllerPair : _s_controllerPairs)
 	{
-		controller->Update(delta_time);
+        PlayerController* controller = controllerPair.second;
+        Entity* owner = controllerPair.first;
+
+        if (controller == nullptr || owner == nullptr)
+        {
+            PlayerControllerSystem::DeregisterController(owner);
+            continue;
+        }
+
+        // if there is a entity we can be can be 100% sure it has a transform so no need to check it
+        Transform* transform = owner->GetComponent<Transform>();
+
+        controller->m_velocity.y -= controller->m_gravity * delta_time;
+
+        if (InputSystem::IsKeyPressed(Key::A))
+        {
+            transform->Translate(Vector3::left * controller->m_moveSpeed * delta_time);
+        }
+        else if (InputSystem::IsKeyPressed(Key::D))
+        {
+            transform->Translate(Vector3::right * controller->m_moveSpeed * delta_time);
+        }
 	}
 }
 
 void PlayerControllerSystem::RegisterController(Entity* owner)
 {
-	_s_controllers.insert(owner->GetComponent<PlayerController>());
+    PlayerController* controller = owner->GetComponent<PlayerController>();
+
+    if (controller == nullptr)
+        return;
+
+    _s_controllerPairs.insert(std::make_pair(owner, controller));
 }
 
 void PlayerControllerSystem::DeregisterController(Entity* owner)
 {
-	PlayerController* controller = owner->GetComponent<PlayerController>();
-	auto it = _s_controllers.find(controller);
+    if (owner == nullptr)
+        return;
 
-	if (it != _s_controllers.end())
+	PlayerController* controller = owner->GetComponent<PlayerController>();
+	auto it = _s_controllerPairs.find(owner);
+
+	if (it != _s_controllerPairs.end())
 	{
-		_s_controllers.erase(it);
+		_s_controllerPairs.erase(it);
 	}
 }

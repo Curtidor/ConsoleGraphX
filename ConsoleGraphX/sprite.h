@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <algorithm>
 #include "transform.h"
 
@@ -41,10 +41,11 @@ public:
     Sprite(int width, int height, bool isTransparent = false);
 	Sprite(int width, int height, int color, bool isTransparent = false);
 	Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
-    Sprite(Sprite& other);
+    Sprite(const Sprite& other);
 
 	~Sprite() override;
 
+    Component* Clone() const override;
 	int GetID() const override;
 
     void HideSprite();

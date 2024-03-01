@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include <string.h>
+#include <string>
 #include <stdexcept>
-#include <iostream>
 #include <algorithm>
 #include "screen_buffer.h"
 

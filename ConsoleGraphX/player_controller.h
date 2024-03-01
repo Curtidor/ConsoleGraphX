@@ -1,22 +1,20 @@
 #pragma once
-#include "entity.h"
 #include "component.h"
+#include "vector3.h"
 #include "input_system.h"
 
 struct PlayerController: Component
 {
-private:
-	Entity* m_owner;
-	float m_move_speed;
-	float m_jump_speed;
+public:
+	float m_moveSpeed;
+	float m_jumpSpeed;
 	float m_gravity;
 	Vector3 m_velocity;
+
 public:
 	PlayerController();
-	PlayerController(Entity* owner, float move_speed, float jump_speed, float gravity);
-
+	PlayerController(float moveSpeed, float jumpSpeed, float gravity);
+	
+	Component* Clone() const override;
 	int GetID() const override;
-
-	void Update(float delta_time);
-	bool IsGrounded();
 };

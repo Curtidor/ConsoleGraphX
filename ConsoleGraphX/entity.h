@@ -1,60 +1,73 @@
 #pragma once
+#include <atomic>
 #include <unordered_map>
 #include <unordered_set>
 #include <typeindex>
 #include "transform.h"
 #include "dispatcher.h"
+#include "random_numbers.h"
+
 
 /**
  * @brief A class representing an entity in the entity-component system (ECS).
  */
 class Entity
 {
-private:
-    const std::string _m_name;
+private:    
+    static std::atomic<long> _s_totalEntities;
 
-    Entity* parent;
-
+    Entity* _m_parent;
     std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
 
+    void CloneComponents(Entity* spawnedEntity);
+
 public:
-    Entity(const std::string& entityName = "") : _m_name(entityName), parent(nullptr)
-    {
-        this->AddComponent<Transform>();
-    }
+    const long m_id;
+    const std::string m_name;
 
-    template <typename ComponentType>
-    Component* AddScript() {
-        static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
+    Entity();
+    Entity(const std::string& entityName);
 
-        // Create a new instance of the component with arguments and add it to the components map
-        Component* component = new ComponentType(this);
-        _m_components[typeid(ComponentType)] = component;
+    Component* AddComponentClone(Component* comp, std::string& componentName, std::type_index typeIndex);
+    Component* GetComponentByID(int id);
 
-        const std::string event_name = "AddScript";
-        Dispatcher<Entity*>::Notify(event_name, this);
+    void RemoveComponentById(int id, bool deleteComponent = true);
+    void RemoveComponentC(Component* component);
+    
+    void SetParent(Entity* newParent);
+    void AddChild(Entity* child);
+    void RemoveChild(Entity* child);
 
-        return component;
-    }
+    void KillEntity();
+    /**
+   * @brief Gets a reference to the components associated with this entity.
+   *
+   * @return A reference to the components map.
+   */
+    const std::unordered_map<std::type_index, Component*> GetComponents();
 
-    void RemoveScript()
-    {
-        const std::string event_name = "RemoveScript";
-        Dispatcher<Entity*>::Notify(event_name, this);
+    /**
+    * @brief Gets the world position of this entity by combining its local position with that of its children.
+    *
+    * @return The world position as a Vector3.
+    */
+    const Vector3 GetWorldPosition();
 
-        this->RemoveComponent(GetComponentByID(ComponentID::script));
-    }
+    long GetId();
 
-    template <typename ComponentType, typename... Args>
+    Entity* CloneEntity();
+    Entity* CloneEntity(Vector3 minSpread, Vector3 maxSpread);
+
+    template <typename T, typename... Args>
     Component* AddComponent(Args&&... args) {
-        static_assert(std::is_base_of<Component, ComponentType>::value, "The passed type must be derived from Component.");
+        static_assert(std::is_base_of<Component, T>::value, "The passed type must be derived from Component.");
 
-        std::string componentName = typeid(ComponentType).name();
+        std::string componentName = typeid(T).name();
 
         // Create a new instance of the component with arguments and add it to the components map
-        Component* component = new ComponentType(std::forward<Args>(args)...);
-        _m_components[typeid(ComponentType)] = component;
+        Component* component = new T(std::forward<Args>(args)...);
+        _m_components[typeid(T)] = component;
 
         if (component->GetID() == ComponentID::script)
         {
@@ -67,129 +80,57 @@ public:
         return component;
     }
 
-    template <typename ComponentType>
-    void RemoveComponent() {
-        std::type_index type = typeid(ComponentType);
+    template <typename T>
+    void RemoveComponent(bool deleteComponent = true) {
+        std::type_index type = typeid(T);
 
         auto it = _m_components.find(type);
+
         if (it != _m_components.end()) {
-            std::string type_name = type.name();
-            std::string event_name = "RemoveComponent" + type_name;
-            Dispatcher<Entity*>::Notify(event_name, this);
 
-            delete it->second;
-            _m_components.erase(it);
-        }
-    }
-
-    template <typename ComponentType>
-    bool HasComponent() {
-        return _m_components.find(typeid(ComponentType)) != _m_components.end();
-    }
-
-    template <typename ComponentType>
-    ComponentType* GetComponent() {
-        auto it = _m_components.find(typeid(ComponentType));
-        if (it != _m_components.end()) {
-            return static_cast<ComponentType*>(it->second);
-        }
-        return nullptr;
-    }
-
-    Component* GetComponentByID(int _m_id)
-    {
-        for (std::pair<std::type_index, Component*> component_pair : _m_components)
-        {
-            if (component_pair.second->GetID() == _m_id)
-            {
-                return component_pair.second;
-            }
-        }
-
-        return nullptr;
-    }
-
-    /**
-    * @brief Gets a reference to the components associated with this entity.
-    *
-    * @return A reference to the components map.
-    */
-    const std::unordered_map<std::type_index, Component*> GetComponents()
-    {
-        return this->_m_components;
-    }
-
-    /**
-     * @brief Gets the world position of this entity by combining its local position with that of its children.
-     *
-     * @return The world position as a Vector3.
-     */
-    const Vector3 GetWorldPosition()
-    {
-        Vector3 world_position = this->GetComponent<Transform>()->GetPosition();
-        for (Entity* child : this->_m_children)
-        {
-            world_position += child->GetWorldPosition();
-        }
-
-        return world_position;
-    }
-
-    void RemoveComponent(Component* component) {
-        std::type_index type = typeid(*component);
-
-        auto it = _m_components.find(type);
-        if (it != _m_components.end() && it->second == component) {
             std::string componentName = type.name();
 
-            if (component->GetID() == ComponentID::script)
+            if (it->second->GetID() == ComponentID::script)
             {
                 componentName = "Struct script";
             }
 
-            std::string event_name = "RemoveComponent" + componentName;
+            if (it->second->GetID() == ComponentID::transform)
+            {
+                throw new std::runtime_error("Entity transforms can not be removed!");
+            }
 
-            Dispatcher<Entity*>::Notify(event_name, this);
+            std::string eventName = "RemoveComponent" + componentName;
+            Dispatcher<Entity*>::Notify(eventName, this);
 
-            delete it->second;
+            if (deleteComponent)
+                delete it->second;
             _m_components.erase(it);
         }
     }
 
-    void SetParent(Entity* newParent) 
-    {
-        if (parent) 
-        {
-            // Remove from the old parent's children list
-            parent->RemoveChild(this);
+    template <typename T>
+    bool HasComponent() {
+        return _m_components.find(typeid(T)) != _m_components.end();
+    }
+
+    template <typename T>
+    T* GetComponent() {
+        auto it = _m_components.find(typeid(T));
+        if (it != _m_components.end()) {
+            T* component = dynamic_cast<T*>(it->second);
+            if (component) {
+                return component;
+            }
         }
 
-        parent = newParent;
-
-        if (parent) 
-        {
-            // Add to the new parent's children list
-            parent->AddChild(this);
-        }
-    }
-
-    void AddChild(Entity* child) 
-    {
-        child->parent = this;
-        _m_children.insert(child);
+        return nullptr;
     }
 
 
-    void RemoveChild(Entity* child) 
-    {
-        auto it = _m_children.find(child);
-        if (it != _m_children.end()) {
-            _m_children.erase(it);
-        }
-    }
+    size_t hash() const;
 
-    void KillEntity()
-    {
-        Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
-    }
+    bool operator==(const Entity& other) const;
+
+    bool operator!=(const Entity& other) const;
 };

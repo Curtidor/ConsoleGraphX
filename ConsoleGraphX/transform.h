@@ -11,9 +11,11 @@ public:
     float m_rotation;
 
     Transform();
+    Transform(const Transform& tansform);
     Transform(float x, float y, float scaleX, float scaleY);
     Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
+    Component* Clone() const override;
     int GetID() const override;
 
     void SetPosition(float x, float y);
@@ -23,5 +25,5 @@ public:
     void SetScale(float x, float y, float z);
     void Translate(const Vector3& translation);
 
-    const Vector3 GetPosition();
+    const Vector3 GetPosition() const;
 };

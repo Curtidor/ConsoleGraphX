@@ -1,6 +1,7 @@
 #pragma once
-#include <unordered_set>
+#include <unordered_map>
 #include "system.h"
+#include "entity.h"
 #include "dispatcher.h"
 #include "player_controller.h"
 
@@ -8,7 +9,7 @@
 class PlayerControllerSystem: public System
 {
 private:
-	static std::unordered_set<PlayerController*> _s_controllers;
+	static std::unordered_map<Entity*, PlayerController*> _s_controllerPairs;
 
 public:
 	void Initialize() const override;

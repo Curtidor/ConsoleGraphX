@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <typeinfo>
 
 /*
 Base class for all components
@@ -7,17 +9,21 @@ struct Component
 {
 public:
     Component();
-    virtual ~Component();
 
-    virtual int GetID() const;
+    virtual ~Component();
+    virtual Component* Clone() const = 0;
+    virtual int GetID() const = 0;
+
+    const std::string ComponentName() const;
 };
 
 
 enum ComponentID
 {
     base = 0,
-    player_controller = 1,
+    playerController = 1,
     script = 2,
     sprite = 3,
-    transform = 4
+    transform = 4,
+    spawner = 5
 };

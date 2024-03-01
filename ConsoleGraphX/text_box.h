@@ -1,3 +1,4 @@
+#pragma once
 #include "gui_element.h"
 
 class TextBox: public GUIElement

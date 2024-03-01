@@ -14,7 +14,7 @@ public:
 
     virtual void Initialize() = 0;
 
-    Entity* RegisterEntity(std::string name = "");
+    Entity* RegisterEntityN(std::string name = "");
     void RegisterEntity(Entity* entity);
 
     void DeregisterEntity(Entity* entity);

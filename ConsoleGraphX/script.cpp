@@ -1,36 +1,34 @@
 #include "script.h"
 
-Script::Script(Entity* entity)
-	: m_entity(entity), m_is_enabled(false)
+Script::Script(): _m_isEnabled(true)
 {}
 
-void Script::Awake() {}
-void Script::Start() {}
-void Script::Update() {}
+Script::Script(const Script& script) : _m_isEnabled(true)
+{}
+
+void Script::Awake(Entity* owner) {}
+void Script::Start(Entity* owner) {}
+void Script::Update(Entity* owner) {}
 
 bool Script::IsEnabled()
 {
-	return this->m_is_enabled;
+	return this->_m_isEnabled;
 }
 
-void Script::SetStatus(bool state)
+void Script::SetState(bool state)
 {
-	this->m_is_enabled = state;
-
-	std::string event_name = state == true ? "RumTimeAddScript" : "RemoveScript";
-	
-	// notify the script system that a script has been added or removed based on the state
-	Dispatcher<Entity*>::Notify(event_name, this->m_entity);
+	this->_m_isEnabled = state;
 }
-
-const Entity* Script::GetOwner()
-{
-	return this->m_entity;
-}
-
 
 int Script::GetID() const 
 {
 	return ComponentID::script;
+}
+
+Component* Script::Clone() const 
+{
+	Script* clone = new Script(*this);
+
+	return clone;
 }
 

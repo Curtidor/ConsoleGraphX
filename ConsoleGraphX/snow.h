@@ -1,14 +1,19 @@
 #pragma once
-#include "player_controller.h"
+#include "input_system.h"
 #include "sprite.h"
 #include "script.h"
 
 
-struct Player : public Script
+struct Snow : public Script
 {
+private:
+	Transform* _m_transform;
+
 public:
-	Player();
+	Snow();
 
 	void Awake(Entity* owner) override;
 	void Update(Entity* owner) override;
+
+	Component* Clone() const override;
 };

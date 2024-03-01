@@ -4,9 +4,10 @@ Scene::Scene(std::string name)
     : _m_scene_name(name)
 {}
 
-Entity* Scene::RegisterEntity(std::string name)
+Entity* Scene::RegisterEntityN(std::string name)
 {
     Entity* entity = new Entity(name);
+
     _m_entities.insert(entity);
 
     return entity;
@@ -24,7 +25,6 @@ void Scene::DeregisterEntity(Entity* entity)
 
 void Scene::DeleteEntities()
 {
-
     for (Entity* entity : this->_m_entitiesToDelete)
     {
         auto it = _m_entities.find(entity);
@@ -33,7 +33,7 @@ void Scene::DeleteEntities()
         {
             for (auto& componentPair : entity->GetComponents())
             {
-                entity->RemoveComponent(componentPair.second);
+                entity->RemoveComponentC(componentPair.second);
             }
             _m_entities.erase(it);
 

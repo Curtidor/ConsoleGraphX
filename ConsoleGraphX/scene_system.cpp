@@ -7,8 +7,8 @@ void SceneSystem::RegisterScene(Scene* scene)
 {
     _s_scenes[scene->GetSceneName()] = scene;
 
+    Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
     Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
-
 }
 
 void SceneSystem::DeregisterScene(const std::string& name)
