@@ -177,12 +177,6 @@
     <ClInclude Include="script.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="spawner_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="spawner.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen.cpp">
@@ -263,17 +257,11 @@
     <ClCompile Include="rendering_test.cpp">
       <Filter>Source Files\Testing</Filter>
     </ClCompile>
-    <ClCompile Include="spawner.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="random_numbers.cpp">
       <Filter>Source Files\utils</Filter>
     </ClCompile>
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="spawner_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Source Files</Filter>

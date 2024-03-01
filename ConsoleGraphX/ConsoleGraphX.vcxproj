@@ -148,8 +148,6 @@
     <ClInclude Include="script.h" />
     <ClInclude Include="script_system.h" />
     <ClInclude Include="snow.h" />
-    <ClInclude Include="spawner.h" />
-    <ClInclude Include="spawner_system.h" />
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system.h" />
@@ -181,8 +179,6 @@
     <ClCompile Include="script.cpp" />
     <ClCompile Include="script_system.cpp" />
     <ClCompile Include="snow.cpp" />
-    <ClCompile Include="spawner.cpp" />
-    <ClCompile Include="spawner_system.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system.cpp" />
