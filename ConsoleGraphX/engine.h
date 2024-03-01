@@ -11,7 +11,6 @@
 #include "player_controller_system.h"
 #include "scene_system.h"
 #include "script_system.h"
-#include "spawner_system.h"
 
 
 class Engine

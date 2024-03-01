@@ -23,7 +23,6 @@ void Engine::InitializeEngine(short screen_width, short screen_height, short pix
     _m_system->RegisterSystem<ScriptSystem>();
     _m_system->RegisterSystem<SpriteSystem>();
     _m_system->RegisterSystem<PlayerControllerSystem>();
-    _m_system->RegisterSystem<SpawnerSystem>();
 
     // Initialize the previous frame time to the current time
     _m_prev_frame_time = std::chrono::high_resolution_clock::now();
