@@ -13,7 +13,7 @@ int main()
 	Engine::InitializeEngine(270, 100, 3, 6, &debugger);
 
 	MainScene* m = new MainScene("Main scene");
-
+	
 	Engine::Run();
 
 
