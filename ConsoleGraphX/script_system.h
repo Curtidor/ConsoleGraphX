@@ -6,9 +6,11 @@
 class ScriptSystem : public System 
 {
 private:
-	static std::unordered_map<Entity*, std::unordered_set<Script*>> _m_scripts;
+	static std::unordered_map<Entity*, std::vector<Script*>> _s_scripts;
+	static std::vector<std::pair<Entity*, Script*>> _s_scriptsToDelete;
 
 	static void DeregisterScriptWS(Entity* entity, Script* script);
+	static void DeleteScripts();
 
 public:
 	void Initialize() const override;
@@ -20,5 +22,4 @@ public:
 	static void RunTimeRegisterScript(Entity* entity);
 
 	static void DeregisterScripts(Entity* entity);
-	static void StartScript(Entity* entity, Script* script);
 };
