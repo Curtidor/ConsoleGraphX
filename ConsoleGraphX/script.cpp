@@ -1,6 +1,9 @@
 #include "script.h"
 
-Script::Script(): m_is_enabled(false)
+Script::Script(): _m_isEnabled(true)
+{}
+
+Script::Script(const Script& script) : _m_isEnabled(true)
 {}
 
 void Script::Awake(Entity* owner) {}
@@ -9,7 +12,12 @@ void Script::Update(Entity* owner) {}
 
 bool Script::IsEnabled()
 {
-	return this->m_is_enabled;
+	return this->_m_isEnabled;
+}
+
+void Script::SetState(bool state)
+{
+	this->_m_isEnabled = state;
 }
 
 int Script::GetID() const 
