@@ -1,4 +1,5 @@
 #pragma once
+#include "input_system.h"
 #include "sprite.h"
 #include "script.h"
 
@@ -13,4 +14,6 @@ public:
 
 	void Awake(Entity* owner) override;
 	void Update(Entity* owner) override;
+
+	Component* Clone() const override;
 };
