@@ -85,6 +85,48 @@ const Vector3 Entity::GetWorldPosition()
     return world_position;
 }
 
+Entity* Entity::CloneEntity()
+{
+    return Entity::CloneEntity(Vector3(0, 0, 0), Vector3(0, 0, 0));
+}
+
+Entity* Entity::CloneEntity(Vector3 minSpread, Vector3 maxSpread)
+{
+    Entity* spawnedEntity = new Entity(this->m_name);
+
+    this->CloneComponents(spawnedEntity);
+
+    float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
+    float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
+    float z = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.z, maxSpread.z);
+
+    Vector3 prefabPosition = this->GetComponent<Transform>()->GetPosition();
+    Vector3 spawnPosition = Vector3(x, y, z) + prefabPosition;
+    spawnedEntity->GetComponent<Transform>()->SetPosition(spawnPosition);
+
+    Dispatcher<Entity*>::Notify("EntityCreation", spawnedEntity);
+
+    return spawnedEntity;
+}
+
+void Entity::CloneComponents(Entity* spawnedEntity)
+{
+    for (std::pair<std::type_index, Component*> componentPair : this->GetComponents())
+    {
+        // spawner's cant spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
+        if (componentPair.second->GetID() == ComponentID::spawner || componentPair.second->GetID() == ComponentID::transform)
+            continue;
+
+        Component* clonedComponent = componentPair.second->Clone();
+        std::string componentName = componentPair.second->ComponentName();
+
+        spawnedEntity->AddComponentClone(clonedComponent, componentName, componentPair.first);
+
+        if (clonedComponent->GetID() == ComponentID::script)
+            Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
+    }
+}
+
 void Entity::RemoveComponentC(Component* component) {
     std::type_index type = typeid(*component);
 

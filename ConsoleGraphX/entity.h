@@ -5,6 +5,7 @@
 #include <typeindex>
 #include "transform.h"
 #include "dispatcher.h"
+#include "random_numbers.h"
 
 
 /**
@@ -18,6 +19,8 @@ private:
     Entity* _m_parent;
     std::unordered_set<Entity*> _m_children;
     std::unordered_map<std::type_index, Component*> _m_components;
+
+    void CloneComponents(Entity* spawnedEntity);
 
 public:
     const long m_id;
@@ -52,6 +55,9 @@ public:
     const Vector3 GetWorldPosition();
 
     long GetId();
+
+    Entity* CloneEntity();
+    Entity* CloneEntity(Vector3 minSpread, Vector3 maxSpread);
 
     template <typename T, typename... Args>
     Component* AddComponent(Args&&... args) {
