@@ -32,6 +32,8 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 	SetConsoleFontSize(fontWidth, fontHeight);
 	SetConsoleWindowSize(_m_width, total_height);
 
+	SetConsoleMode(this->_m_screenBuffer->hConsole, ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+
 	FillScreen({ s_pixel , 0 });
 
 	Screen::_s_activeScreen = this;
@@ -234,11 +236,8 @@ int Screen::GetHeight_A() { return Screen::_s_activeScreen->_m_height; }
 
 HWND Screen::GetConsoleWindowHandle() { return this->_m_screenBuffer->wHandle; }
 
-WORD Screen::RandomColor()
-{
-	return rand() % 16;
-}
+WORD Screen::RandomColor() { return rand() % 16; }
 
-Screen* Screen::GetActiveScreen_A() { return Screen::_s_activeScreen; }
 void Screen::SetActiveScreen_A(Screen* screen) { Screen::_s_activeScreen = screen; }
+Screen* Screen::GetActiveScreen_A() { return Screen::_s_activeScreen; }
 CHAR_INFO* Screen::GetActiveScreenBuffer_A() { return Screen::_s_activeScreen->_m_screenBuffer->buffer; }
