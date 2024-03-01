@@ -14,6 +14,7 @@ Screen::Screen(short width, short height, short debugger_height, short fontWidth
 
 	short total_height = _m_height + _m_debuggerHeight;
 
+
 	// Set the buffer size and allocate memory for the buffer
 	this->_m_screenBuffer->bufferSize = { _m_width, total_height };
 	this->_m_screenBuffer->bufferCoord = { 0, 0 };
