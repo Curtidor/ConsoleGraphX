@@ -39,7 +39,7 @@ void RenderSystem::DrawSprite_SS(const Vector3 position, Sprite* sprite)
     const int spriteHeight = sprite->GetHeight();
     const int screenWidth = Screen::GetWidth_A();
 
-    int buffer_offset = position.x + position.y * screenWidth;
+    int buffer_offset = std::floor(position.x) + std::floor(position.y) * screenWidth;
     // how much the sprite is off the screen in positive x
     int overlap_px = std::max<int>(0, position.x + spriteWidth - screenWidth);
     // how much the sprite is off the screen in negative x
