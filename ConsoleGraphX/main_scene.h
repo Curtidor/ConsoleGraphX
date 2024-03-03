@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "player.h"
 #include "snow.h"
+#include "test_script.h"
 #include "gui_element.h"
 
 // Register->Load->Initialize->Run
