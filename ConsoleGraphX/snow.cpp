@@ -36,6 +36,7 @@ void Snow::Update(Entity* owner)
 Component* Snow::Clone() const
 {
 	Snow* clone = new Snow();
+
 	return clone;
 }
 
