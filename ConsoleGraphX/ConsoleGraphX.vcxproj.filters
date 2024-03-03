@@ -177,6 +177,9 @@
     <ClInclude Include="script.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="test_script.h">
+      <Filter>Header Files\Game\Scripts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen.cpp">
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_script.cpp">
+      <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

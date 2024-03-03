@@ -151,6 +151,7 @@
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system.h" />
+    <ClInclude Include="test_script.h" />
     <ClInclude Include="text_box.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="vector2.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system.cpp" />
+    <ClCompile Include="test_script.cpp" />
     <ClCompile Include="text_box.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="vector2.cpp" />
