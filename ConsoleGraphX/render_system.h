@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include <iostream>
-#include "screen.h"
 #include "sprite.h"
 #include "entity.h"
+#include "vector2.h"
+#include "vector3.h"
 
 
 class RenderSystem

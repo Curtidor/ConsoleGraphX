@@ -1,4 +1,5 @@
 #include "random_numbers.h"
+#include <random>
 
 int RandomNumberGenerator::GenerateRandomIntInRange(int min, int max) {
 	std::random_device rd;

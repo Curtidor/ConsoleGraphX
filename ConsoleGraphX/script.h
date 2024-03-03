@@ -1,7 +1,6 @@
 #pragma once
 #include "component.h"
 #include "entity.h"
-#include "dispatcher.h"
 
 struct Script : public Component
 {

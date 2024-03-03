@@ -1,4 +1,9 @@
 #include "input_system.h"
+#include <windows.h>
+#include <conio.h>
+#include <cctype>
+#include "screen.h"
+#include "vector2.h"
 
 
 bool InputSystem::keys[255];

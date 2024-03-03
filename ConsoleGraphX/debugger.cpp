@@ -1,5 +1,9 @@
 
 #include "debugger.h"
+#include <chrono>
+#include <ctime>
+#include <string>
+#include "screen.h"
 
 Debugger* Debugger::_s_active_debugger;
 

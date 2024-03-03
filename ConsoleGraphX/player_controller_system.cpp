@@ -1,4 +1,12 @@
 #include "player_controller_system.h"
+#include <unordered_map>
+#include <utility>
+#include "dispatcher.h"
+#include "entity.h"
+#include "player_controller.h"
+#include "input_system.h"
+#include "transform.h"
+#include "vector3.h"
 
 std::unordered_map<Entity*, PlayerController*> PlayerControllerSystem::_s_controllerPairs;
 

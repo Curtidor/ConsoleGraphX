@@ -1,9 +1,8 @@
 #pragma once
 #include <set>
-#include <stdexcept>
-#include "sprite.h"
 #include "system.h"
 #include "entity.h"
+#include <vector>
 
 struct SpriteComparator {
 	bool operator()(const Entity* entityA, const Entity* entityB) const;

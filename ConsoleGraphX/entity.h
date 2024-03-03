@@ -3,9 +3,10 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <typeindex>
-#include "transform.h"
-#include "dispatcher.h"
-#include "random_numbers.h"
+#include <string>
+#include <type_traits>
+#include "component.h"
+#include "vector3.h"
 
 /**
  * @brief A class representing an entity in the entity-component system (ECS).

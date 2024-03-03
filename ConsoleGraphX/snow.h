@@ -1,7 +1,8 @@
 #pragma once
-#include "input_system.h"
-#include "sprite.h"
 #include "script.h"
+#include "component.h"
+#include "entity.h"
+#include "transform.h"
 
 
 struct Snow : public Script

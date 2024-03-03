@@ -1,4 +1,16 @@
 ﻿#include "main_scene.h"
+#include "scene_system.h"
+#include "screen.h"
+#include <windows.h>
+#include <string>
+#include "entity.h"
+#include "player.h"
+#include "scene.h"
+#include "snow.h"
+#include "sprite.h"
+#include "test_script.h"
+#include "transform.h"
+#include "vector3.h"
 
 
 MainScene::MainScene(std::string name) : Scene(name)

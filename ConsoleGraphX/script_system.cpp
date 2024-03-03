@@ -1,4 +1,11 @@
 #include "script_system.h"
+#include <stdexcept>
+#include <unordered_set>
+#include "component.h"
+#include "debugger.h"
+#include "dispatcher.h"
+#include "entity.h"
+#include "script.h"
 
 std::unordered_set<Entity*> ScriptSystem::_s_scripts;
 

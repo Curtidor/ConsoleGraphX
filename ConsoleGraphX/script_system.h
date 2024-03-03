@@ -1,7 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include "system.h"
-#include "script.h"
+#include <unordered_set>
+#include "entity.h"
 
 class ScriptSystem : public System 
 {

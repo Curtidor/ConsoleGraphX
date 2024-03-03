@@ -1,10 +1,5 @@
 #pragma once
-#include <conio.h>
-#include <algorithm>
-#include <cctype>
-#include <windows.h>
 #include "vector2.h"
-#include "screen.h"
 
 enum class Key : char
 {

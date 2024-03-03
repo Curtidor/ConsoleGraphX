@@ -1,4 +1,10 @@
 ﻿#include "player.h"
+#include "entity.h"
+#include "player_controller.h"
+#include "script.h"
+#include "sprite.h"
+#include "transform.h"
+#include "input_system.h"
 
 Player::Player() : Script() 
 {}

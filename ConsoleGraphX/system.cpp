@@ -1,4 +1,5 @@
 #include "system.h"
+#include <unordered_set>
 
 std::unordered_set<System*> System::_s_systems;
 

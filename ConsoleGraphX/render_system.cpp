@@ -1,4 +1,14 @@
 #include "render_system.h"
+#include <windows.h>
+#include <cmath>
+#include <utility>
+#include <vector>
+#include "debugger.h"
+#include "entity.h"
+#include "screen.h"
+#include "sprite.h"
+#include "vector2.h"
+#include "vector3.h"
 
 /*
 Parallelization: If you have a multi-core CPU, you could explore parallelizing the rendering process.

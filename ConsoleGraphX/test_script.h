@@ -1,5 +1,6 @@
 #pragma once
 #include "script.h"
+#include "entity.h"
 
 
 struct TestScript : public Script

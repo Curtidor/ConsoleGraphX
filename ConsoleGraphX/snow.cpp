@@ -1,4 +1,11 @@
 #include "snow.h"
+#include "component.h"
+#include "debugger.h"
+#include "entity.h"
+#include "random_numbers.h"
+#include "script.h"
+#include "transform.h"
+#include "vector3.h"
 
 Snow::Snow(): Script(), _m_transform(nullptr)
 {}

@@ -1,4 +1,7 @@
 ﻿#include "sprite.h"
+#include <windows.h>
+#include "component.h"
+
 
 
 Sprite::Sprite() : _m_width(1), _m_height(1), _m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false), m_layer(0)

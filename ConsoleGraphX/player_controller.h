@@ -1,7 +1,6 @@
 #pragma once
 #include "component.h"
 #include "vector3.h"
-#include "input_system.h"
 
 struct PlayerController: Component
 {

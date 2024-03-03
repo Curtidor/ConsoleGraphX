@@ -1,16 +1,9 @@
 #pragma once
 #include <chrono>
-#include <thread>
-#include "screen.h"
 // utilities
 #include "debugger.h"
 // systems
-#include "render_system.h"
-#include "sprtite_system.h"
-#include "input_system.h"
-#include "player_controller_system.h"
-#include "scene_system.h"
-#include "script_system.h"
+#include "system.h"
 
 
 class Engine

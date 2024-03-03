@@ -1,4 +1,6 @@
 #include "player_controller.h"
+#include "component.h"
+
 
 PlayerController::PlayerController() : m_moveSpeed(0), m_jumpSpeed(0), m_gravity(0), m_velocity(0.0f)
 {}

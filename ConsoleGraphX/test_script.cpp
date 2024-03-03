@@ -1,4 +1,7 @@
 #include "test_script.h"
+#include "debugger.h"
+#include "entity.h"
+#include "script.h"
 
 TestScript::TestScript() : Script()
 {}

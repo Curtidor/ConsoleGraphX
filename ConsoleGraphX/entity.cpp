@@ -1,4 +1,17 @@
 #include "entity.h"
+#include <stdexcept>
+#include <atomic>
+#include <string>
+#include <typeindex>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include "component.h"
+#include "dispatcher.h"
+#include "random_numbers.h"
+#include "transform.h"
+#include "vector3.h"
 
 std::atomic<long> Entity::_s_totalEntities(0);
 
@@ -18,7 +31,7 @@ void Entity::_CloneComponents(Entity* spawnedEntity)
     for (std::pair<std::type_index, Component*> componentPair : this->GetComponents())
     {
         // spawner's cant spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
-        if (componentPair.second->GetID() == ComponentID::spawner || componentPair.second->GetID() == ComponentID::transform)
+        if (componentPair.second->GetID() == ComponentID::transform)
             continue;
 
         Component* clonedComponent = componentPair.second->Clone();
@@ -28,7 +41,6 @@ void Entity::_CloneComponents(Entity* spawnedEntity)
 
     for (Component* comp: this->GetScripts())
     {
-        
         Component* componentClone = comp->Clone();
         std::type_index index = typeid(componentClone);
 

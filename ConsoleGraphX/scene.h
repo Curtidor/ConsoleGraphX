@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include "entity.h"
-#include "script.h"
+#include <string>
 
 class Scene
 {

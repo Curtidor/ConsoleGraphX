@@ -1,4 +1,10 @@
 #include "sprtite_system.h"
+#include <set>
+#include <stdexcept>
+#include <vector>
+#include "dispatcher.h"
+#include "entity.h"
+#include "sprite.h"
 
 bool SpriteComparator::operator()(const Entity* entityAC, const Entity* entityBC) const {
 	Entity* entityA = const_cast<Entity*>(entityAC);

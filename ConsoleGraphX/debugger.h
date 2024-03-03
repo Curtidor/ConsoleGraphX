@@ -1,8 +1,6 @@
 #pragma once
-#include <chrono>
-#include <ctime>
 #include <deque>
-#include "screen.h"
+#include <string>
 
 class Debugger
 {

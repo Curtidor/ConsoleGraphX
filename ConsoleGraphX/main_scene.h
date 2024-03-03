@@ -1,9 +1,6 @@
 #pragma once
-#include "engine.h"
-#include "player.h"
-#include "snow.h"
-#include "test_script.h"
-#include "gui_element.h"
+#include <string>
+#include "scene.h"
 
 // Register->Load->Initialize->Run
 

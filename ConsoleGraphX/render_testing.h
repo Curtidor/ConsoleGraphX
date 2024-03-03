@@ -1,10 +1,10 @@
 #pragma once
-#include <iostream>
-#include <random>
 #include <functional>
-#include "screen.h"
-#include "render_system.h"
 #include "entity.h"
+#include <string>
+#include <vector>
+#include "sprite.h"
+#include "vector3.h"
 
 class RenderTest
 {

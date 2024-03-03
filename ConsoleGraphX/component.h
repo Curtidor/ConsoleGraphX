@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <typeinfo>
 
 /*
 Base class for all components
@@ -25,5 +24,4 @@ enum ComponentID
     script = 2,
     sprite = 3,
     transform = 4,
-    spawner = 5
 };

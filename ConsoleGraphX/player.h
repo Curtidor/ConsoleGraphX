@@ -1,7 +1,6 @@
 #pragma once
-#include "player_controller.h"
-#include "sprite.h"
 #include "script.h"
+#include "entity.h"
 
 
 struct Player : public Script

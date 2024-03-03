@@ -1,4 +1,15 @@
 #include "engine.h"
+#include <chrono>
+#include <string>
+#include "debugger.h"
+#include "input_system.h"
+#include "player_controller_system.h"
+#include "render_system.h"
+#include "scene_system.h"
+#include "screen.h"
+#include "script_system.h"
+#include "sprtite_system.h"
+#include "system.h"
 
 System* Engine::_m_system = nullptr;
 Debugger* Engine::_m_debugger = nullptr;

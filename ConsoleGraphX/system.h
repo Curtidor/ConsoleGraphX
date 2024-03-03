@@ -1,6 +1,6 @@
 #pragma once
 #include <unordered_set>
-#include "debugger.h"
+#include <type_traits>
 
 class System
 {

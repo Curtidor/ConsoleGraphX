@@ -1,4 +1,11 @@
 #include "scene_system.h"
+#include <functional>
+#include <stdexcept>
+#include <string>
+#include <unordered_map>
+#include "dispatcher.h"
+#include "entity.h"
+#include "scene.h"
 
 Scene* SceneSystem::_s_activeScene;
 std::unordered_map<std::string, Scene*> SceneSystem::_s_scenes;

@@ -1,4 +1,6 @@
 #include "script.h"
+#include "component.h"
+#include "entity.h"
 
 Script::Script(): _m_isEnabled(true)
 {}

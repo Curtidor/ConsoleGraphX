@@ -1,4 +1,15 @@
 #include "render_testing.h"
+#include <chrono>
+#include <functional>
+#include <random>
+#include <string>
+#include <vector>
+#include "entity.h"
+#include "render_system.h"
+#include "screen.h"
+#include "sprite.h"
+#include "vector3.h"
+#include <iostream>
 
 /*
 * sprite size (0,0) => SS

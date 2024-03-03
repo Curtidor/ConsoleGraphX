@@ -1,7 +1,6 @@
 #pragma once
 #include <windows.h>
-#include <algorithm>
-#include "transform.h"
+#include "component.h"
 
 enum Color
 {

@@ -1,4 +1,9 @@
 #include "scene.h"
+#include <string>
+#include <unordered_set>
+#include "component.h"
+#include "entity.h"
+#include "script.h"
 
 Scene::Scene(std::string name)
     : _m_scene_name(name)
