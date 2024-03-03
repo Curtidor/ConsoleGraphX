@@ -35,6 +35,13 @@ void Scene::DeleteEntities()
             {
                 entity->RemoveComponentC(componentPair.second);
             }
+
+            for (Component* comp: entity->GetScripts())
+            {
+                Script* script = static_cast<Script*>(comp);
+                entity->RemoveComponentC(script);
+            }
+
             _m_entities.erase(it);
 
             delete entity;

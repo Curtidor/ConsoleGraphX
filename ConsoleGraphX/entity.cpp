@@ -13,49 +13,98 @@ Entity::Entity(const std::string& entityName) : m_name(entityName), _m_parent(nu
 }
 
 
-Component* Entity::AddComponentClone(Component* comp, std::string& componentName, std::type_index typeIndex)
+void Entity::_CloneComponents(Entity* spawnedEntity)
 {
-    _m_components[typeIndex] = comp;
+    for (std::pair<std::type_index, Component*> componentPair : this->GetComponents())
+    {
+        // spawner's cant spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
+        if (componentPair.second->GetID() == ComponentID::spawner || componentPair.second->GetID() == ComponentID::transform)
+            continue;
+
+        Component* clonedComponent = componentPair.second->Clone();
+
+        spawnedEntity->_AddComponent(componentPair.first, clonedComponent);
+    }
+
+    for (Component* comp: this->GetScripts())
+    {
+        
+        Component* componentClone = comp->Clone();
+        std::type_index index = typeid(componentClone);
+
+        spawnedEntity->_AddComponent(index, componentClone);
+
+        Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
+    }
+}
+
+void Entity::_AddScript(Component* script)
+{
+    if (script->GetID() != ComponentID::script)
+        throw std::runtime_error("script param must be of type Script");
+
+    _m_scripts.insert(script);
+}
+
+void Entity::_RemoveScript(Component* script)
+{
+    auto it = _m_scripts.find(script);
+
+    if (it != _m_scripts.end())
+        _m_scripts.erase(it);
+}
+  
+void Entity::_RemoveComponent(std::type_index type, Component* comp)
+{
+    std::string componentName = type.name();
+
+    if (comp->GetID() == ComponentID::script)
+    {
+        this->_RemoveScript(comp);
+        componentName = "Struct script";
+    }
+    else 
+    {
+        auto it = _m_components.find(type);
+
+        if (it != _m_components.end())
+            _m_components.erase(it);
+    }
+
+    std::string event_name = "RemoveComponent" + componentName;
+
+    Dispatcher<Entity*>::Notify(event_name, this);
+
+    delete comp;
+}
+
+void Entity::_AddComponent(std::type_index index, Component* comp)
+{
+    std::string componentName = index.name();
 
     if (comp->GetID() == ComponentID::script)
     {
         componentName = "Struct script";
+        this->_AddScript(comp);
+    } 
+    else
+    {
+        _m_components[index] = comp;
     }
+
     std::string event_name = "AddComponent" + componentName;
     Dispatcher<Entity*>::Notify(event_name, this);
-
-    return comp;
 }
-
-  
 
 void Entity::RemoveComponentById(int id, bool deleteComponent)
 {
     for (std::pair<std::type_index, Component*> componentPair : _m_components)
     {
-        if (componentPair.second->GetID() != id)
-            continue;
-
-        std::string componentName = componentPair.first.name();
-
-        if (componentPair.second->GetID() == ComponentID::script)
+        if (componentPair.second->GetID() == id)
         {
-            componentName = "Struct script";
+            this->_RemoveComponent(componentPair.first, componentPair.second);
+            break;
         }
-
-        if (componentPair.second->GetID() == ComponentID::transform)
-        {
-            throw new std::runtime_error("Entity transforms can not be removed!");
-        }
-
-        std::string event_name = "RemoveComponent" + componentName;
-
-        Dispatcher<Entity*>::Notify(event_name, this);
-
-        _m_components.erase(componentPair.first);
-
-        if (deleteComponent)
-            delete componentPair.second;
     }
 }
 
@@ -74,15 +123,9 @@ Component* Entity::GetComponentByID(int id)
 }
 
    
-const Vector3 Entity::GetWorldPosition()
+const Vector3 Entity::GetPosition()
 {
-    Vector3 world_position = this->GetComponent<Transform>()->GetPosition();
-    for (Entity* child : this->_m_children)
-    {
-        world_position += child->GetWorldPosition();
-    }
-
-    return world_position;
+    return this->GetComponent<Transform>()->GetPosition();
 }
 
 Entity* Entity::CloneEntity()
@@ -94,7 +137,7 @@ Entity* Entity::CloneEntity(Vector3 minSpread, Vector3 maxSpread)
 {
     Entity* spawnedEntity = new Entity(this->m_name);
 
-    this->CloneComponents(spawnedEntity);
+    this->_CloneComponents(spawnedEntity);
 
     float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
     float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
@@ -109,49 +152,22 @@ Entity* Entity::CloneEntity(Vector3 minSpread, Vector3 maxSpread)
     return spawnedEntity;
 }
 
-void Entity::CloneComponents(Entity* spawnedEntity)
-{
-    for (std::pair<std::type_index, Component*> componentPair : this->GetComponents())
-    {
-        // spawner's cant spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
-        if (componentPair.second->GetID() == ComponentID::spawner || componentPair.second->GetID() == ComponentID::transform)
-            continue;
-
-        Component* clonedComponent = componentPair.second->Clone();
-        std::string componentName = componentPair.second->ComponentName();
-
-        spawnedEntity->AddComponentClone(clonedComponent, componentName, componentPair.first);
-
-        if (clonedComponent->GetID() == ComponentID::script)
-            Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
-    }
-}
-
 void Entity::RemoveComponentC(Component* component) {
     std::type_index type = typeid(*component);
 
-    auto it = _m_components.find(type);
-    if (it != _m_components.end() && it->second == component) {
-        std::string componentName = type.name();
-
-        if (component->GetID() == ComponentID::script)
-        {
-            componentName = "Struct script";
-        }
-
-        std::string event_name = "RemoveComponent" + componentName;
-
-        Dispatcher<Entity*>::Notify(event_name, this);
-
-        delete it->second;
-        _m_components.erase(it);
-    }
+    this->_RemoveComponent(type, component);
 }
+
 
   
 const std::unordered_map<std::type_index, Component*> Entity::GetComponents()
 {
     return this->_m_components;
+}
+
+const std::unordered_set<Component*> Entity::GetScripts()
+{
+    return this->_m_scripts;
 }
 
 void Entity::SetParent(Entity* newParent)
