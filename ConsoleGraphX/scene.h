@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include "entity.h"
+#include "script.h"
 
 class Scene
 {
