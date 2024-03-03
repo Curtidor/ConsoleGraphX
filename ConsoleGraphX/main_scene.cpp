@@ -12,7 +12,9 @@ void MainScene::Initialize()
 	Entity* snowPrefab = this->RegisterEntityN("snow");
 	Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(2, 1, Color::White);
 	snowPrefab->GetComponent<Transform>()->SetPosition(Screen::GetWidth_A() / 2, 0);
-	snowPrefab->AddComponent<Snow>();
+	Snow* snowScript = (Snow*)snowPrefab->AddComponent<Snow>();
+	snowScript->SetState(false);
+	
 
 	snowSprite->m_layer = 1;
 
