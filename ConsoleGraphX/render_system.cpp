@@ -19,7 +19,7 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
             continue;
         }
            
-        const Vector3 position = entity->GetWorldPosition();
+        const Vector3 position = entity->GetPosition();
 
         RenderSystem::DrawSprite_SS(position, sprite);
     }
@@ -89,7 +89,7 @@ void RenderSystem::DrawSprites_SS(const std::vector<Entity*>& entities)
     for (Entity* entity : entities)
     {
         Sprite* sprite = entity->GetComponent<Sprite>();
-        const Vector3 position = entity->GetWorldPosition();
+        const Vector3 position = entity->GetPosition();
 
         RenderSystem::DrawSprite_SS(position, sprite);
     }
@@ -101,7 +101,7 @@ void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
     for (Entity* entity : entities)
     {
         Sprite* sprite = entity->GetComponent<Sprite>();
-        const Vector3 position = entity->GetWorldPosition();
+        const Vector3 position = entity->GetPosition();
 
         RenderSystem::DrawSprite_SP(position, sprite);
     }
