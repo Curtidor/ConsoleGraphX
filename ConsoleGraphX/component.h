@@ -24,4 +24,5 @@ enum ComponentID
     script = 2,
     sprite = 3,
     transform = 4,
+    camera = 5
 };
