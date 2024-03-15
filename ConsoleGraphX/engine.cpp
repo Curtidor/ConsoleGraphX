@@ -9,6 +9,7 @@
 #include "screen.h"
 #include "script_system.h"
 #include "sprtite_system.h"
+#include "camera_system.h"
 #include "system.h"
 
 System* Engine::_m_system = nullptr;
@@ -34,6 +35,7 @@ void Engine::InitializeEngine(short screen_width, short screen_height, short pix
     _m_system->RegisterSystem<ScriptSystem>();
     _m_system->RegisterSystem<SpriteSystem>();
     _m_system->RegisterSystem<PlayerControllerSystem>();
+    _m_system->RegisterSystem<CameraSystem>();
 
     // Initialize the previous frame time to the current time
     _m_prev_frame_time = std::chrono::high_resolution_clock::now();
