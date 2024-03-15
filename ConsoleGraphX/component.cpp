@@ -1,5 +1,6 @@
 #include "component.h"
 #include <typeindex>
+#include <string>
 
 /**
  * @brief Default constructor for the base Component class.
