@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <string>
-#include <stdexcept>
-#include <algorithm>
+#include <windows.h>
 #include "screen_buffer.h"
 
 class Screen

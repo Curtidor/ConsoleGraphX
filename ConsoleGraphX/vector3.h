@@ -1,5 +1,4 @@
 #pragma once
-#include <cmath>
 #include "vector2.h"
 
 class Vector3 {
@@ -32,6 +31,8 @@ public:
     Vector3 operator/(float scalar) const;
     Vector3& operator/=(float scalar);
 
+    
     double Magnitude() const;
+    void AbsVector();
     void Normalize();
 };

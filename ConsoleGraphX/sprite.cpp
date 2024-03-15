@@ -1,6 +1,7 @@
 ﻿#include "sprite.h"
 #include <windows.h>
 #include "component.h"
+#include "vector2.h"
 
 
 
@@ -34,6 +35,11 @@ Sprite::Sprite(const Sprite& other)
 Sprite::~Sprite()
 {
 	delete[] this->_m_pixels;
+}
+
+Vector2 Sprite::Size()
+{
+	return{ static_cast<float>(_m_width), static_cast<float>(_m_height) };
 }
 
 int Sprite::GetID() const { return ComponentID::sprite; }

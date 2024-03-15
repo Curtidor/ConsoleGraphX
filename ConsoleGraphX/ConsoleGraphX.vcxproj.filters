@@ -180,6 +180,12 @@
     <ClInclude Include="test_script.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_system.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen.cpp">
@@ -271,6 +277,12 @@
     </ClCompile>
     <ClCompile Include="test_script.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_system.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

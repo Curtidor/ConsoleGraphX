@@ -13,9 +13,9 @@ std::unordered_set<Entity*> ScriptSystem::_s_scripts;
 
 void ScriptSystem::Initialize() const 
 {
-	Dispatcher<Entity*>::RegisterListener("AddComponentStruct script", RegisterScript);
+	Dispatcher<Entity*>::RegisterListener("AddComponentstruct Script", RegisterScript);
 	// need to add support for removing single scripts
-	Dispatcher<Entity*>::RegisterListener("RemoveComponentStruct script", DeregisterScript);
+	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct Script", DeregisterScript);
 	Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition", RunTimeRegisterScript);
 }
 
@@ -102,7 +102,7 @@ void ScriptSystem::DeregisterScript(Entity* entity)
 
 	Entity* entityToRemove = *itEntity;  
 
-	if (entityToRemove->GetScripts().size() == 0)
+	if (entityToRemove->GetScripts().size() == 1)
 		_s_scripts.erase(itEntity);
 }
 

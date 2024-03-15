@@ -23,25 +23,32 @@ void PlayerControllerSystem::Update(float delta_time) const
         PlayerController* controller = controllerPair.second;
         Entity* owner = controllerPair.first;
 
-        if (controller == nullptr || owner == nullptr)
-        {
-            PlayerControllerSystem::DeregisterController(owner);
-            continue;
-        }
-
-        // if there is a entity we can be can be 100% sure it has a transform so no need to check it
         Transform* transform = owner->GetComponent<Transform>();
 
         controller->m_velocity.y -= controller->m_gravity * delta_time;
 
+        Vector3 movement;
+
         if (InputSystem::IsKeyPressed(Key::A))
         {
-            transform->Translate(Vector3::left * controller->m_moveSpeed * delta_time);
+            movement += Vector3::left;
         }
         else if (InputSystem::IsKeyPressed(Key::D))
         {
-            transform->Translate(Vector3::right * controller->m_moveSpeed * delta_time);
+            movement += Vector3::right;
         }
+
+        if (InputSystem::IsKeyPressed(Key::W))
+        {
+            movement += Vector3::down;
+        }
+        else if (InputSystem::IsKeyPressed(Key::S))
+        {
+            movement += Vector3::up;
+        }
+
+        transform->Translate(movement * controller->m_moveSpeed * delta_time);
+
 	}
 }
 

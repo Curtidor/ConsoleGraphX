@@ -1,4 +1,16 @@
 ﻿#include "screen.h"
+#include <consoleapi3.h>
+#include <windows.h>
+#include <stdexcept>
+#include <consoleapi2.h>
+#include <utility>
+#include <algorithm>
+#include <string>
+#include <cstdlib>
+#include <processenv.h>
+#include <handleapi.h>
+#include "screen_buffer.h"
+
 
 Screen* Screen::_s_activeScreen = nullptr;
 

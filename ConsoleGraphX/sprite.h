@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "component.h"
+#include "vector2.h"
 
 enum Color
 {
@@ -41,6 +42,8 @@ public:
 	Sprite(int width, int height, int color, bool isTransparent = false);
 	Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
     Sprite(const Sprite& other);
+
+    Vector2 Size();
 
 	~Sprite() override;
 

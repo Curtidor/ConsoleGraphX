@@ -68,44 +68,41 @@ void Entity::_RemoveScript(Component* script)
   
 void Entity::_RemoveComponent(std::type_index type, Component* comp)
 {
-    std::string componentName = type.name();
+    bool isScript = comp->GetID() == ComponentID::script;
 
-    if (comp->GetID() == ComponentID::script)
+    std::string componentName = isScript ? "struct Script" : type.name();
+
+    Dispatcher<Entity*>::Notify("RemoveComponent" + componentName, this);
+
+    if (isScript)
     {
         this->_RemoveScript(comp);
-        componentName = "Struct script";
     }
-    else 
+    else
     {
         auto it = _m_components.find(type);
-
         if (it != _m_components.end())
             _m_components.erase(it);
     }
 
-    std::string event_name = "RemoveComponent" + componentName;
-
-    Dispatcher<Entity*>::Notify(event_name, this);
-
     delete comp;
 }
 
+
 void Entity::_AddComponent(std::type_index index, Component* comp)
 {
-    std::string componentName = index.name();
+    std::string componentName = (comp->GetID() == ComponentID::script) ? "struct Script" : index.name();
 
     if (comp->GetID() == ComponentID::script)
     {
-        componentName = "Struct script";
         this->_AddScript(comp);
-    } 
+    }
     else
     {
         _m_components[index] = comp;
     }
 
-    std::string event_name = "AddComponent" + componentName;
-    Dispatcher<Entity*>::Notify(event_name, this);
+    Dispatcher<Entity*>::Notify("AddComponent" + componentName, this);
 }
 
 void Entity::RemoveComponentById(int id, bool deleteComponent)

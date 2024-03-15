@@ -1,4 +1,7 @@
 #include "vector3.h"
+#include <cmath>
+#include <cstdlib>
+#include "vector2.h"
 
 const Vector3 Vector3::left(-1.0f, 0.0f, 0.0f);
 const Vector3 Vector3::right(1.0f, 0.0f, 0.0f);
@@ -35,6 +38,13 @@ void Vector3::Normalize() {
     x /= magnitude;
     y /= magnitude;
     z /= magnitude;
+}
+
+void Vector3::AbsVector()
+{
+    x = std::abs(x);
+    y = std::abs(y);
+    z = std::abs(z);
 }
 
 Vector3& Vector3::operator+=(const Vector3& other) {
