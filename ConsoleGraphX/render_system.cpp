@@ -31,8 +31,6 @@ bool RenderSystem::_IsEntityNotInCamView(const _OverlapPoints& overlapPoints, co
         overlapPoints.bottom >= spriteSize.y);
 }
 
-
-
 void RenderSystem::_CalculateEntityOverLapCamera(const Vector3& entityPosition, const Vector3& camPosition, const Vector2& viewPortSize, Sprite* sprite, _OverlapPoints& overlapPoints)
 {
     const int spriteWidth = sprite->GetWidth();
@@ -45,22 +43,24 @@ void RenderSystem::_CalculateEntityOverLapCamera(const Vector3& entityPosition, 
     overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y + camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
 }
 
-
 void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
 {
     std::unordered_set<Camera*> activeCams = CameraSystem::GetActiveCameras();
 
-    if (activeCams.size() == 0)
-        throw std::runtime_error("No active cameras found");
-
-
     for (Camera* cam : activeCams)
     {
+        Vector3 cameraPosition = cam->GetPosition();
+
+        cameraPosition.x = std::floorf(cameraPosition.x);
+        cameraPosition.y = std::floorf(cameraPosition.y);
+
+        Vector2 viewPortSize = Vector2{ static_cast<float>(cam->GetWidth()),static_cast<float>(cam->GetHeight()) };
+
         for (Entity* entity : entities)
         {
             Sprite* sprite = entity->GetComponent<Sprite>();
 
-            if (sprite == nullptr)
+            if (!sprite)
             {
                 Debugger::S_LogMessage("entity does not have the sprite component DRAW SPRITES", Debugger::LogLevel::WARNING);
                 continue;
@@ -69,12 +69,6 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
             Vector3 entityPosition = entity->GetPosition();
             entityPosition.x = std::floorf(entityPosition.x);
             entityPosition.y = std::floorf(entityPosition.y);
-
-            Vector3 cameraPosition = cam->GetPosition();
-            cameraPosition.x = std::floorf(cameraPosition.x);
-            cameraPosition.y = std::floorf(cameraPosition.y);
-
-            Vector2 viewPortSize = Vector2{ static_cast<float>(cam->GetWidth()),static_cast<float>(cam->GetHeight()) };
 
             _OverlapPoints overlapPoints;
             _CalculateEntityOverLapCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
@@ -102,15 +96,15 @@ void RenderSystem::DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprit
 
     const int screenWidth = Screen::GetWidth_A();
 
-    const int entityX = std::floorf(relEntityPosition.x);
-    const int entityY = std::floorf(relEntityPosition.y);
+    int buffer_offset = (overlapPoints.left > 0 ? 0 : relEntityPosition.x) + (overlapPoints.top > 0 ? 0 : relEntityPosition.y) * screenWidth;
 
-    int buffer_offset = (overlapPoints.left > 0 ? 0 : entityX) + (overlapPoints.top > 0 ? 0 : entityY) * screenWidth;
+    CHAR_INFO* pixelStartOffset = pixels + overlapPoints.left;
+    CHAR_INFO* pixelEndOffset = pixels - overlapPoints.right;
 
     for (int y = overlapPoints.top; y < spriteHeight-overlapPoints.bottom; y++)
     {
-        CHAR_INFO* srcStart = pixels + (y * spriteWidth) + overlapPoints.left;
-        CHAR_INFO* srcEnd = pixels + (((y + 1) * spriteWidth) - overlapPoints.right);
+        CHAR_INFO* srcStart = pixelStartOffset + (y * spriteWidth);
+        CHAR_INFO* srcEnd = pixelEndOffset + ((y + 1) * spriteWidth);
 
         CHAR_INFO* dest = buffer + buffer_offset;
 
