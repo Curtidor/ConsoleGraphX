@@ -19,16 +19,13 @@ private:
 	};
 
 	static bool _IsEntityNotInCamView(const _OverlapPoints& overlapPoints , const Vector2& spriteSize);
-	static void _CalculateEntityOverLapRelCamera(const Vector3& relEntityPosition, Camera* cam, Sprite* sprite, _OverlapPoints& overlapPoints);
+	static void _CalculateEntityOverLapCamera(const Vector3& entityPosition, const Vector3& camPosition, const Vector2& viewPortSize, Sprite* sprite, _OverlapPoints& overlapPoints);
 
 public:
 	static void DrawSprites(const std::vector<Entity*>& entities);
 
 	static void DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints);
 	static void DrawSprite_SP(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints);
-
-	static void DrawSprites_SS(const std::vector<Entity*>& entities);
-	static void DrawSprites_SP(const std::vector<Entity*>& entities);
 
 	static void DrawLine(Vector2 origin, Vector2 end, int color);
 };
