@@ -23,15 +23,15 @@ to copy pixels for each region. This can improve performance, especially if you 
 */
 
 
-bool RenderSystem::_IsEntityNotInCamView(const _OverlapPoints& overlapPoints, const Vector2& spriteSize)
+bool RenderSystem::_IsEntityVisibleInView(const _OverlapPoints& overlapPoints, const Vector2& spriteSize)
 {
-    return (overlapPoints.left >= spriteSize.x ||
+    return !(overlapPoints.left >= spriteSize.x ||
         overlapPoints.right >= spriteSize.x ||
         overlapPoints.top >= spriteSize.y ||
         overlapPoints.bottom >= spriteSize.y);
 }
 
-void RenderSystem::_CalculateEntityOverLapCamera(const Vector3& entityPosition, const Vector3& camPosition, const Vector2& viewPortSize, Sprite* sprite, _OverlapPoints& overlapPoints)
+void RenderSystem::_CalculateEntityOverlapWithCamera(const Vector3& entityPosition, const Vector3& camPosition, const Vector2& viewPortSize, Sprite* sprite, _OverlapPoints& overlapPoints)
 {
     const int spriteWidth = sprite->GetWidth();
     const int spriteHeight = sprite->GetHeight();
@@ -40,7 +40,7 @@ void RenderSystem::_CalculateEntityOverLapCamera(const Vector3& entityPosition, 
     overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityPosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
 
     overlapPoints.top = std::abs(std::min<int>(entityPosition.y - camPosition.y, 0));
-    overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y + camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
+    overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y - camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
 }
 
 void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
@@ -58,32 +58,27 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
 
         for (Entity* entity : entities)
         {
-            Sprite* sprite = entity->GetComponent<Sprite>();
-
-            if (!sprite)
-            {
-                Debugger::S_LogMessage("entity does not have the sprite component DRAW SPRITES", Debugger::LogLevel::WARNING);
-                continue;
-            }
-
             Vector3 entityPosition = entity->GetPosition();
             entityPosition.x = std::floorf(entityPosition.x);
             entityPosition.y = std::floorf(entityPosition.y);
 
-            _OverlapPoints overlapPoints;
-            _CalculateEntityOverLapCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
+            // we don't check the sprite pointer as all entities in the sprite system are guaranteed to have a sprite component
+            Sprite* sprite = entity->GetComponent<Sprite>();
 
-            if (_IsEntityNotInCamView(overlapPoints, sprite->Size()))
+            _OverlapPoints overlapPoints;
+            _CalculateEntityOverlapWithCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
+
+            if (!_IsEntityVisibleInView(overlapPoints, sprite->Size()))
                 continue;
 
-            Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y + cameraPosition.y };
+            Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y - cameraPosition.y };
 
-            RenderSystem::DrawSprite_SS(relativePosition, sprite, overlapPoints);
+            RenderSystem::_DrawSprite_SS(relativePosition, sprite, overlapPoints);
         }
     }
 }
 
-void RenderSystem::DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints)
+void RenderSystem::_DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints)
 {
     if (!sprite)
        throw std::runtime_error("[RENDER SYSTEM], null sprite pointer");
@@ -115,7 +110,7 @@ void RenderSystem::DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprit
 }
 
 
-void RenderSystem::DrawSprite_SP(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints)
+void RenderSystem::_DrawSprite_SP(const Vector3& relEntityPosition, Sprite* sprite, const _OverlapPoints& overlapPoints)
 {
     if (!sprite)
         return;
