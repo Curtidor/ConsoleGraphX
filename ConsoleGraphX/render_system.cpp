@@ -33,27 +33,16 @@ bool RenderSystem::_IsEntityNotInCamView(const _OverlapPoints& overlapPoints, co
 
 
 
-void RenderSystem::_CalculateEntityOverLapRelCamera(const Vector3& relEntityPosition, Camera* cam, Sprite* sprite, _OverlapPoints& overlapPoints)
+void RenderSystem::_CalculateEntityOverLapCamera(const Vector3& entityPosition, const Vector3& camPosition, const Vector2& viewPortSize, Sprite* sprite, _OverlapPoints& overlapPoints)
 {
-    const Vector3 camPosition = cam->GetPosition();
-
     const int spriteWidth = sprite->GetWidth();
     const int spriteHeight = sprite->GetHeight();
 
-    const int renderWidth = cam->GetWidth();
-    const int renderHeight = cam->GetHeight();
+    overlapPoints.left = std::abs(std::min<int>(entityPosition.x - camPosition.x, 0));
+    overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityPosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
 
-    const int camX = std::floorf(camPosition.x);
-    const int camY = std::floorf(camPosition.y);
-
-    const int entityX = std::floorf(relEntityPosition.x); 
-    const int entityY = std::floorf(relEntityPosition.y);  
-
-    overlapPoints.left = std::max<int>(0, camX - entityX);
-    overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityX) + spriteWidth - overlapPoints.left) - renderWidth);
-
-    overlapPoints.top = std::max<int>(0, camY - entityY);
-    overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityY) + spriteHeight - overlapPoints.top) - renderHeight);
+    overlapPoints.top = std::abs(std::min<int>(entityPosition.y - camPosition.y, 0));
+    overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y + camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
 }
 
 
@@ -67,8 +56,6 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
 
     for (Camera* cam : activeCams)
     {
-        Vector3 cameraPosition = cam->GetPosition();
-
         for (Entity* entity : entities)
         {
             Sprite* sprite = entity->GetComponent<Sprite>();
@@ -80,14 +67,22 @@ void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
             }
 
             Vector3 entityPosition = entity->GetPosition();
+            entityPosition.x = std::floorf(entityPosition.x);
+            entityPosition.y = std::floorf(entityPosition.y);
 
-            Vector3 relativePosition = {entityPosition.x - cameraPosition.x, entityPosition.y + cameraPosition.y, 0};
+            Vector3 cameraPosition = cam->GetPosition();
+            cameraPosition.x = std::floorf(cameraPosition.x);
+            cameraPosition.y = std::floorf(cameraPosition.y);
+
+            Vector2 viewPortSize = Vector2{ static_cast<float>(cam->GetWidth()),static_cast<float>(cam->GetHeight()) };
 
             _OverlapPoints overlapPoints;
-            _CalculateEntityOverLapRelCamera(relativePosition, cam, sprite, overlapPoints);
+            _CalculateEntityOverLapCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
 
             if (_IsEntityNotInCamView(overlapPoints, sprite->Size()))
                 continue;
+
+            Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y + cameraPosition.y };
 
             RenderSystem::DrawSprite_SS(relativePosition, sprite, overlapPoints);
         }
@@ -110,15 +105,12 @@ void RenderSystem::DrawSprite_SS(const Vector3& relEntityPosition, Sprite* sprit
     const int entityX = std::floorf(relEntityPosition.x);
     const int entityY = std::floorf(relEntityPosition.y);
 
-    // if the entity is off the left side of the screen use 0 for the x position as the first visible part of sprite starts at x 0
-    int buffer_offset = (overlapPoints.left > 0 ? 0 : entityX) + entityY * screenWidth;
+    int buffer_offset = (overlapPoints.left > 0 ? 0 : entityX) + (overlapPoints.top > 0 ? 0 : entityY) * screenWidth;
 
     for (int y = overlapPoints.top; y < spriteHeight-overlapPoints.bottom; y++)
     {
         CHAR_INFO* srcStart = pixels + (y * spriteWidth) + overlapPoints.left;
         CHAR_INFO* srcEnd = pixels + (((y + 1) * spriteWidth) - overlapPoints.right);
-
-        //Debugger::S_LogMessage("SORUCE LEGTH: " + std::to_string(src_end - src_start));
 
         CHAR_INFO* dest = buffer + buffer_offset;
 
@@ -144,60 +136,6 @@ void RenderSystem::DrawSprite_SP(const Vector3& relEntityPosition, Sprite* sprit
         for (int x = 0; x < spriteWidth; x++)
         {
             Screen::SetPixel_A(relEntityPosition.x + x, relEntityPosition.y + y, *pixels++);
-        }
-    }
-}
-
-void RenderSystem::DrawSprites_SS(const std::vector<Entity*>& entities)
-{
-    std::unordered_set<Camera*> activeCams = CameraSystem::GetActiveCameras();
-
-    if (activeCams.size() == 0)
-        throw std::runtime_error("No active cameras found");
-
-    for (Camera* cam : activeCams) {
-
-        Vector3 cameraPosition = cam->GetPosition();
-
-        for (Entity* entity : entities)
-        {
-            Sprite* sprite = entity->GetComponent<Sprite>();
-            
-            Vector3 entityPosition = entity->GetPosition();
-
-            Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y + cameraPosition.y, 0 };
-
-            _OverlapPoints overlapPoints;
-            _CalculateEntityOverLapRelCamera(relativePosition, cam, sprite, overlapPoints);
-
-            if (!_IsEntityNotInCamView(overlapPoints, sprite->Size()))
-                continue;
-
-            RenderSystem::DrawSprite_SS(relativePosition, sprite, overlapPoints);
-        }
-    }
-   
-}
-
-void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
-{
-    std::unordered_set<Camera*> activeCams = CameraSystem::GetActiveCameras();
-
-    if (activeCams.size() == 0)
-        throw std::runtime_error("No active cameras found");
-
-    for (Camera* cam : activeCams) {
-        for (Entity* entity : entities)
-        {
-            Sprite* sprite = entity->GetComponent<Sprite>();
-            
-            const Vector3 entityPosition = entity->GetPosition();
-            const Vector3 camPosition = cam->GetPosition();
-
-            _OverlapPoints overlapPoints;
-            const Vector3 relativePosition = entityPosition + camPosition;
-
-            RenderSystem::DrawSprite_SP(relativePosition, sprite, overlapPoints);
         }
     }
 }
