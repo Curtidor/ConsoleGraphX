@@ -16,8 +16,9 @@ Player::Player() : Script(), _m_playerCam(nullptr)
 void Player::Awake(Entity* owner)
 {
 	Sprite* sprite = (Sprite*)owner->AddComponent<Sprite>(7, 12, DarkYellow);
-	sprite->m_layer = 4;
-	owner->GetComponent<Transform>()->SetPosition(0,0);
+	sprite->m_layer = 10;
+
+	owner->GetComponent<Transform>()->SetPosition(0,75);
 	owner->AddComponent<PlayerController>(25, 5, 9);
 
 	_m_playerCam = owner->GetComponent<Camera>();
