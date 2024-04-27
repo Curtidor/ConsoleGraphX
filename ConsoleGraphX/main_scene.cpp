@@ -22,7 +22,7 @@ MainScene::MainScene(std::string name) : Scene(name)
 
 void MainScene::Initialize()
 {
-	const int sceneWidth = 400;
+	const int sceneWidth = 100;
 	const int sceneHeight = 100;
 	const int camWidth = 270;
 	const int camHeight = 100;
