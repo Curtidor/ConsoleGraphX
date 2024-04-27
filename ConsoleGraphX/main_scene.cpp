@@ -22,28 +22,32 @@ MainScene::MainScene(std::string name) : Scene(name)
 
 void MainScene::Initialize()
 {
-	//Entity* snowPrefab = this->RegisterEntityN("snow");
-	//Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(2, 1, Color::White);
-	//snowPrefab->GetComponent<Transform>()->SetPosition(Screen::GetWidth_A() / 2, 0);
-	//Snow* snowScript = (Snow*)snowPrefab->AddComponent<Snow>();
-	//snowScript->SetState(false);
-	//
+	const int sceneWidth = 400;
+	const int sceneHeight = 100;
+	const int camWidth = 270;
+	const int camHeight = 100;
 
-	//snowSprite->m_layer = 1;
+	Entity* snowPrefab = this->RegisterEntityN("snow");
+	Sprite* snowSprite = (Sprite*)snowPrefab->AddComponent<Sprite>(2, 1, Color::White);
+	snowPrefab->GetComponent<Transform>()->SetPosition(-sceneWidth / 2, 0);
+	Snow* snowScript = (Snow*)snowPrefab->AddComponent<Snow>();
+	snowScript->SetState(false);
 
-	//Vector3 minSpread = Vector3(-135, 0,0);
-	//Vector3 maxSpread = Vector3(135, 90, 0);
+	snowSprite->m_layer = 1;
 
-	//for (int i = 0; i < 2000; i++)
-	//{
-	//	// snowPrefab->CloneEntity(minSpread, maxSpread);
-	//}
+	Vector3 minSpread = Vector3(-135, 0,0);
+	Vector3 maxSpread = Vector3(135, 90, 0);
+
+	for (int i = 0; i < 2000; i++)
+	{
+		snowPrefab->CloneEntity(minSpread, maxSpread);
+	}
 
 
 	Entity* grass = this->RegisterEntityN("Grass");
-	grass->GetComponent<Transform>()->SetPosition(0, 12);
-	Sprite* grassSprite = (Sprite*)grass->AddComponent<Sprite>(140, 10, Green);
-	grassSprite->m_layer = 1;
+	grass->GetComponent<Transform>()->SetPosition(-sceneWidth/2, sceneHeight-15);
+	Sprite* grassSprite = (Sprite*)grass->AddComponent<Sprite>(sceneWidth, 10, Green);
+	grassSprite->m_layer = 2;
 
 	/*Entity* marker = this->RegisterEntityN("marker");
 	marker->GetComponent<Transform>()->SetPosition(100, 0);
@@ -51,10 +55,10 @@ void MainScene::Initialize()
 	makerSprite->m_layer = 1;*/
 
 	
-	/*Entity* sky = this->RegisterEntityN("Sky");
-	sky->GetComponent<Transform>()->SetPosition(0, 0);
-	Sprite* spriteSky = (Sprite*)sky->AddComponent<Sprite>(Screen::GetWidth_A(), 90, Blue);
-	spriteSky->m_layer = 1;*/
+	Entity* sky = this->RegisterEntityN("Sky");
+	sky->GetComponent<Transform>()->SetPosition(sceneWidth/2, 0);
+	Sprite* spriteSky = (Sprite*)sky->AddComponent<Sprite>(sceneWidth, 90, Blue);
+	spriteSky->m_layer = 1;
 
 	Entity* player = this->RegisterEntityN("Player");
 	player->AddComponent<Player>();
@@ -62,7 +66,7 @@ void MainScene::Initialize()
 
 	Vector3 playerPosition = player->GetPosition();
 
-	Camera* cam = (Camera*)player->AddComponent<Camera>(120, 65, Vector3());
+	Camera* cam = (Camera*)player->AddComponent<Camera>(camWidth, camHeight, Vector3(-50, 0));
 	CameraSystem::RegisterCamera(cam);
 	CameraSystem::SetCameraState(cam, true);
 	
