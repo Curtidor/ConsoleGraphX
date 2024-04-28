@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "camera.h"
 
+using namespace ConsoleGraphX;
 
 struct Player : public Script
 {

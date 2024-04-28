@@ -7,65 +7,70 @@
 #include "entity.h"
 #include "scene.h"
 
-Scene* SceneSystem::_s_activeScene;
-std::unordered_map<std::string, Scene*> SceneSystem::_s_scenes;
-
-void SceneSystem::RegisterScene(Scene* scene)
+namespace ConsoleGraphX
 {
-    _s_scenes[scene->GetSceneName()] = scene;
+    Scene* SceneSystem::_s_activeScene;
+    std::unordered_map<std::string, Scene*> SceneSystem::_s_scenes;
 
-    Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
-    Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
-}
-
-void SceneSystem::DeregisterScene(const std::string& name)
-{
-    auto it = _s_scenes.find(name);
-
-    if (name == _s_activeScene->GetSceneName())
-        _s_activeScene = nullptr;
-
-    DeleteScene(name);
-    if (it != _s_scenes.end())
+    void SceneSystem::RegisterScene(Scene* scene)
     {
-        _s_scenes.erase(it);
+        _s_scenes[scene->GetSceneName()] = scene;
+
+        ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
+        ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
     }
-}
 
-void SceneSystem::LoadScene(const std::string& name)
-{
-    if (!IsSceneRegistered(name))
+    void SceneSystem::DeregisterScene(const std::string& name)
     {
-        throw std::runtime_error("Scene must be registered");
-    }
-    _s_activeScene = _s_scenes[name];
-    _s_activeScene->Initialize();
-}
+        auto it = _s_scenes.find(name);
 
-void SceneSystem::DeleteScene(const std::string& name)
-{
-    auto it = _s_scenes.find(name);
-    if (it != _s_scenes.end())
-    {
-        Scene* scene = it->second;
-        for (Entity* entity : scene->GetEntities())
+        if (name == _s_activeScene->GetSceneName())
+            _s_activeScene = nullptr;
+
+        DeleteScene(name);
+        if (it != _s_scenes.end())
         {
-            scene->DeregisterEntity(entity);
+            _s_scenes.erase(it);
         }
     }
-}
 
-bool SceneSystem::IsSceneRegistered(const std::string& name)
-{
-    return _s_scenes.find(name) != _s_scenes.end();
-}
+    void SceneSystem::LoadScene(const std::string& name)
+    {
+        if (!IsSceneRegistered(name))
+        {
+            throw std::runtime_error("Scene must be registered");
+        }
+        _s_activeScene = _s_scenes[name];
+        _s_activeScene->Initialize();
+    }
 
-Scene* SceneSystem::GetActiveScene()
-{
-    return _s_activeScene;
-}
+    void SceneSystem::DeleteScene(const std::string& name)
+    {
+        auto it = _s_scenes.find(name);
+        if (it != _s_scenes.end())
+        {
+            Scene* scene = it->second;
+            for (Entity* entity : scene->GetEntities())
+            {
+                scene->DeregisterEntity(entity);
+            }
+        }
+    }
 
-const std::unordered_map<std::string, Scene*>& SceneSystem::GetScenes()
-{
-    return _s_scenes;
-}
+    bool SceneSystem::IsSceneRegistered(const std::string& name)
+    {
+        return _s_scenes.find(name) != _s_scenes.end();
+    }
+
+    Scene* SceneSystem::GetActiveScene()
+    {
+        return _s_activeScene;
+    }
+
+    const std::unordered_map<std::string, Scene*>& SceneSystem::GetScenes()
+    {
+        return _s_scenes;
+    }
+};
+
+

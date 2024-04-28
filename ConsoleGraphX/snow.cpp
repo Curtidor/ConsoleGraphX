@@ -7,6 +7,9 @@
 #include "transform.h"
 #include "vector3.h"
 
+using namespace ConsoleGraphX;
+
+
 Snow::Snow(): Script(), _m_transform(nullptr)
 {}
 
@@ -25,7 +28,7 @@ void Snow::Update(Entity* owner)
 	{
 		if (owner->m_id == 0)
 		{
-			Debugger::S_LogMessage("prefab died");
+			ConsoleGraphX_Interal::Debugger::S_LogMessage("prefab died");
 		}
 
 		Vector3 minSpread = Vector3(0, 0, 0);
@@ -40,7 +43,7 @@ void Snow::Update(Entity* owner)
 
 }
 
-Component* Snow::Clone() const
+ConsoleGraphX_Interal::Component* Snow::Clone() const
 {
 	Snow* clone = new Snow();
 

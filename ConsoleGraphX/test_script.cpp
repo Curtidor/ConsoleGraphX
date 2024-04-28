@@ -3,6 +3,9 @@
 #include "entity.h"
 #include "script.h"
 
+using namespace ConsoleGraphX;
+
+
 TestScript::TestScript() : Script()
 {}
 

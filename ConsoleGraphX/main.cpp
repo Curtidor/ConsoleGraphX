@@ -9,7 +9,7 @@ Fastest Font:
 
 int main()
 {
-	Debugger debugger = Debugger(10);
+	ConsoleGraphX_Interal::Debugger debugger = ConsoleGraphX_Interal::Debugger(10);
 	Engine::InitializeEngine(270, 100, 3, 6, &debugger);
 
 	MainScene* m = new MainScene("Main scene");

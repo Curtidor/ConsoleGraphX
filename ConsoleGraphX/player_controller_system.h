@@ -4,16 +4,19 @@
 #include "entity.h"
 #include "player_controller.h"
 
-
-class PlayerControllerSystem: public System
+namespace ConsoleGraphX
 {
-private:
-	static std::unordered_map<Entity*, PlayerController*> _s_controllerPairs;
 
-public:
-	void Initialize() const override;
-	void Update(float delta_time) const override;
+	class PlayerControllerSystem : public System
+	{
+	private:
+		static std::unordered_map<Entity*, PlayerController*> _s_controllerPairs;
 
-	static void RegisterController(Entity* owner);
-	static void DeregisterController(Entity* owner);
+	public:
+		void Initialize() const override;
+		void Update(float delta_time) const override;
+
+		static void RegisterController(Entity* owner);
+		static void DeregisterController(Entity* owner);
+	};
 };
