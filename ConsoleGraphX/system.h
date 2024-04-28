@@ -2,26 +2,29 @@
 #include <unordered_set>
 #include <type_traits>
 
-class System
+namespace ConsoleGraphX
 {
-private:
-	static std::unordered_set<System*> _s_systems;
-
-public:
-	~System();
-
-	template <typename SystemType>
-	static void RegisterSystem()
+	class System
 	{
-		static_assert(std::is_base_of<System, SystemType>::value, "The passed type must be derived from Component.");
+	private:
+		static std::unordered_set<System*> _s_systems;
 
-		System* system = new SystemType();
+	public:
+		~System();
 
-		system->Initialize();
+		template <typename SystemType>
+		static void RegisterSystem()
+		{
+			static_assert(std::is_base_of<System, SystemType>::value, "The passed type must be derived from Component.");
 
-		_s_systems.insert(system);
+			System* system = new SystemType();
 
-	}
-	virtual void Initialize() const;
-	virtual void Update(float delta_time) const;
+			system->Initialize();
+
+			_s_systems.insert(system);
+
+		}
+		virtual void Initialize() const;
+		virtual void Update(float delta_time) const;
+	};
 };

@@ -3,16 +3,18 @@
 #include "sprite.h"
 #include "entity.h"
 
-
-class GUIElement : public Entity
+namespace ConsoleGraphX_GUI
 {
-private:
-	std::vector<GUIElement> _m_children;
-	Sprite* _m_sprite;
+	class GUIElement : public ConsoleGraphX::Entity
+	{
+	private:
+		std::vector<GUIElement> _m_children;
+		ConsoleGraphX::Sprite* _m_sprite;
 
-public:
-	GUIElement(int width, int hegiht, const std::string& name = "");
-	GUIElement(int width, int hegiht, int color, const std::string& name = "");
-	GUIElement(int width, int hegiht, CHAR_INFO* pixels, const std::string& name = "");
-	
+	public:
+		GUIElement(int width, int hegiht, const std::string& name = "");
+		GUIElement(int width, int hegiht, int color, const std::string& name = "");
+		GUIElement(int width, int hegiht, CHAR_INFO* pixels, const std::string& name = "");
+
+	};
 };

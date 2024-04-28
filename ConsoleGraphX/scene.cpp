@@ -5,68 +5,72 @@
 #include "entity.h"
 #include "script.h"
 
-Scene::Scene(std::string name)
-    : _m_scene_name(name)
-{}
-
-Entity* Scene::RegisterEntityN(std::string name)
+namespace ConsoleGraphX
 {
-    Entity* entity = new Entity(name);
+    Scene::Scene(std::string name)
+        : _m_scene_name(name)
+    {}
 
-    _m_entities.insert(entity);
-
-    return entity;
-}
-
-void Scene::RegisterEntity(Entity* entity)
-{
-    _m_entities.insert(entity);
-}
-
-void Scene::DeregisterEntity(Entity* entity)
-{
-    this->_m_entitiesToDelete.insert(entity);
-}
-
-void Scene::DeleteEntities()
-{
-    for (Entity* entity : this->_m_entitiesToDelete)
+    Entity* Scene::RegisterEntityN(std::string name)
     {
-        auto it = _m_entities.find(entity);
+        Entity* entity = new Entity(name);
 
-        if (it != _m_entities.end())
-        {
-            for (auto& componentPair : entity->GetComponents())
-            {
-                entity->RemoveComponentC(componentPair.second);
-            }
+        _m_entities.insert(entity);
 
-            for (Component* comp: entity->GetScripts())
-            {
-                Script* script = static_cast<Script*>(comp);
-                entity->RemoveComponentC(script);
-            }
-
-            _m_entities.erase(it);
-
-            delete entity;
-        }
+        return entity;
     }
-    this->_m_entitiesToDelete.clear();
-}
+
+    void Scene::RegisterEntity(Entity* entity)
+    {
+        _m_entities.insert(entity);
+    }
+
+    void Scene::DeregisterEntity(Entity* entity)
+    {
+        this->_m_entitiesToDelete.insert(entity);
+    }
+
+    void Scene::DeleteEntities()
+    {
+        for (Entity* entity : this->_m_entitiesToDelete)
+        {
+            auto it = _m_entities.find(entity);
+
+            if (it != _m_entities.end())
+            {
+                for (auto& componentPair : entity->GetComponents())
+                {
+                    entity->RemoveComponentC(componentPair.second);
+                }
+
+                for (ConsoleGraphX_Interal::Component* comp : entity->GetScripts())
+                {
+                    Script* script = static_cast<Script*>(comp);
+                    entity->RemoveComponentC(script);
+                }
+
+                _m_entities.erase(it);
+
+                delete entity;
+            }
+        }
+        this->_m_entitiesToDelete.clear();
+    }
 
 
-bool Scene::InScene(Entity* entity)
-{
-    return _m_entities.find(entity) != _m_entities.end();
-}
+    bool Scene::InScene(Entity* entity)
+    {
+        return _m_entities.find(entity) != _m_entities.end();
+    }
 
-const std::unordered_set<Entity*>& Scene::GetEntities()
-{
-    return _m_entities;
-}
+    const std::unordered_set<Entity*>& Scene::GetEntities()
+    {
+        return _m_entities;
+    }
 
-const std::string& Scene::GetSceneName()
-{
-    return _m_scene_name;
-}
+    const std::string& Scene::GetSceneName()
+    {
+        return _m_scene_name;
+    }
+};
+

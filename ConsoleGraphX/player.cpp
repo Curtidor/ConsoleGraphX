@@ -10,6 +10,8 @@
 #include "vector3.h"
 #include "debugger.h"
 
+using namespace ConsoleGraphX;
+
 Player::Player() : Script(), _m_playerCam(nullptr)
 {}
 
@@ -32,8 +34,8 @@ void Player::Update(Entity* owner)
 	_m_playerCam->SetPosition(Vector3(playerPosition.x - _m_playerCam->GetWidth() * 0.5f, playerPosition.y - _m_playerCam->GetHeight() * 0.5f));
 	//_m_playerCam->SetPosition(Vector3(playerPosition.x - _m_playerCam->GetWidth() * 0.5f, 0));
 
-	Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));
-	Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
+	ConsoleGraphX_Interal::Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));
+	ConsoleGraphX_Interal::Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
 
 	if (InputSystem::IsKeyPressed(Key::B))
 	{

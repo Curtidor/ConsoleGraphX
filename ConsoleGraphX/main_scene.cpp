@@ -13,6 +13,7 @@
 #include "camera.h"
 #include "camera_system.h"
 
+using namespace ConsoleGraphX;
 
 MainScene::MainScene(std::string name) : Scene(name)
 {

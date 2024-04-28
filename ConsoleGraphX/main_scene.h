@@ -4,6 +4,8 @@
 
 // Register->Load->Initialize->Run
 
+using namespace ConsoleGraphX;
+
 class MainScene: public Scene
 {
 public:

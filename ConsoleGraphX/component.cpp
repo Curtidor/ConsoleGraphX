@@ -5,18 +5,22 @@
 /**
  * @brief Default constructor for the base Component class.
  */
-Component::Component()
-{}
-
-Component::~Component()
-{}
-
-int Component::GetID() const 
+namespace ConsoleGraphX_Interal
 {
-	return ComponentID::base;
-}
+	Component::Component()
+	{}
 
-const std::string Component::ComponentName() const
-{
-	return typeid(*this).name();
-}
+	Component::~Component()
+	{}
+
+	int Component::GetID() const
+	{
+		return ComponentID::base;
+	}
+
+	const std::string Component::ComponentName() const
+	{
+		return typeid(*this).name();
+	}
+};
+
