@@ -1,7 +1,7 @@
 #include <set>
-#include <string>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 #include "dispatcher.h"
 #include "entity.h"
 #include "sprite.h"
