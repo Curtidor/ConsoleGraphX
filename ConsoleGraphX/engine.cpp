@@ -29,7 +29,7 @@ namespace ConsoleGraphX
         int debugger_height = debugger != nullptr ? debugger->GetMaxMessages() : 0;
 
         ConsoleGraphX_Interal::Screen* screen = new ConsoleGraphX_Interal::Screen(screen_width, screen_height, debugger_height, pixel_width, pixel_height);
-        screen->FillScreen({ ConsoleGraphX_Interal::Screen::s_pixel, 0 });
+        screen->MemFillScreen( 0 );
 
         _m_debugger = debugger;
 
@@ -79,7 +79,7 @@ namespace ConsoleGraphX
             UpdateFPS();
 
             active_screen->DrawScreen();
-            active_screen->FillScreen({ ConsoleGraphX_Interal::Screen::s_pixel, 0 });
+            active_screen->MemFillScreen(0 );
 
             //Sleep(4);
         }
