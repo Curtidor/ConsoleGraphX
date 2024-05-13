@@ -2,6 +2,7 @@
 #include <set>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 #include "dispatcher.h"
 #include "entity.h"
 #include "sprite.h"
@@ -33,10 +34,9 @@ void SpriteSystem::Initialize() const
 	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct Sprite", SpriteSystem::DeregisterEntitySprite);
 }
 
-void SpriteSystem::Update(float delta_time) const
-{
-	
-}
+	void SpriteSystem::Update(float delta_time) const
+	{
+	}
 
 
 void SpriteSystem::RegisterEntitySprite(Entity* entity)
