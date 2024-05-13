@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "transform.h"
 
+using namespace ConsoleGraphX;
 
 struct Snow : public Script
 {
@@ -16,5 +17,5 @@ public:
 	void Awake(Entity* owner) override;
 	void Update(Entity* owner) override;
 
-	Component* Clone() const override;
+	ConsoleGraphX_Interal::Component* Clone() const override;
 };

@@ -4,23 +4,28 @@
 #include "entity.h"
 #include <vector>
 
-struct SpriteComparator {
-	bool operator()(const Entity* entityA, const Entity* entityB) const;
-};
-
-class SpriteSystem : public System
+namespace ConsoleGraphX_Interal
 {
-private:
-	static std::multiset<Entity*, SpriteComparator> _s_entitySprites;
+	struct SpriteComparator {
+		bool operator()(const ConsoleGraphX::Entity* entityA, const ConsoleGraphX::Entity* entityB) const;
+	};
 
-public:
-	void Initialize() const override;
-	void Update(float delta_time) const override;
+	class SpriteSystem : public ConsoleGraphX::System
+	{
+	private:
+		static std::multiset<ConsoleGraphX::Entity*, SpriteComparator> _s_entitySprites;
 
-	static void RegisterEntitySprite(Entity* entity);
+	public:
+		void Initialize() const override;
+		void Update(float delta_time) const override;
 
-	static void DeregisterEntitySprite(Entity* entity);
+		static void RegisterEntitySprite(ConsoleGraphX::Entity* entity);
 
-	static std::vector<Entity*> GetEntitySprites();
+		static void DeregisterEntitySprite(ConsoleGraphX::Entity* entity);
 
+		static std::vector<ConsoleGraphX::Entity*> GetEntitySprites();
+
+	};
 };
+
+

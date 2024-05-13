@@ -1,72 +1,79 @@
-#include "sprtite_system.h"
 #include <set>
+#include <string>
 #include <stdexcept>
 #include <vector>
-#include <algorithm>
 #include "dispatcher.h"
 #include "entity.h"
 #include "sprite.h"
+#include "sprtite_system.h"
 
-bool SpriteComparator::operator()(const Entity* entityAC, const Entity* entityBC) const {
-	Entity* entityA = const_cast<Entity*>(entityAC);
-	Entity* entityB = const_cast<Entity*>(entityBC);
-	
-	Sprite* spriteA = entityA->GetComponent<Sprite>();
-	Sprite* spriteB = entityB->GetComponent<Sprite>();
-
-	if (!spriteA || !spriteB) {
-		throw std::runtime_error("Null sprite encountered in SpriteComparator");
-	}
-
-	if (spriteA->m_layer != spriteB->m_layer) {
-		return spriteA->m_layer < spriteB->m_layer;
-	} 
-	else {
-		return entityA->m_id < entityB->m_id;
-	}
-}
-
-std::multiset<Entity*, SpriteComparator> SpriteSystem::_s_entitySprites;
-
-void SpriteSystem::Initialize() const
+namespace ConsoleGraphX_Interal
 {
-	Dispatcher<Entity*>::RegisterListener("AddComponentstruct Sprite", SpriteSystem::RegisterEntitySprite);
-	Dispatcher<Entity*>::RegisterListener("RemoveComponentstruct Sprite", SpriteSystem::DeregisterEntitySprite);
-}
+	bool SpriteComparator::operator()(const ConsoleGraphX::Entity* entityAC, const ConsoleGraphX::Entity* entityBC) const {
+		ConsoleGraphX::Entity* entityA = const_cast<ConsoleGraphX::Entity*>(entityAC);
+		ConsoleGraphX::Entity* entityB = const_cast<ConsoleGraphX::Entity*>(entityBC);
+
+		ConsoleGraphX::Sprite* spriteA = entityA->GetComponent<ConsoleGraphX::Sprite>();
+		ConsoleGraphX::Sprite* spriteB = entityB->GetComponent<ConsoleGraphX::Sprite>();
+
+		if (!spriteA || !spriteB) {
+			throw std::runtime_error("Null sprite encountered in SpriteComparator");
+		}
+
+		if (spriteA->m_layer != spriteB->m_layer) {
+			return spriteA->m_layer < spriteB->m_layer;
+		}
+		else {
+			return entityA->m_id < entityB->m_id;
+		}
+	}
+
+	std::multiset<ConsoleGraphX::Entity*, SpriteComparator> SpriteSystem::_s_entitySprites;
+
+	void SpriteSystem::Initialize() const
+	{
+		std::string objectName = typeid(ConsoleGraphX::Sprite).name();
+
+		Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("AddComponent" + objectName, SpriteSystem::RegisterEntitySprite);
+		Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("RemoveComponent" + objectName, SpriteSystem::DeregisterEntitySprite);
+	}
 
 	void SpriteSystem::Update(float delta_time) const
 	{
+
 	}
 
 
-void SpriteSystem::RegisterEntitySprite(Entity* entity)
-{
-	_s_entitySprites.insert(entity);
-}
-
-void SpriteSystem::DeregisterEntitySprite(Entity* entity)
-{
-	// TEMP
-	// when using .find on _s_entitySprite it sometimes returns "end" even though the entity is present
-	// until we fix the SpriteComparator we will use this code for removing entities from the multiset
-	auto equalsEntity = [entity](Entity* entry) {
-		return entry == entity;
-	};
-
-	auto it = std::find_if(_s_entitySprites.begin(), _s_entitySprites.end(), equalsEntity);
-
-	if (it != _s_entitySprites.end()) {
-		_s_entitySprites.erase(it);
+	void SpriteSystem::RegisterEntitySprite(ConsoleGraphX::Entity* entity)
+	{
+		_s_entitySprites.insert(entity);
 	}
-}
 
-std::vector<Entity*> SpriteSystem::GetEntitySprites()
-{
-	std::vector<Entity*> entitiesVector;
-	entitiesVector.reserve(_s_entitySprites.size()); 
+	void SpriteSystem::DeregisterEntitySprite(ConsoleGraphX::Entity* entity)
+	{
+		// TEMP
+		// when using .find on _s_entitySprite it sometimes returns "end" even though the entity is present
+		// until we fix the SpriteComparator we will use this code for removing entities from the multiset
+		auto equalsEntity = [entity](ConsoleGraphX::Entity* entry) {
+			return entry == entity;
+			};
 
-	entitiesVector.insert(entitiesVector.end(), _s_entitySprites.begin(), _s_entitySprites.end());
+		auto it = std::find_if(_s_entitySprites.begin(), _s_entitySprites.end(), equalsEntity);
 
-	return entitiesVector;
-}
+		if (it != _s_entitySprites.end()) {
+			_s_entitySprites.erase(it);
+		}
+	}
+
+	std::vector<ConsoleGraphX::Entity*> SpriteSystem::GetEntitySprites()
+	{
+		std::vector<ConsoleGraphX::Entity*> entitiesVector;
+		entitiesVector.reserve(_s_entitySprites.size());
+
+		entitiesVector.insert(entitiesVector.end(), _s_entitySprites.begin(), _s_entitySprites.end());
+
+		return entitiesVector;
+	}
+};
+
 
