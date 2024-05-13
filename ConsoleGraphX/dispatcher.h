@@ -1,7 +1,5 @@
 #pragma once
-#include <stack>
 #include <unordered_map>
-#include <vector>
 #include <functional>
 #include <queue>
 #include "debugger.h"
@@ -9,9 +7,9 @@
 namespace ConsoleGraphX_Interal
 {
     /**
- * @brief A generic event dispatcher that supports event prioritization.
- * @tparam T The event data type.
- */
+    * @brief A generic event dispatcher that supports event prioritization.
+    * @tparam T The event data type.
+    */
     template <typename T>
     class Dispatcher {
     private:
@@ -37,12 +35,15 @@ namespace ConsoleGraphX_Interal
             auto it = _s_eventRegistry.find(event_name);
 
             if (it != _s_eventRegistry.end()) {
-                std::priority_queue<Listener> listener_queue_copy = it->second;
+                std::priority_queue<Listener> listenerQueueCopy = it->second;
 
-                while (!listener_queue_copy.empty()) {
-                    Listener listener = listener_queue_copy.top();
+                // TODO:
+                // listeners should be put into a queue then called if they are called within the notify method like they are now
+                // it could lead to a stack over flow if two events call each other
+                while (!listenerQueueCopy.empty()) {
+                    Listener listener = listenerQueueCopy.top();
                     listener.callback(eventData);
-                    listener_queue_copy.pop();
+                    listenerQueueCopy.pop();
                 }
             }
         }
@@ -70,19 +71,19 @@ namespace ConsoleGraphX_Interal
             if (eventNameNQueue == _s_eventRegistry.end())
                 return;
 
-            auto& listener_queue = eventNameNQueue->second;
-            std::priority_queue<Listener> new_queue; // Create a new queue without the specified listener
+            auto& listenerQueue = eventNameNQueue->second;
+            std::priority_queue<Listener> newQueue; // Create a new queue without the specified listener
 
-            while (!listener_queue.empty()) {
-                const auto& listener = listener_queue.top();
+            while (!listenerQueue.empty()) {
+                const auto& listener = listenerQueue.top();
                 if (!(listener.callback == callback && listener.priority == priority)) {
-                    new_queue.push(listener); // Keep listeners that are not the one to be removed
+                    newQueue.push(listener); // Keep listeners that are not the one to be removed
                 }
-                listener_queue.pop();
+                listenerQueue.pop();
             }
 
             // Replace the old priority queue with the new one (without the specified listener)
-            std::swap(listener_queue, new_queue);
+            std::swap(listenerQueue, newQueue);
         }
     };
 
