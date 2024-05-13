@@ -1,147 +1,157 @@
-#include "render_system.h"
-#include <windows.h>
 #include <cmath>
 #include <utility>
 #include <vector>
+#include <windows.h>
+#include <stdexcept>
+#include <unordered_set>
+#include "render_system.h"
 #include "debugger.h"
 #include "entity.h"
 #include "screen.h"
 #include "sprite.h"
 #include "vector2.h"
 #include "vector3.h"
+#include "camera_system.h"
+#include "camera.h"
+#include "transform.h"
 
 /*
 Parallelization: If you have a multi-core CPU, you could explore parallelizing the rendering process.
-For example, you could divide the screen into smaller regions and assign a separate thread 
+For example, you could divide the screen into smaller regions and assign a separate thread
 to copy pixels for each region. This can improve performance, especially if you have a lot of sprites to render.
 */
 
-void RenderSystem::DrawSprites(const std::vector<Entity*>& entities)
+namespace ConsoleGraphX_Interal 
 {
-
-    for (Entity* entity : entities)
+    bool RenderSystem::_IsEntityVisibleInView(const _OverlapPoints& overlapPoints, const ConsoleGraphX::Vector2& spriteSize)
     {
-        Sprite* sprite = entity->GetComponent<Sprite>();
-
-        if (sprite == nullptr)
-        {
-            Debugger::S_LogMessage("entity does not have the sprite component DRAW SPRITES", Debugger::LogLevel::WARNING);
-            continue;
-        }
-           
-        const Vector3 position = entity->GetPosition();
-
-        RenderSystem::DrawSprite_SS(position, sprite);
+        return !(overlapPoints.left >= spriteSize.x ||
+            overlapPoints.right >= spriteSize.x ||
+            overlapPoints.top >= spriteSize.y ||
+            overlapPoints.bottom >= spriteSize.y);
     }
-}
 
-
-
-void RenderSystem::DrawSprite_SS(const Vector3 position, Sprite* sprite)
-{
-    if (!sprite)
-        return;
-
-    CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
-    CHAR_INFO* pixels = sprite->GetPixels();
-
-    const int spriteWidth = sprite->GetWidth();
-    const int spriteHeight = sprite->GetHeight();
-    const int screenWidth = Screen::GetWidth_A();
-
-    int buffer_offset = std::floor(position.x) + std::floor(position.y) * screenWidth;
-    // how much the sprite is off the screen in positive x
-    int overlap_px = std::max<int>(0, position.x + spriteWidth - screenWidth);
-    // how much the sprite is off the screen in negative x
-    int overlap_nx = std::max<int>(0, 0 - position.x);
-
-    // if its off the screen return
-    if (position.x > screenWidth || position.x + spriteWidth < 0)
-        return;
-
-
-    int sprite_index_offset = 0;
-    for (int y = 0; y < spriteHeight; y++)
+    void RenderSystem::_CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, _OverlapPoints& overlapPoints)
     {
-        // sprite is the source, the buffer is the destination
-        CHAR_INFO* src_start = pixels + sprite_index_offset;
-        CHAR_INFO* src_end = pixels + sprite_index_offset + spriteWidth - overlap_px - overlap_nx;
-        CHAR_INFO* dest = buffer + buffer_offset + overlap_nx;
+        const int spriteWidth = sprite->GetWidth();
+        const int spriteHeight = sprite->GetHeight();
 
-        Screen::SetPixels_A(src_start, src_end, dest);
+        overlapPoints.left = std::abs(std::min<int>(entityPosition.x - camPosition.x, 0));
+        overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityPosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
 
-        sprite_index_offset += spriteWidth;
-        buffer_offset += screenWidth;
+        overlapPoints.top = std::abs(std::min<int>(entityPosition.y - camPosition.y, 0));
+        overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y - camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
     }
-}
 
-void RenderSystem::DrawSprite_SP(const Vector3 position, Sprite* sprite)
-{
-    if (!sprite)
-        return;
-  
-    CHAR_INFO* pixels = sprite->GetPixels();
-
-    const int spriteWidth = sprite->GetWidth();
-    const int spriteHeight = sprite->GetHeight();
-
-    for (int y = 0; y < spriteHeight; y++)
+    void RenderSystem::DrawSprites(const std::vector<ConsoleGraphX::Entity*>& entities)
     {
-        for (int x = 0; x < spriteWidth; x++)
+        std::unordered_set<ConsoleGraphX::Camera*> activeCams = ConsoleGraphX::CameraSystem::GetActiveCameras();
+
+        for (ConsoleGraphX::Camera* cam : activeCams)
         {
-            Screen::SetPixel_A(position.x + x, position.y + y, *pixels++);
+            ConsoleGraphX::Vector3 cameraPosition = cam->GetPosition();
+
+            cameraPosition.x = std::floorf(cameraPosition.x);
+            cameraPosition.y = std::floorf(cameraPosition.y);
+
+            ConsoleGraphX::Vector2 viewPortSize = ConsoleGraphX::Vector2{ static_cast<float>(cam->GetWidth()),static_cast<float>(cam->GetHeight()) };
+
+            for (ConsoleGraphX::Entity* entity : entities)
+            {
+                ConsoleGraphX::Vector3 entityPosition = entity->GetPosition();
+                entityPosition.x = std::floorf(entityPosition.x);
+                entityPosition.y = std::floorf(entityPosition.y);
+
+                // we don't check the sprite pointer as all entities in the sprite system are guaranteed to have a sprite component
+                ConsoleGraphX::Sprite* sprite = entity->GetComponent<ConsoleGraphX::Sprite>();
+
+                _OverlapPoints overlapPoints;
+                _CalculateEntityOverlapWithCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
+
+                if (!_IsEntityVisibleInView(overlapPoints, sprite->Size()))
+                    continue;
+
+                ConsoleGraphX::Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y - cameraPosition.y };
+
+                RenderSystem::_DrawSprite_SS(relativePosition, sprite, overlapPoints);
+            }
         }
     }
-}
 
-void RenderSystem::DrawSprites_SS(const std::vector<Entity*>& entities)
-{
-    for (Entity* entity : entities)
+    void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
     {
-        Sprite* sprite = entity->GetComponent<Sprite>();
-        const Vector3 position = entity->GetPosition();
+        if (!sprite)
+            throw std::runtime_error("[RENDER SYSTEM], null sprite pointer");
 
-        RenderSystem::DrawSprite_SS(position, sprite);
+        CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
+        CHAR_INFO* pixels = sprite->GetPixels();
+
+        const int spriteWidth = sprite->GetWidth();
+        const int spriteHeight = sprite->GetHeight();
+
+        const int screenWidth = Screen::GetWidth_A();
+
+        int buffer_offset = (overlapPoints.left > 0 ? 0 : relEntityPosition.x) + (overlapPoints.top > 0 ? 0 : relEntityPosition.y) * screenWidth;
+
+        CHAR_INFO* pixelStartOffset = pixels + overlapPoints.left;
+        CHAR_INFO* pixelEndOffset = pixels - overlapPoints.right;
+
+        for (int y = overlapPoints.top; y < spriteHeight - overlapPoints.bottom; y++)
+        {
+            CHAR_INFO* srcStart = pixelStartOffset + (y * spriteWidth);
+            CHAR_INFO* srcEnd = pixelEndOffset + ((y + 1) * spriteWidth);
+
+            CHAR_INFO* dest = buffer + buffer_offset;
+
+            Screen::SetPixels_A(srcStart, srcEnd, dest);
+
+            buffer_offset += screenWidth;
+        }
     }
-   
-}
 
-void RenderSystem::DrawSprites_SP(const std::vector<Entity*>& entities)
-{
-    for (Entity* entity : entities)
+
+    void RenderSystem::_DrawSprite_SP(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
     {
-        Sprite* sprite = entity->GetComponent<Sprite>();
-        const Vector3 position = entity->GetPosition();
+        if (!sprite)
+            return;
 
-        RenderSystem::DrawSprite_SP(position, sprite);
+        CHAR_INFO* pixels = sprite->GetPixels();
+
+        const int spriteWidth = sprite->GetWidth();
+        const int spriteHeight = sprite->GetHeight();
+
+        for (int y = 0; y < spriteHeight; y++)
+        {
+            for (int x = 0; x < spriteWidth; x++)
+            {
+                Screen::SetPixel_A(relEntityPosition.x + x, relEntityPosition.y + y, *pixels++);
+            }
+        }
     }
-}
 
-void RenderSystem::DrawLine(Vector2 origin, Vector2 end, int color)
-{
-    CHAR_INFO s_pixel{ Screen::s_pixel, color };
+    void RenderSystem::DrawLine(ConsoleGraphX::Vector2 origin, ConsoleGraphX::Vector2 end, int color)
+    {
+        CHAR_INFO s_pixel{ Screen::s_pixel, color };
 
-    int dx = end.x - origin.x;
-    int dy = end.y - origin.y;
+        int dx = end.x - origin.x;
+        int dy = end.y - origin.y;
 
-    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+        int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
 
-    float xIncrement = static_cast<float>(dx) / steps;
-    float yIncrement = static_cast<float>(dy) / steps;
+        float xIncrement = static_cast<float>(dx) / steps;
+        float yIncrement = static_cast<float>(dy) / steps;
 
-    float x = origin.x;
-    float y = origin.y;
+        float x = origin.x;
+        float y = origin.y;
 
-    for (int i = 0; i <= steps; i++) {
-        int ix = static_cast<int>(x);
-        int iy = static_cast<int>(y);
-        
-        Screen::SetPixel_A(ix, iy, s_pixel);
-        
-        x += xIncrement;
-        y += yIncrement;
+        for (int i = 0; i <= steps; i++) {
+            int ix = static_cast<int>(x);
+            int iy = static_cast<int>(y);
+
+            Screen::SetPixel_A(ix, iy, s_pixel);
+
+            x += xIncrement;
+            y += yIncrement;
+        }
     }
-}
-
-
-
+};

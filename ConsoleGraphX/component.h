@@ -4,17 +4,21 @@
 /*
 Base class for all components
 */
-struct Component
+namespace ConsoleGraphX_Interal
 {
-public:
-    Component();
+    struct Component
+    {
+    public:
+        Component();
 
-    virtual ~Component();
-    virtual Component* Clone() const = 0;
-    virtual int GetID() const = 0;
+        virtual ~Component();
+        virtual Component* Clone() const = 0;
+        virtual int GetID() const = 0;
 
-    const std::string ComponentName() const;
+        const std::string ComponentName() const;
+    };
 };
+
 
 
 enum ComponentID
@@ -24,4 +28,5 @@ enum ComponentID
     script = 2,
     sprite = 3,
     transform = 4,
+    camera = 5
 };

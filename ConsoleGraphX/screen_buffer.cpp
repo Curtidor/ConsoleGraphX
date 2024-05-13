@@ -1,6 +1,9 @@
 #include "screen_buffer.h"
 
-ScreenBuffer::~ScreenBuffer()
+namespace ConsoleGraphX_Interal
 {
-	delete[] buffer;
-}
+	ScreenBuffer::~ScreenBuffer()
+	{
+		delete[] buffer;
+	}
+};
