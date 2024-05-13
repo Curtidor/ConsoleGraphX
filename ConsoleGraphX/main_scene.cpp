@@ -34,15 +34,15 @@ void MainScene::Initialize()
 	Snow* snowScript = (Snow*)snowPrefab->AddComponent<Snow>();
 	snowScript->SetState(false);
 
-	snowSprite->m_layer = 1;
+	snowSprite->m_layer = 21;
 
 	Vector3 minSpread = Vector3(-135, 0,0);
 	Vector3 maxSpread = Vector3(135, 90, 0);
 
-	for (int i = 0; i < 2000; i++)
+	/*for (int i = 0; i < 2000; i++)
 	{
 		snowPrefab->CloneEntity(minSpread, maxSpread);
-	}
+	}*/
 
 
 	Entity* grass = this->RegisterEntityN("Grass");
@@ -59,7 +59,7 @@ void MainScene::Initialize()
 	Entity* sky = this->RegisterEntityN("Sky");
 	sky->GetComponent<Transform>()->SetPosition(sceneWidth/2, 0);
 	Sprite* spriteSky = (Sprite*)sky->AddComponent<Sprite>(sceneWidth, 90, Blue);
-	spriteSky->m_layer = 1;
+	spriteSky->m_layer = 40;
 
 	Entity* player = this->RegisterEntityN("Player");
 	player->AddComponent<Player>();
