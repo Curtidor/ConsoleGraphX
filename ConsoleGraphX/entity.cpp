@@ -105,7 +105,7 @@ namespace ConsoleGraphX
 
         ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("AddComponent" + componentName, this);
     }
-
+    
     void Entity::RemoveComponentById(int id, bool deleteComponent)
     {
         for (std::pair<std::type_index, ConsoleGraphX_Interal::Component*> componentPair : _m_components)
