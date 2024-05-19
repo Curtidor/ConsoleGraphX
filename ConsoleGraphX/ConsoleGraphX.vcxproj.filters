@@ -177,7 +177,7 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="macros.h">
+    <ClInclude Include="verify_macro.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="frame_rate_controller.h">
