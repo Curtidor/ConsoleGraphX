@@ -1,26 +1,26 @@
 #pragma once
 #include "camera.h"
 #include <unordered_set>
-#include "system.h"
+#include "base_system.h"
 #include "entity.h"
 
 namespace ConsoleGraphX
 {
-	class CameraSystem : public System
+	class CameraSystem : public BaseSystem
 	{
 	private:
 		static std::unordered_set<Camera*> _s_backupCamera;
 		static std::unordered_set<Camera*> _s_cameras;
 		static std::unordered_set<Camera*> _s_activeCameras;
 
-		static void _RemoveCameraFromActive(Camera* cam);
-		static void _CameraRemovedHandler(Entity* entity);
+		static void _RemoveCameraFromActiveSet(Camera* cam);
+		static void _DeregisterCameraAttachedToEntity(Entity* entity);
 		static void _AddCameraToActive(Camera* cam);
 
 
 	public:
-		void Initialize() const override;
-		void Update(float delta_time) const override;
+		void Initialize() override;
+		void Update(float delta_time) override;
 
 		static void RegisterCamera(Camera* cam);
 		static void DeregisterCamera(Camera* cam);

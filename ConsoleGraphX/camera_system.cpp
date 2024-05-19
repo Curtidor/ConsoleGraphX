@@ -1,6 +1,5 @@
 #include <unordered_set>
 #include <string>
-#include <stdexcept>
 #include "camera_system.h"
 #include "camera.h"
 #include "debugger.h"
@@ -8,6 +7,7 @@
 #include "entity.h"
 #include "screen.h"
 #include "vector3.h"
+#include "macros.h"
 
 namespace ConsoleGraphX
 {
@@ -15,32 +15,30 @@ namespace ConsoleGraphX
 	std::unordered_set<Camera*> CameraSystem::_s_cameras;
 	std::unordered_set<Camera*> CameraSystem::_s_activeCameras;
 
-	void CameraSystem::Initialize() const
+	void CameraSystem::Initialize()
 	{
 		std::string objectName = typeid(Camera).name();
 
-		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, _CameraRemovedHandler);
-		Camera* cam = new Camera(ConsoleGraphX_Interal::Screen::GetWidth_A(), ConsoleGraphX_Interal::Screen::GetHeight_A(), Vector3());
+		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, _DeregisterCameraAttachedToEntity);
+		Camera* backupCam = new Camera(ConsoleGraphX_Interal::Screen::GetWidth_A(), ConsoleGraphX_Interal::Screen::GetHeight_A(), Vector3());
 
-		_s_backupCamera.insert(cam);
+		_s_backupCamera.insert(backupCam);
 
 	}
 
-	void CameraSystem::Update(float deltaTime) const
+	void CameraSystem::Update(float deltaTime)
 	{}
 
 	void CameraSystem::_AddCameraToActive(Camera* cam)
 	{
-		if (cam == nullptr)
-			throw std::runtime_error("bad camera pointer, camera system");
+		CGX_VERIFY(cam);
 
 		_s_activeCameras.insert(cam);
 	}
 
-	void CameraSystem::_RemoveCameraFromActive(Camera* cam)
+	void CameraSystem::_RemoveCameraFromActiveSet(Camera* cam)
 	{
-		if (cam == nullptr)
-			throw std::runtime_error("bad camera pointer, camera system");
+		CGX_VERIFY(cam);
 
 		auto it = _s_activeCameras.find(cam);
 
@@ -48,44 +46,36 @@ namespace ConsoleGraphX
 			_s_activeCameras.erase(it);
 	}
 
-	void CameraSystem::_CameraRemovedHandler(Entity* entity)
+	void CameraSystem::_DeregisterCameraAttachedToEntity(Entity* entity)
 	{
-		if (entity == nullptr)
-			throw std::runtime_error("null entity, cam system");
+		CGX_VERIFY(entity);
 
-		Camera* cam = entity->GetComponent<Camera>();
-		if (cam == nullptr)
-			return;
-
-		CameraSystem::DeregisterCamera(cam);
+		if (Camera* cam = entity->GetComponent<Camera>())
+			CameraSystem::DeregisterCamera(cam);
 	}
 
 	void CameraSystem::RegisterCamera(Camera* cam)
 	{
-		if (cam == nullptr)
-			throw std::runtime_error("bad camera pointer, camera system");
-
+		CGX_VERIFY(cam);
 
 		_s_cameras.insert(cam);
 	}
 
 	void CameraSystem::DeregisterCamera(Camera* cam)
 	{
-		if (cam == nullptr)
-			throw std::runtime_error("bad camera pointer, camera system");
+		CGX_VERIFY(cam);
 
 		auto itCam = _s_cameras.find(cam);
 
 		if (itCam != _s_cameras.end())
 			_s_cameras.erase(itCam);
 
-		_RemoveCameraFromActive(cam);
+		_RemoveCameraFromActiveSet(cam);
 	}
 
 	void CameraSystem::SetCameraState(Camera* cam, bool state)
 	{
-		if (cam == nullptr)
-			throw std::runtime_error("bad camera pointer, camera system");
+		CGX_VERIFY(cam);
 
 		auto itCam = _s_cameras.find(cam);
 
@@ -98,7 +88,7 @@ namespace ConsoleGraphX
 		if (state)
 			_AddCameraToActive(cam);
 		else
-			_RemoveCameraFromActive(cam);
+			_RemoveCameraFromActiveSet(cam);
 	}
 
 	const std::unordered_set<Camera*> CameraSystem::GetActiveCameras()
