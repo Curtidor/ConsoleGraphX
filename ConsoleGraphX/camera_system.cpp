@@ -7,7 +7,7 @@
 #include "entity.h"
 #include "screen.h"
 #include "vector3.h"
-#include "macros.h"
+#include "verify_macro.h"
 
 namespace ConsoleGraphX
 {
