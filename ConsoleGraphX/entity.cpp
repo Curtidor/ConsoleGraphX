@@ -1,12 +1,9 @@
 #include "entity.h"
-#include <stdexcept>
-#include <atomic>
+#include <memory>
 #include <string>
 #include <typeindex>
 #include <type_traits>
 #include <unordered_map>
-#include <unordered_set>
-#include <utility>
 #include "component.h"
 #include "dispatcher.h"
 #include "random_numbers.h"
@@ -15,7 +12,7 @@
 
 namespace ConsoleGraphX
 {
-    std::atomic<long> Entity::_s_totalEntities(0);
+    long Entity::_s_totalEntities(0);
 
     Entity::Entity() : m_name(""), _m_parent(nullptr), m_id(_s_totalEntities++)
     {
@@ -27,113 +24,101 @@ namespace ConsoleGraphX
         this->AddComponent<Transform>();
     }
 
-
-    void Entity::_CloneComponents(Entity* spawnedEntity)
+    void Entity::_CloneComponents(Entity* spawnedEntity) const
     {
-        for (std::pair<std::type_index, ConsoleGraphX_Interal::Component*> componentPair : this->GetComponents())
+        for (const auto& componentPair : this->GetComponents())
         {
-            // spawner's cant spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
+            // spawner's can't spawn spawner's and the entity class is responsible for adding transform so there's no need to clone a new one
             if (componentPair.second->GetID() == ComponentID::transform)
                 continue;
 
-            ConsoleGraphX_Interal::Component* clonedComponent = componentPair.second->Clone();
-
-            spawnedEntity->_AddComponent(componentPair.first, clonedComponent);
+            auto clonedComponent = std::unique_ptr<ConsoleGraphX_Interal::Component>(componentPair.second->Clone());
+            spawnedEntity->_AddComponent(componentPair.first, std::move(clonedComponent));
         }
 
-        for (ConsoleGraphX_Interal::Component* comp : this->GetScripts())
+        for (const auto& scriptPair : this->GetScripts())
         {
-            ConsoleGraphX_Interal::Component* componentClone = comp->Clone();
-            std::type_index index = typeid(componentClone);
-
-            spawnedEntity->_AddComponent(index, componentClone);
-
+            auto clonedScript = std::unique_ptr<ConsoleGraphX_Interal::Component>(scriptPair.second->Clone());
+            spawnedEntity->_AddComponent(scriptPair.first, std::move(clonedScript));
+           
             ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
         }
     }
 
-    void Entity::_AddScript(ConsoleGraphX_Interal::Component* script)
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::_RemoveScript(std::type_index index, ConsoleGraphX_Interal::Component* script)
     {
-        if (script->GetID() != ComponentID::script)
-            throw std::runtime_error("script param must be of type Script");
-
-        _m_scripts.insert(script);
-    }
-
-    void Entity::_RemoveScript(ConsoleGraphX_Interal::Component* script)
-    {
-        auto it = _m_scripts.find(script);
-
+        auto it = _m_scripts.find(index);
         if (it != _m_scripts.end())
-            _m_scripts.erase(it);
+        {
+            return _m_scripts.erase(it);
+        }
+
+        // Script not found, return end iterator
+        return _m_scripts.end();
     }
 
-    void Entity::_RemoveComponent(std::type_index type, ConsoleGraphX_Interal::Component* comp)
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::_RemoveComponent(std::type_index index, ConsoleGraphX_Interal::Component* comp)
     {
         bool isScript = comp->GetID() == ComponentID::script;
 
-        std::string componentName = isScript ? "struct ConsoleGraphX::Script" : type.name();
-
+        std::string componentName = isScript ? "struct ConsoleGraphX::Script" : index.name();
         ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("RemoveComponent" + componentName, this);
 
-        if (isScript)
+        if (!isScript)
         {
-            this->_RemoveScript(comp);
-        }
-        else
-        {
-            auto it = _m_components.find(type);
+            auto it = _m_components.find(index);
             if (it != _m_components.end())
-                _m_components.erase(it);
+            {
+                return _m_components.erase(it);
+            }
+            return _m_components.end();
         }
 
-        delete comp;
+        return this->_RemoveScript(index, comp);
     }
 
-    void Entity::_AddComponent(std::type_index index, ConsoleGraphX_Interal::Component* comp)
+    void Entity::_AddComponent(std::type_index index, std::unique_ptr<ConsoleGraphX_Interal::Component> comp)
     {
         std::string componentName = (comp->GetID() == ComponentID::script) ? "struct ConsoleGraphX::Script" : index.name();
-
+        
         if (comp->GetID() == ComponentID::script)
         {
-            this->_AddScript(comp);
+            _m_scripts[index] = std::move(comp);
         }
         else
         {
-            _m_components[index] = comp;
+            _m_components[index] = std::move(comp);
         }
 
         ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("AddComponent" + componentName, this);
     }
-    
-    void Entity::RemoveComponentById(int id, bool deleteComponent)
+
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::RemoveComponentById(int id)
     {
-        for (std::pair<std::type_index, ConsoleGraphX_Interal::Component*> componentPair : _m_components)
+        // TODO: log a warning if this function is used with a script id it will just remove the first found script
+        for (auto it = _m_components.begin(); it != _m_components.end(); ++it)
         {
-            if (componentPair.second->GetID() == id)
+            if (it->second->GetID() == id)
             {
-                this->_RemoveComponent(componentPair.first, componentPair.second);
-                break;
+                return this->_RemoveComponent(it->first, it->second.get());
             }
         }
     }
-
 
     ConsoleGraphX_Interal::Component* Entity::GetComponentByID(int id)
     {
-        for (std::pair<std::type_index, ConsoleGraphX_Interal::Component*> component_pair : _m_components)
+        // TODO: log a warning if this function is used with a script id it will just return the first found script
+        for (const auto& component_pair : _m_components)
         {
             if (component_pair.second->GetID() == id)
             {
-                return component_pair.second;
+                return component_pair.second.get();
             }
         }
-
         return nullptr;
     }
 
-
-    const Vector3 Entity::GetPosition()
+    const Vector3 Entity::GetPosition() const
     {
         return this->GetComponent<Transform>()->GetPosition();
     }
@@ -146,7 +131,6 @@ namespace ConsoleGraphX
     Entity* Entity::CloneEntity(Vector3 minSpread, Vector3 maxSpread)
     {
         Entity* spawnedEntity = new Entity(this->m_name);
-
         this->_CloneComponents(spawnedEntity);
 
         float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
@@ -162,18 +146,17 @@ namespace ConsoleGraphX
         return spawnedEntity;
     }
 
-    void Entity::RemoveComponentC(ConsoleGraphX_Interal::Component* component) {
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::RemoveComponentC(ConsoleGraphX_Interal::Component* component) {
         std::type_index type = typeid(*component);
-
-        this->_RemoveComponent(type, component);
+        return this->_RemoveComponent(type, component);
     }
 
-    const std::unordered_map<std::type_index, ConsoleGraphX_Interal::Component*> Entity::GetComponents()
+    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& Entity::GetComponents() const
     {
         return this->_m_components;
     }
 
-    const std::unordered_set<ConsoleGraphX_Interal::Component*> Entity::GetScripts()
+    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& Entity::GetScripts() const
     {
         return this->_m_scripts;
     }
@@ -201,11 +184,11 @@ namespace ConsoleGraphX
         _m_children.insert(child);
     }
 
-
     void Entity::RemoveChild(Entity* child)
     {
         auto it = _m_children.find(child);
-        if (it != _m_children.end()) {
+        if (it != _m_children.end())
+        {
             _m_children.erase(it);
         }
     }
@@ -214,6 +197,11 @@ namespace ConsoleGraphX
     {
         ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
         Entity::_s_totalEntities--;
+    }
+
+    long Entity::GetId() const
+    {
+        return m_id;
     }
 
     size_t Entity::hash() const {
@@ -227,6 +215,4 @@ namespace ConsoleGraphX
     bool Entity::operator!=(const Entity& other) const {
         return m_id != other.m_id;
     }
-
 };
-
