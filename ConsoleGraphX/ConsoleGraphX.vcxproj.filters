@@ -85,11 +85,17 @@
     <Filter Include="Source Files\Testing">
       <UniqueIdentifier>{698166f8-7050-4415-bba7-93cf5ab7636a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\utils">
+    <Filter Include="Header Files\Utils">
       <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\utils">
+    <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Systems\SystemManagend">
+      <UniqueIdentifier>{971e86fb-df72-48a1-a9ad-b88804b118e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Systems\SystemManaged">
+      <UniqueIdentifier>{394aba2f-52f1-407f-96de-203311f3642b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,22 +120,13 @@
     <ClInclude Include="sprite.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="sprtite_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="render_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="input_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="scene_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="debugger.h">
@@ -150,9 +147,6 @@
     <ClInclude Include="player.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="script_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
-    </ClInclude>
     <ClInclude Include="interactable.h">
       <Filter>Header Files\Engine\Graphics\GUI</Filter>
     </ClInclude>
@@ -166,7 +160,7 @@
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
     <ClInclude Include="random_numbers.h">
-      <Filter>Header Files\utils</Filter>
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="snow.h">
       <Filter>Header Files\Game\Scripts</Filter>
@@ -183,8 +177,29 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
+    <ClInclude Include="macros.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="frame_rate_controller.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="camera_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="player_controller_system.h">
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="script_system.h">
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="sprtite_system.h">
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="system_manager.h">
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="base_system.h">
+      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +224,6 @@
     <ClCompile Include="transform.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
-    <ClCompile Include="sprite_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
@@ -221,17 +233,11 @@
     <ClCompile Include="component.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="scene_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="player_controller.cpp">
       <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="player_controller_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
@@ -247,9 +253,6 @@
     </ClCompile>
     <ClCompile Include="script.cpp">
       <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="script_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
@@ -267,7 +270,7 @@
       <Filter>Source Files\Testing</Filter>
     </ClCompile>
     <ClCompile Include="random_numbers.cpp">
-      <Filter>Source Files\utils</Filter>
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
@@ -281,8 +284,23 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
+    <ClCompile Include="frame_rate_controller.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="system_manager.cpp">
+      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
+    </ClCompile>
     <ClCompile Include="camera_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
+    </ClCompile>
+    <ClCompile Include="player_controller_system.cpp">
+      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
+    </ClCompile>
+    <ClCompile Include="script_system.cpp">
+      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite_system.cpp">
+      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
