@@ -8,20 +8,21 @@ namespace ConsoleGraphX_Interal
 	class Screen
 	{
 	private:
+		static Screen* _s_activeScreen;
+
 		const short _m_width;
 		const short _m_height;
 		const short _m_pixelWidth;
 		const short _m_pixelHeight;
 		const short _m_debuggerHeight;
+
 		std::size_t _m_bufferSizeB;
 		std::size_t _m_bufferSize;
-		ConsoleGraphX_Interal::ScreenBuffer* _m_screenBuffer;
-
-		static Screen* _s_activeScreen;
+		ScreenBuffer* _m_screenBuffer;
 
 
 	public:
-		static const wchar_t s_pixel = L'\x2588';
+		static const wchar_t s_blockPixel = L'\x2588';
 		static const wchar_t s_transparentPixel = L'‎‎';
 
 		Screen(short width, short height, short debuggerHeight, short fontWidth, short fontHeight);
