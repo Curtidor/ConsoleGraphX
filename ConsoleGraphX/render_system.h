@@ -4,8 +4,6 @@
 #include "entity.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "camera.h"
-
 
 namespace ConsoleGraphX_Interal 
 {
