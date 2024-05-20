@@ -2,10 +2,8 @@
 #include <utility>
 #include <vector>
 #include <windows.h>
-#include <stdexcept>
 #include <unordered_set>
 #include "render_system.h"
-#include "debugger.h"
 #include "entity.h"
 #include "screen.h"
 #include "sprite.h"
@@ -13,7 +11,7 @@
 #include "vector3.h"
 #include "camera_system.h"
 #include "camera.h"
-#include "transform.h"
+#include "verify_macro.h"
 
 /*
 Parallelization: If you have a multi-core CPU, you could explore parallelizing the rendering process.
@@ -46,21 +44,23 @@ namespace ConsoleGraphX_Interal
     void RenderSystem::DrawSprites(const std::vector<ConsoleGraphX::Entity*>& entities)
     {
         std::unordered_set<ConsoleGraphX::Camera*> activeCams = ConsoleGraphX::CameraSystem::GetActiveCameras();
+        ConsoleGraphX::Vector2 viewPortSize;
 
         for (ConsoleGraphX::Camera* cam : activeCams)
         {
             ConsoleGraphX::Vector3 cameraPosition = cam->GetPosition();
 
-            cameraPosition.x = std::floorf(cameraPosition.x);
-            cameraPosition.y = std::floorf(cameraPosition.y);
+            cameraPosition.y = std::roundf(cameraPosition.y);
+            cameraPosition.x = std::roundf(cameraPosition.x);
 
-            ConsoleGraphX::Vector2 viewPortSize = ConsoleGraphX::Vector2{ static_cast<float>(cam->GetWidth()),static_cast<float>(cam->GetHeight()) };
-
+            viewPortSize.x = static_cast<float>(cam->GetWidth());
+            viewPortSize.y = static_cast<float>(cam->GetHeight());
+             
             for (ConsoleGraphX::Entity* entity : entities)
             {
                 ConsoleGraphX::Vector3 entityPosition = entity->GetPosition();
-                entityPosition.x = std::floorf(entityPosition.x);
-                entityPosition.y = std::floorf(entityPosition.y);
+                entityPosition.y = std::roundf(entityPosition.y);
+                entityPosition.x = std::roundf(entityPosition.x);
 
                 // we don't check the sprite pointer as all entities in the sprite system are guaranteed to have a sprite component
                 ConsoleGraphX::Sprite* sprite = entity->GetComponent<ConsoleGraphX::Sprite>();
@@ -80,8 +80,7 @@ namespace ConsoleGraphX_Interal
 
     void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
     {
-        if (!sprite)
-            throw std::runtime_error("[RENDER SYSTEM], null sprite pointer");
+        CGX_VERIFY(sprite);
 
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
         CHAR_INFO* pixels = sprite->GetPixels();
@@ -112,8 +111,7 @@ namespace ConsoleGraphX_Interal
 
     void RenderSystem::_DrawSprite_SP(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
     {
-        if (!sprite)
-            return;
+        CGX_VERIFY(sprite);
 
         CHAR_INFO* pixels = sprite->GetPixels();
 
@@ -131,7 +129,7 @@ namespace ConsoleGraphX_Interal
 
     void RenderSystem::DrawLine(ConsoleGraphX::Vector2 origin, ConsoleGraphX::Vector2 end, int color)
     {
-        CHAR_INFO s_pixel{ Screen::s_pixel, color };
+        CHAR_INFO s_pixel{ Screen::s_blockPixel, color };
 
         int dx = end.x - origin.x;
         int dy = end.y - origin.y;
