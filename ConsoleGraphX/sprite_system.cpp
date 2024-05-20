@@ -1,11 +1,12 @@
 #include <set>
-#include <stdexcept>
 #include <vector>
-#include <algorithm>
+#include <string>
+#include "verify_macro.h"
 #include "dispatcher.h"
 #include "entity.h"
 #include "sprite.h"
 #include "sprtite_system.h"
+
 
 namespace ConsoleGraphX_Interal
 {
@@ -15,10 +16,9 @@ namespace ConsoleGraphX_Interal
 
 		ConsoleGraphX::Sprite* spriteA = entityA->GetComponent<ConsoleGraphX::Sprite>();
 		ConsoleGraphX::Sprite* spriteB = entityB->GetComponent<ConsoleGraphX::Sprite>();
-
-		if (!spriteA || !spriteB) {
-			throw std::runtime_error("Null sprite encountered in SpriteComparator");
-		}
+		
+		CGX_VERIFY(spriteA);
+		CGX_VERIFY(spriteB);
 
 		if (spriteA->m_layer != spriteB->m_layer) {
 			return spriteA->m_layer < spriteB->m_layer;
@@ -30,7 +30,7 @@ namespace ConsoleGraphX_Interal
 
 	std::multiset<ConsoleGraphX::Entity*, SpriteComparator> SpriteSystem::_s_entitySprites;
 
-	void SpriteSystem::Initialize() const
+	void SpriteSystem::Initialize()
 	{
 		std::string objectName = typeid(ConsoleGraphX::Sprite).name();
 
@@ -38,7 +38,7 @@ namespace ConsoleGraphX_Interal
 		Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("RemoveComponent" + objectName, SpriteSystem::DeregisterEntitySprite);
 	}
 
-	void SpriteSystem::Update(float delta_time) const
+	void SpriteSystem::Update(float delta_time) 
 	{
 
 	}

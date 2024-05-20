@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <utility>
+#include <string>
 #include "player_controller_system.h"
 #include "dispatcher.h"
 #include "entity.h"
@@ -12,16 +13,15 @@ namespace ConsoleGraphX
 {
     std::unordered_map<Entity*, PlayerController*> PlayerControllerSystem::_s_controllerPairs;
 
-    void PlayerControllerSystem::Initialize() const
+    void PlayerControllerSystem::Initialize()
     {
         std::string objectName = typeid(PlayerController).name();
 
-        std::string x = "AddComponent" + objectName;
         ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName , RegisterController);
         ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterController);
     }
 
-    void PlayerControllerSystem::Update(float delta_time) const
+    void PlayerControllerSystem::Update(float deltaTime)
     {
         for (std::pair<Entity*, PlayerController*> controllerPair : _s_controllerPairs)
         {
@@ -30,7 +30,7 @@ namespace ConsoleGraphX
 
             Transform* transform = owner->GetComponent<Transform>();
 
-            controller->m_velocity.y -= controller->m_gravity * delta_time;
+            controller->m_velocity.y -= controller->m_gravity * deltaTime;
 
             Vector3 movement;
 
@@ -52,7 +52,7 @@ namespace ConsoleGraphX
                 movement += Vector3::up;
             }
 
-            transform->Translate(movement * controller->m_moveSpeed * delta_time);
+            transform->Translate(movement * controller->m_moveSpeed * deltaTime);
 
         }
     }

@@ -1,6 +1,6 @@
 #pragma once
 #include <set>
-#include "system.h"
+#include "base_system.h"
 #include "entity.h"
 #include <vector>
 
@@ -10,14 +10,14 @@ namespace ConsoleGraphX_Interal
 		bool operator()(const ConsoleGraphX::Entity* entityA, const ConsoleGraphX::Entity* entityB) const;
 	};
 
-	class SpriteSystem : public ConsoleGraphX::System
+	class SpriteSystem : public ConsoleGraphX::BaseSystem
 	{
 	private:
 		static std::multiset<ConsoleGraphX::Entity*, SpriteComparator> _s_entitySprites;
 
 	public:
-		void Initialize() const override;
-		void Update(float delta_time) const override;
+		void Initialize() override;
+		void Update(float delta_time) override;
 
 		static void RegisterEntitySprite(ConsoleGraphX::Entity* entity);
 
