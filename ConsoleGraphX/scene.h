@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_set>
-#include "entity.h"
 #include <string>
+#include "entity.h"
 
 namespace ConsoleGraphX
 {
@@ -14,6 +14,7 @@ namespace ConsoleGraphX
 
     public:
         Scene(std::string name);
+        ~Scene();
 
         virtual void Initialize() = 0;
 
