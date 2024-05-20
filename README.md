@@ -1,6 +1,5 @@
 # ConsoleGraphX
 
-### NOTE: As of March 15 2024 this project will not receive any updates for a few months
 
 Welcome to ConsoleGraphX, a minimalistic game engine designed to create retro-style games running on the Windows console. This project provides a foundation for game development in a nostalgic, text-based environment, reminiscent of classic titles from the past.
 
