@@ -1,11 +1,11 @@
 #pragma once
 #include <unordered_set>
-#include "system.h"
+#include "base_system.h"
 #include "entity.h"
 
 namespace ConsoleGraphX
 {
-	class ScriptSystem : public System
+	class ScriptSystem : public BaseSystem
 	{
 	private:
 		static std::unordered_set<Entity*> _s_scripts;
@@ -14,8 +14,8 @@ namespace ConsoleGraphX
 
 
 	public:
-		void Initialize() const override;
-		void Update(float delta_time) const override;
+		void Initialize() override;
+		void Update(float delta_time) override;
 
 		static void WarmUp();
 

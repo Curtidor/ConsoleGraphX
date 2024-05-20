@@ -1,93 +1,90 @@
-#include <stdexcept>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
+#include <typeindex>
+#include <memory>
 #include "component.h"
-#include "debugger.h"
 #include "dispatcher.h"
 #include "entity.h"
 #include "script.h"
 #include "script_system.h"
+#include "verify_macro.h"
 
 namespace ConsoleGraphX
 {
-	std::unordered_set<ConsoleGraphX::Entity*> ScriptSystem::_s_scripts;
+	std::unordered_set<Entity*> ScriptSystem::_s_scripts;
 
 	// TODO when script state changes we should stop calling update on that script or start calling update deping on the state
 
-	void ScriptSystem::Initialize() const
+	void ScriptSystem::Initialize() 
 	{
 		std::string objectName = typeid(Script).name();
 
-		//AddComponentstruct ConsoleGraphX::Script
-		ConsoleGraphX_Interal::Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
-		// need to add support for removing single scripts
-		ConsoleGraphX_Interal::Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
-		ConsoleGraphX_Interal::Dispatcher<ConsoleGraphX::Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
+		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
+		// TODO need to add support for removing single scripts
+		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
+		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
 	}
 
-	void ScriptSystem::Update(float delta_time) const
+	void ScriptSystem::Update(float delta_time)
 	{
 
-		for (ConsoleGraphX::Entity* entity : _s_scripts)
+		for (Entity* entity : _s_scripts)
 		{
-			if (entity == nullptr)
-				throw std::runtime_error("[SCRIPT SYSTEM] update, null entity pointer");
+			CGX_VERIFY(entity);
 
-			for (ConsoleGraphX_Interal::Component* component : entity->GetScripts())
+			for (const auto& component: entity->GetScripts())
 			{
-				ConsoleGraphX::Script* script = static_cast<ConsoleGraphX::Script*>(component);
+				Script* script = static_cast<Script*>(component.second.get());
 
 				if (script->IsEnabled())
 					script->Update(entity);
 			}
-
 		}
 	}
 
-	void ScriptSystem::_DoScriptWarmUp(ConsoleGraphX::Entity* entity)
+	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
 	{
-		std::unordered_set<ConsoleGraphX_Interal::Component*> scripts = entity->GetScripts();
+		const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& scripts = entity->GetScripts();
 
-		for (ConsoleGraphX_Interal::Component* component : scripts)
+		for (const auto& scriptPtr : scripts)
 		{
-			ConsoleGraphX::Script* script = static_cast<ConsoleGraphX::Script*>(component);
-
-			script->Awake(entity);
+			Script* script = static_cast<Script*>(scriptPtr.second.get());
+			if (script)
+			{
+				script->Awake(entity);
+			}
 		}
 
-		for (ConsoleGraphX_Interal::Component* component : scripts)
+		for (const auto& scriptPtr : scripts)
 		{
-			ConsoleGraphX::Script* script = static_cast<ConsoleGraphX::Script*>(component);
-
-			script->Start(entity);
+			Script* script = static_cast<Script*>(scriptPtr.second.get());
+			if (script)
+			{
+				script->Start(entity);
+			}
 		}
 	}
 
 	void ScriptSystem::WarmUp()
 	{
-		for (ConsoleGraphX::Entity* entity : _s_scripts)
+		for (Entity* entity : _s_scripts)
 		{
 			ScriptSystem::_DoScriptWarmUp(entity);
 		}
 	}
 
-	void ScriptSystem::RegisterScript(ConsoleGraphX::Entity* entity)
+	void ScriptSystem::RegisterScript(Entity* entity)
 	{
-		if (entity == nullptr)
-			throw std::runtime_error("[SCRIPT SYSTEM] reg, null entity pointer");
+		CGX_VERIFY(entity);
 
 		if (entity->GetScripts().size() > 0)
 			_s_scripts.insert(entity);
 	}
 
-
-	void ScriptSystem::RunTimeRegisterScript(ConsoleGraphX::Entity* entity)
+	void ScriptSystem::RunTimeRegisterScript(Entity* entity)
 	{
-		if (entity == nullptr)
-		{
-			ConsoleGraphX_Interal::Debugger::S_LogMessage("[SCRIPT SYSTEM] reg, null entity pointer");
-			return;
-		}
+		CGX_VERIFY(entity);
 
 		if (entity->GetScripts().size() > 0)
 		{
@@ -98,8 +95,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::DeregisterScript(Entity* entity)
 	{
-		if (entity == nullptr)
-			throw std::runtime_error("[SCRIPT SYSTEM] dereg, null entity pointer");
+		CGX_VERIFY(entity);
 
 		auto itEntity = _s_scripts.find(entity);
 
@@ -112,4 +108,3 @@ namespace ConsoleGraphX
 			_s_scripts.erase(itEntity);
 	}
 }
-
