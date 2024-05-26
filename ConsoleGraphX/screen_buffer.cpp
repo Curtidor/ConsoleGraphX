@@ -1,6 +1,6 @@
 #include "screen_buffer.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	ScreenBuffer::~ScreenBuffer()
 	{

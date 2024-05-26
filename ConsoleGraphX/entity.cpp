@@ -32,20 +32,20 @@ namespace ConsoleGraphX
             if (componentPair.second->GetID() == ComponentID::transform)
                 continue;
 
-            auto clonedComponent = std::unique_ptr<ConsoleGraphX_Interal::Component>(componentPair.second->Clone());
+            auto clonedComponent = std::unique_ptr<ConsoleGraphX_Internal::Component>(componentPair.second->Clone());
             spawnedEntity->_AddComponent(componentPair.first, std::move(clonedComponent));
         }
 
         for (const auto& scriptPair : this->GetScripts())
         {
-            auto clonedScript = std::unique_ptr<ConsoleGraphX_Interal::Component>(scriptPair.second->Clone());
+            auto clonedScript = std::unique_ptr<ConsoleGraphX_Internal::Component>(scriptPair.second->Clone());
             spawnedEntity->_AddComponent(scriptPair.first, std::move(clonedScript));
            
-            ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
+            ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
         }
     }
 
-    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::_RemoveScript(std::type_index index, ConsoleGraphX_Interal::Component* script)
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator Entity::_RemoveScript(std::type_index index, ConsoleGraphX_Internal::Component* script)
     {
         auto it = _m_scripts.find(index);
         if (it != _m_scripts.end())
@@ -57,13 +57,13 @@ namespace ConsoleGraphX
         return _m_scripts.end();
     }
 
-    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::_RemoveComponent(std::type_index index, ConsoleGraphX_Interal::Component* comp)
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator Entity::_RemoveComponent(std::type_index index, ConsoleGraphX_Internal::Component* comp)
     {
         bool isScript = comp->GetID() == ComponentID::script;
 
         std::string componentName = isScript ? "struct ConsoleGraphX::Script" : index.name();
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("RemoveComponent" + componentName, this);
-
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("RemoveComponent" + componentName, this);
+            
         if (!isScript)
         {
             auto it = _m_components.find(index);
@@ -77,7 +77,7 @@ namespace ConsoleGraphX
         return this->_RemoveScript(index, comp);
     }
 
-    void Entity::_AddComponent(std::type_index index, std::unique_ptr<ConsoleGraphX_Interal::Component> comp)
+    void Entity::_AddComponent(std::type_index index, std::unique_ptr<ConsoleGraphX_Internal::Component> comp)
     {
         std::string componentName = (comp->GetID() == ComponentID::script) ? "struct ConsoleGraphX::Script" : index.name();
         
@@ -90,10 +90,10 @@ namespace ConsoleGraphX
             _m_components[index] = std::move(comp);
         }
 
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("AddComponent" + componentName, this);
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("AddComponent" + componentName, this);
     }
 
-    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::RemoveComponentById(int id)
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator Entity::RemoveComponentById(int id)
     {
         // TODO: log a warning if this function is used with a script id it will just remove the first found script
         for (auto it = _m_components.begin(); it != _m_components.end(); ++it)
@@ -103,9 +103,11 @@ namespace ConsoleGraphX
                 return this->_RemoveComponent(it->first, it->second.get());
             }
         }
+
+        return id == ComponentID::script ? _m_scripts.end() : _m_components.end();
     }
 
-    ConsoleGraphX_Interal::Component* Entity::GetComponentByID(int id)
+    ConsoleGraphX_Internal::Component* Entity::GetComponentByID(int id)
     {
         // TODO: log a warning if this function is used with a script id it will just return the first found script
         for (const auto& component_pair : _m_components)
@@ -141,22 +143,22 @@ namespace ConsoleGraphX
         Vector3 spawnPosition = Vector3(x, y, z) + prefabPosition;
         spawnedEntity->GetComponent<Transform>()->SetPosition(spawnPosition);
 
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("EntityCreation", spawnedEntity);
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("EntityCreation", spawnedEntity);
 
         return spawnedEntity;
     }
 
-    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator Entity::RemoveComponentC(ConsoleGraphX_Interal::Component* component) {
+    std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator Entity::RemoveComponentC(ConsoleGraphX_Internal::Component* component) {
         std::type_index type = typeid(*component);
         return this->_RemoveComponent(type, component);
     }
 
-    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& Entity::GetComponents() const
+    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& Entity::GetComponents() const
     {
         return this->_m_components;
     }
 
-    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& Entity::GetScripts() const
+    const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& Entity::GetScripts() const
     {
         return this->_m_scripts;
     }
@@ -195,7 +197,7 @@ namespace ConsoleGraphX
 
     void Entity::KillEntity()
     {
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
         Entity::_s_totalEntities--;
     }
 

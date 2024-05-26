@@ -75,7 +75,7 @@ namespace ConsoleGraphX
     {
         POINT cursorPos;
         GetCursorPos(&cursorPos);
-        ScreenToClient(ConsoleGraphX_Interal::Screen::GetActiveScreen_A()->GetConsoleWindowHandle(), &cursorPos);
+        ScreenToClient(ConsoleGraphX_Internal::Screen::GetActiveScreen_A()->GetConsoleWindowHandle(), &cursorPos);
 
         InputSystem::mousePos.x = cursorPos.x;
         InputSystem::mousePos.y = cursorPos.y;

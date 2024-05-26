@@ -20,15 +20,15 @@ namespace ConsoleGraphX
 
         Entity* _m_parent;
         std::unordered_set<Entity*> _m_children;
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>> _m_components;
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>> _m_scripts;
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>> _m_components;
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>> _m_scripts;
 
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator _RemoveScript(std::type_index index, ConsoleGraphX_Interal::Component* script);
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator _RemoveComponent(std::type_index type, ConsoleGraphX_Interal::Component* comp);
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator _RemoveScript(std::type_index index, ConsoleGraphX_Internal::Component* script);
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator _RemoveComponent(std::type_index type, ConsoleGraphX_Internal::Component* comp);
 
 
         void _CloneComponents(Entity* spawnedEntity) const;
-        void _AddComponent(std::type_index inded, std::unique_ptr<ConsoleGraphX_Interal::Component> comp);
+        void _AddComponent(std::type_index inded, std::unique_ptr<ConsoleGraphX_Internal::Component> comp);
         
       
     public:
@@ -51,19 +51,19 @@ namespace ConsoleGraphX
          * @param id The ID of the component to retrieve.
          * @return Pointer to the component with the specified ID, or nullptr if not found.
          */
-        ConsoleGraphX_Interal::Component* GetComponentByID(int id);
+        ConsoleGraphX_Internal::Component* GetComponentByID(int id);
 
         /**
          * @brief Removes a component by its ID.
          * @param id The ID of the component to be removed.
          */
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator RemoveComponentById(int id);
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator RemoveComponentById(int id);
 
         /**
          * @brief Removes a component by a pointer reference.
          * @param component The component to be removed.
          */
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>::iterator RemoveComponentC(ConsoleGraphX_Interal::Component* component);
+        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator RemoveComponentC(ConsoleGraphX_Internal::Component* component);
 
         /**
          * @brief Sets the parent of the entity.
@@ -92,8 +92,8 @@ namespace ConsoleGraphX
          * @brief Gets a reference to the components associated with this entity.
          * @return A reference to the components map.
          */
-        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& GetComponents() const;
-        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& GetScripts() const;
+        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& GetComponents() const;
+        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& GetScripts() const;
 
         /**
          * @brief Gets the world position of this entity by combining its local position with that of its children.
@@ -130,7 +130,7 @@ namespace ConsoleGraphX
          */
         template <typename T, typename... Args>
         T* AddComponent(Args&&... args) {
-            static_assert(std::is_base_of<ConsoleGraphX_Interal::Component, T>::value, "The passed type must be derived from Component.");
+            static_assert(std::is_base_of<ConsoleGraphX_Internal::Component, T>::value, "The passed type must be derived from Component.");
 
             // Create a new instance of the component with arguments and add it to the components map
             auto component = std::make_unique<T>(std::forward<Args>(args)...);
