@@ -108,7 +108,19 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <NoEntryPoint>false</NoEntryPoint>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,7 +156,6 @@
     <ClInclude Include="player_controller_system.h" />
     <ClInclude Include="random_numbers.h" />
     <ClInclude Include="render_system.h" />
-    <ClInclude Include="render_testing.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="scene_system.h" />
     <ClInclude Include="screen.h" />
@@ -155,7 +166,6 @@
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system_manager.h" />
-    <ClInclude Include="test_script.h" />
     <ClInclude Include="text_box.h" />
     <ClInclude Include="frame_rate_controller.h" />
     <ClInclude Include="transform.h" />
@@ -178,7 +188,6 @@
     <ClCompile Include="player_controller.cpp" />
     <ClCompile Include="player_controller_system.cpp" />
     <ClCompile Include="random_numbers.cpp" />
-    <ClCompile Include="rendering_test.cpp" />
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="scene_system.cpp" />
@@ -190,7 +199,6 @@
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system_manager.cpp" />
-    <ClCompile Include="test_script.cpp" />
     <ClCompile Include="text_box.cpp" />
     <ClCompile Include="frame_rate_controller.cpp" />
     <ClCompile Include="transform.cpp" />
