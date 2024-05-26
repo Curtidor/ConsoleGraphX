@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <iostream>
 #include <string>
 #include <memory>
 #include "shared_memory.h"

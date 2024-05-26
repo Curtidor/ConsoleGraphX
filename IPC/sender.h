@@ -52,10 +52,11 @@ public:
     }
 
 
+    // THIS CODE IS EXPERIMENTAL AND IM STILL IRONING OUT THE KINKS THIS PUSH IS JUST GOING TO BE TO BACKUP THE PROJECT
     void SendMessageIPC(const T& data)
     {
 
-        std::cout << "SENDING " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
+       // std::cout << "SENDING " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
 
         // Acquire the mutex to access the shared memory
         DWORD mutex = WaitForSingleObject(this->_m_hMutex, INFINITE);
@@ -72,13 +73,14 @@ public:
         ReleaseMutex(this->_m_hMutex);
 
         // Signal the receiver that new data is available
-        std::cout << "SET SEND B " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
+       // std::cout << "SET SEND B " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
         SetEvent(this->_m_hEventSend);
-        std::cout << "SET SEND A " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
+       // std::cout << "SET SEND A " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
 
         // Wait for the receiver to be ready to read new data
-        DWORD read = WaitForSingleObject(this->_m_hEventRead, INFINITE);
-        std::cout << "GOT READ " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
+        // NEED THIS LINE 
+       // DWORD read = WaitForSingleObject(this->_m_hEventRead, INFINITE);
+       // std::cout << "GOT READ " << std::chrono::high_resolution_clock::now().time_since_epoch().count() << std::endl;
 
     }
 
