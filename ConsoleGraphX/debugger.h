@@ -1,34 +1,58 @@
 #pragma once
-#include <deque>
+#include <windows.h>
 #include <string>
+#include <queue>
+#include <mutex>
+#include <thread>
+#include <memory>
+#include <condition_variable>
+#include "../IPC/sender.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
     class Debugger
     {
+    private:
+        static Debugger* _s_active_debugger;  // Singleton instance
+
+        bool _m_terminate;  // Flag to terminate the queue processing
+        std::mutex _m_mutex;  // Mutex for synchronizing access to the message queue
+        std::thread _m_thread;  // Thread for processing the message queue
+        std::condition_variable _m_cv;  // Condition variable for queue processing
+        std::unique_ptr<Sender<std::string>> _m_sender;  // IPC sender
+        std::queue<std::string> _m_messageQueue;  // Queue for log messages
+
+        HANDLE _m_receiverProcessHandle;
+
+
     public:
         enum class LogLevel
         {
-            INFO = 1,
-            WARNING = 2,
-            ERRORd = 3
+            CGX_INFO = 1,
+            CGX_WARNING = 2,
+            CGX_ERROR = 3  
         };
 
-        Debugger(int max_messages);
+        // Constructor: Initializes the debugger with a name and starts the receiver
+        Debugger(const std::wstring& debuggerName);
 
-        void LogMessage(const std::string& message, LogLevel level = LogLevel::INFO);
-        void DisplayMessages();
-        static void S_LogMessage(const std::string& message, LogLevel level = LogLevel::INFO);
+        // Destructor: Cleans up resources and terminates the queue processing thread
+        ~Debugger();
 
-        int GetMaxMessages();
+        // Log a message with the specified log level (default: INFO)
+        void LogMessage(const std::string& message, LogLevel level = LogLevel::CGX_INFO);
+
+        // Process the message queue in a separate thread
+        void ProcessQueue();
+
+        // Static method to log a message using the active debugger instance
+        static void S_LogMessage(const std::string& message, LogLevel level = LogLevel::CGX_INFO);
 
     private:
-        static Debugger* _s_active_debugger;
+        // Starts the debugger receiver process
+        void _StartDebuggerReceiver();
 
-        int m_max_messages;
-
-        std::deque<std::string> m_message_queue;
-        std::string GetFormattedLogMessage(const std::string& message, LogLevel level);
+        // Formats the log message with the specified log level
+        std::string _GetFormattedLogMessage(const std::string& message, LogLevel level);
     };
-
-};
+}

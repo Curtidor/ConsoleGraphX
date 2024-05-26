@@ -1,85 +1,122 @@
-
-#include "debugger.h"
-#include <chrono>
-#include <ctime>
 #include <string>
-#include "screen.h"
+#include <windows.h>
+#include <memory>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include "debugger.h"
+#include "../IPC/sender.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
-    Debugger* Debugger::_s_active_debugger;
+    Debugger* Debugger::_s_active_debugger = nullptr;
 
-    Debugger::Debugger(int max_messages)
-        : m_max_messages(max_messages)
+    Debugger::Debugger(const std::wstring& debuggerName) : _m_sender(std::make_unique<Sender<std::string>>(debuggerName)), _m_terminate(false)
     {
-        this->_s_active_debugger = this;
+        _s_active_debugger = this;
+        _m_thread = std::thread(&Debugger::ProcessQueue, this);
+
+        _StartDebuggerReceiver();
+    }
+
+    Debugger::~Debugger()
+    {
+        {
+            std::lock_guard<std::mutex> lock(_m_mutex);
+            _m_terminate = true;
+        }
+        _m_cv.notify_one();
+        if (_m_thread.joinable())
+        {
+            _m_thread.join();
+        }
     }
 
     void Debugger::LogMessage(const std::string& message, LogLevel level)
     {
-        if (this->m_message_queue.size() >= this->m_max_messages)
+        std::unique_lock<std::mutex> lock(_m_mutex);
+       
+        std::string formattedMessage = _GetFormattedLogMessage(message, level);
+        _m_messageQueue.push(formattedMessage);
+        
+        _m_cv.notify_one();
+    }
+
+    void Debugger::ProcessQueue()
+    {
+        while (true)
         {
-            this->m_message_queue.pop_back();
+            std::unique_lock<std::mutex> lock(_m_mutex);
+            _m_cv.wait(lock, [this]() { return !_m_messageQueue.empty() || _m_terminate; });
+
+            if (_m_terminate && _m_messageQueue.empty())
+                break;
+
+            while (!_m_messageQueue.empty())
+            {
+                _m_sender->SendMessageIPC(_m_messageQueue.front());
+                _m_messageQueue.pop();
+            }
         }
-
-        std::string formattedMessage = GetFormattedLogMessage(message, level);
-
-        this->m_message_queue.push_front(formattedMessage);
     }
 
     void Debugger::S_LogMessage(const std::string& message, LogLevel level)
     {
-        Debugger::_s_active_debugger->LogMessage(message, level);
+        if (_s_active_debugger != nullptr)
+            _s_active_debugger->LogMessage(message, level);
     }
 
-
-    void Debugger::DisplayMessages()
+    std::string Debugger::_GetFormattedLogMessage(const std::string& message, LogLevel level)
     {
-        int y = 1;
-        for (const std::string& message : this->m_message_queue)
-        {
-            Screen::SetText_A(0, Screen::GetHeight_A() + y++, message);
-        }
-    }
-
-    std::string Debugger::GetFormattedLogMessage(const std::string& message, LogLevel level)
-    {
-        std::string formattedMessage;
-
-        // Get the current time and format it
-        auto now = std::chrono::system_clock::now();
-        auto time_t = std::chrono::system_clock::to_time_t(now);
-        std::tm tm;
-        localtime_s(&tm, &time_t);
-        char timeStr[20];
-        strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", &tm);
-
-        formattedMessage += "[" + std::string(timeStr) + "] ";
-
-        // Add log level
+        std::string levelStr;
         switch (level)
         {
-        case LogLevel::INFO:
-            formattedMessage += "[INFO] ";
+        case LogLevel::CGX_INFO:
+            levelStr = "INFO";
             break;
-        case LogLevel::WARNING:
-            formattedMessage += "[WARNING] ";
+        case LogLevel::CGX_WARNING:
+            levelStr = "WARNING";
             break;
-        case LogLevel::ERRORd:
-            formattedMessage += "[ERROR] ";
-            break;
-        default:
+        case LogLevel::CGX_ERROR:
+            levelStr = "ERROR";
             break;
         }
-
-        formattedMessage += message;
-
-        return formattedMessage;
+        return "[" + levelStr + "] " + message;
     }
 
-    int Debugger::GetMaxMessages()
+    void Debugger::_StartDebuggerReceiver()
     {
-        return this->m_max_messages;;
-    }
+        std::wstring exePath;
+        #ifdef _DEBUG
+            exePath = L"../x64/Debug/DebuggerReceiver.exe";
+        #else
+            exePath = L"../x64/Release/DebuggerReceiver.exe";
+        #endif
 
-};
+        STARTUPINFOW si = { sizeof(si) };
+        PROCESS_INFORMATION pi = { 0 };
+
+        si.dwFlags = STARTF_USESHOWWINDOW;
+        si.wShowWindow = SW_SHOWNORMAL;
+
+        if (!CreateProcessW(exePath.c_str(), NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi))
+        {
+            DWORD error = GetLastError();
+            LPVOID lpMsgBuf;
+            FormatMessageW(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                NULL,
+                error,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPWSTR)&lpMsgBuf,
+                0, NULL);
+
+            LocalFree(lpMsgBuf);
+            return;
+        }
+
+        _m_receiverProcessHandle = pi.hProcess;
+        CloseHandle(pi.hThread);
+    }
+}
