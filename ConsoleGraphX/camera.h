@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX
 {
-	struct Camera : public ConsoleGraphX_Interal::Component
+	struct Camera : public ConsoleGraphX_Internal::Component
 	{
 	private:
 		int _m_width;
@@ -22,7 +22,7 @@ namespace ConsoleGraphX
 		void SetPosition(const Vector3& position);
 		void SetCameraSize(int width, int height);
 
-		ConsoleGraphX_Interal::Component* Clone() const override;
+		ConsoleGraphX_Internal::Component* Clone() const override;
 		int GetID() const override;
 
 	};

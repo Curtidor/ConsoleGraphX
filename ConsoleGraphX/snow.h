@@ -17,5 +17,5 @@ public:
 	void Awake(Entity* owner) override;
 	void Update(Entity* owner) override;
 
-	ConsoleGraphX_Interal::Component* Clone() const override;
+	ConsoleGraphX_Internal::Component* Clone() const override;
 };

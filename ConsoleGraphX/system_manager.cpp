@@ -1,7 +1,7 @@
 #include "system_manager.h"
 #include "base_system.h"
 
-namespace ConsoleGraphX_Interal 
+namespace ConsoleGraphX_Internal 
 {
 	SystemManager::~SystemManager()
 	{

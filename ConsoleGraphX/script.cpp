@@ -29,7 +29,7 @@ namespace ConsoleGraphX
 		return ComponentID::script;
 	}
 
-	ConsoleGraphX_Interal::Component* Script::Clone() const
+	ConsoleGraphX_Internal::Component* Script::Clone() const
 	{
 		Script* clone = new Script(*this);
 

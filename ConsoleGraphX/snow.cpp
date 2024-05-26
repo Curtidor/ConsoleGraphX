@@ -28,7 +28,7 @@ void Snow::Update(Entity* owner)
 	{
 		if (owner->m_id == 0)
 		{
-			ConsoleGraphX_Interal::Debugger::S_LogMessage("prefab died");
+			ConsoleGraphX_Internal::Debugger::S_LogMessage("prefab died");
 		}
 
 		Vector3 minSpread = Vector3(0, 0, 0);
@@ -43,7 +43,7 @@ void Snow::Update(Entity* owner)
 
 }
 
-ConsoleGraphX_Interal::Component* Snow::Clone() const
+ConsoleGraphX_Internal::Component* Snow::Clone() const
 {
 	Snow* clone = new Snow();
 

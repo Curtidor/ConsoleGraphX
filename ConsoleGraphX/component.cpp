@@ -5,7 +5,7 @@
 /**
  * @brief Default constructor for the base Component class.
  */
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	Component::Component()
 	{}

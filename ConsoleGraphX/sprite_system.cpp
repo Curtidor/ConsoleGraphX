@@ -8,7 +8,7 @@
 #include "sprtite_system.h"
 
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	bool SpriteComparator::operator()(const ConsoleGraphX::Entity* entityAC, const ConsoleGraphX::Entity* entityBC) const {
 		ConsoleGraphX::Entity* entityA = const_cast<ConsoleGraphX::Entity*>(entityAC);

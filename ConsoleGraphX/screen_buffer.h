@@ -1,7 +1,7 @@
 #pragma once
 #include <windows.h>
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	struct ScreenBuffer
 	{

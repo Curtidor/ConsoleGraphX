@@ -20,10 +20,10 @@ namespace ConsoleGraphX
 	{
 		std::string objectName = typeid(Script).name();
 
-		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
+		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
 		// TODO need to add support for removing single scripts
-		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
-		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
+		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
+		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
 	}
 
 	void ScriptSystem::Update(float delta_time)
@@ -45,7 +45,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
 	{
-		const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Interal::Component>>& scripts = entity->GetScripts();
+		const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& scripts = entity->GetScripts();
 
 		for (const auto& scriptPtr : scripts)
 		{
@@ -102,9 +102,7 @@ namespace ConsoleGraphX
 		if (itEntity == _s_scripts.end())
 			return;
 
-		Entity* entityToRemove = *itEntity;
-
-		if (entityToRemove->GetScripts().size() == 1)
+		if ((*itEntity)->GetScripts().size() == 1)
 			_s_scripts.erase(itEntity);
 	}
 }

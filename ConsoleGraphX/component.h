@@ -4,7 +4,7 @@
 /*
 Base class for all components
 */
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
     struct Component
     {

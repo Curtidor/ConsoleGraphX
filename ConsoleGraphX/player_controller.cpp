@@ -15,7 +15,7 @@ namespace ConsoleGraphX
         return ComponentID::playerController;
     }
 
-    ConsoleGraphX_Interal::Component* PlayerController::Clone() const
+    ConsoleGraphX_Internal::Component* PlayerController::Clone() const
     {
         PlayerController* clone = new PlayerController(*this);
 

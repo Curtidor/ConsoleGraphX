@@ -18,6 +18,7 @@ namespace ConsoleGraphX
 
         virtual void Initialize() = 0;
 
+
         Entity* RegisterEntityN(std::string name = "");
         void RegisterEntity(Entity* entity);
 
