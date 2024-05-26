@@ -30,5 +30,6 @@ namespace ConsoleGraphX
         int GetFramesPerSecond() const;
         std::chrono::nanoseconds GetDeltaTimeNS() const;
         std::chrono::milliseconds GetDeltaTimeMS() const;
+        std::chrono::microseconds GetTargetFrameDuration();
     };
 }

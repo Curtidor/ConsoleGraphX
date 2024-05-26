@@ -4,19 +4,20 @@
 
 namespace ConsoleGraphX
 {
-	class Engine
-	{
-	private:
-		static ConsoleGraphX_Interal::SystemManager* _s_systemManager;
-		static ConsoleGraphX_Interal::Debugger* _s_debugger;
+    class Engine
+    {
+    private:
+        static ConsoleGraphX_Internal::SystemManager* _systemManager;
+        static ConsoleGraphX_Internal::Debugger* _debugger;
+        static bool _m_isRunning;
 
-		static bool _s_isRunning;
+    private:
+        static BOOL WINAPI _CleanUp(DWORD ctrlType);
+        static void _Update(float deltaTime);
 
-		static void _Update(float deltaTime);
-
-
-	public:
-		static void InitializeEngine(short screen_width, short screen_height, short pixel_width, short pixel_height, ConsoleGraphX_Interal::Debugger& debugger);
-		static void Run();
-	};
+    public:
+        static void Initialize(short screen_width, short screen_height, short pixel_width, short pixel_height, ConsoleGraphX_Internal::Debugger& debugger);
+        static void Run();
+        static void Shutdown();
+    };
 };
