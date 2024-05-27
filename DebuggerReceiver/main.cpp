@@ -8,5 +8,5 @@ int main()
 	
 	Receiver<std::string> receiver(L"Debugger", callback);
 
-	receiver.Start();
+	receiver.StartReceiver();
 }
