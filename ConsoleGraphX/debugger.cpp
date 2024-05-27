@@ -1,8 +1,10 @@
 #include <string>
 #include <windows.h>
 #include <memory>
-#include <queue>
 #include <thread>
+#include <handleapi.h>
+#include <errhandlingapi.h>
+#include <processthreadsapi.h>
 #include <mutex>
 #include <condition_variable>
 #include "debugger.h"
@@ -15,7 +17,7 @@ namespace ConsoleGraphX_Internal
     Debugger::Debugger(const std::wstring& debuggerName) : _m_sender(std::make_unique<Sender<std::string>>(debuggerName)), _m_terminate(false)
     {
         _s_active_debugger = this;
-        _m_thread = std::thread(&Debugger::ProcessQueue, this);
+        _m_thread = std::thread(&Debugger::_ProcessQueue, this);
 
         _StartDebuggerReceiver();
     }
@@ -43,7 +45,7 @@ namespace ConsoleGraphX_Internal
         _m_cv.notify_one();
     }
 
-    void Debugger::ProcessQueue()
+    void Debugger::_ProcessQueue()
     {
         while (true)
         {
