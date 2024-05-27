@@ -42,13 +42,13 @@ namespace ConsoleGraphX_Internal
         // Log a message with the specified log level (default: INFO)
         void LogMessage(const std::string& message, LogLevel level = LogLevel::CGX_INFO);
 
-        // Process the message queue in a separate thread
-        void ProcessQueue();
-
         // Static method to log a message using the active debugger instance
         static void S_LogMessage(const std::string& message, LogLevel level = LogLevel::CGX_INFO);
 
     private:
+        // Process the message queue in a separate thread
+        void _ProcessQueue();
+
         // Starts the debugger receiver process
         void _StartDebuggerReceiver();
 
