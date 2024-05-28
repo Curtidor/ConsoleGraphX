@@ -33,8 +33,8 @@ void Player::Update(Entity* owner)
 
 	_m_playerCam->SetPosition(Vector3(playerPosition.x - _m_playerCam->GetWidth() * 0.5f, playerPosition.y - _m_playerCam->GetHeight() * 0.5f));
 
-	ConsoleGraphX_Interal::Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));
-	ConsoleGraphX_Interal::Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
+	ConsoleGraphX_Internal::Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
+	ConsoleGraphX_Internal::Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));
 
 	if (InputSystem::IsKeyPressed(Key::B))
 		owner->KillEntity();

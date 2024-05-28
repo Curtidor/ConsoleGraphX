@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleGraphX", "ConsoleGraphX\ConsoleGraphX.vcxproj", "{668FEC41-820B-444D-AA2B-7C78E195C904}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebuggerReceiver", "DebuggerReceiver\DebuggerReceiver.vcxproj", "{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{668FEC41-820B-444D-AA2B-7C78E195C904}.Release|x64.Build.0 = Release|x64
 		{668FEC41-820B-444D-AA2B-7C78E195C904}.Release|x86.ActiveCfg = Release|Win32
 		{668FEC41-820B-444D-AA2B-7C78E195C904}.Release|x86.Build.0 = Release|Win32
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Debug|x64.ActiveCfg = Debug|x64
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Debug|x64.Build.0 = Debug|x64
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Debug|x86.ActiveCfg = Debug|Win32
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Debug|x86.Build.0 = Debug|Win32
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Release|x64.ActiveCfg = Release|x64
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Release|x64.Build.0 = Release|x64
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Release|x86.ActiveCfg = Release|Win32
+		{3F5A847B-4A7C-4276-8B02-2D1E0A2FF9E1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

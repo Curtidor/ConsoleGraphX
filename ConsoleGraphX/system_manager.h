@@ -3,7 +3,7 @@
 #include <type_traits>
 #include "base_system.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	class SystemManager
 	{

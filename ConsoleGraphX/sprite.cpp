@@ -44,7 +44,7 @@ namespace ConsoleGraphX
 
 	int Sprite::GetID() const { return ComponentID::sprite; }
 
-	ConsoleGraphX_Interal::Component* Sprite::Clone() const
+	ConsoleGraphX_Internal::Component* Sprite::Clone() const
 	{
 		Sprite* clone = new Sprite(*this);
 

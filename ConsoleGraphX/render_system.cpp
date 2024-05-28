@@ -19,9 +19,9 @@ For example, you could divide the screen into smaller regions and assign a separ
 to copy pixels for each region. This can improve performance, especially if you have a lot of sprites to render.
 */
 
-namespace ConsoleGraphX_Interal 
+namespace ConsoleGraphX_Internal 
 {
-    bool RenderSystem::_IsEntityVisibleInView(const _OverlapPoints& overlapPoints, const ConsoleGraphX::Vector2& spriteSize)
+    bool RenderSystem::_IsEntityVisibleInView(const OverlapPoints& overlapPoints, const ConsoleGraphX::Vector2& spriteSize)
     {
         return !(overlapPoints.left >= spriteSize.x ||
             overlapPoints.right >= spriteSize.x ||
@@ -29,7 +29,7 @@ namespace ConsoleGraphX_Interal
             overlapPoints.bottom >= spriteSize.y);
     }
 
-    void RenderSystem::_CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, _OverlapPoints& overlapPoints)
+    void RenderSystem::_CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, OverlapPoints& overlapPoints)
     {
         const int spriteWidth = sprite->GetWidth();
         const int spriteHeight = sprite->GetHeight();
@@ -56,31 +56,35 @@ namespace ConsoleGraphX_Interal
             viewPortSize.x = static_cast<float>(cam->GetWidth());
             viewPortSize.y = static_cast<float>(cam->GetHeight());
              
+            ConsoleGraphX::Vector3 entityPosition;
+            ConsoleGraphX::Vector3 relativePosition;
             for (ConsoleGraphX::Entity* entity : entities)
             {
-                ConsoleGraphX::Vector3 entityPosition = entity->GetPosition();
+                entityPosition = entity->GetPosition();
+
                 entityPosition.y = std::roundf(entityPosition.y);
                 entityPosition.x = std::roundf(entityPosition.x);
 
                 // we don't check the sprite pointer as all entities in the sprite system are guaranteed to have a sprite component
                 ConsoleGraphX::Sprite* sprite = entity->GetComponent<ConsoleGraphX::Sprite>();
 
-                _OverlapPoints overlapPoints;
+                OverlapPoints overlapPoints;
                 _CalculateEntityOverlapWithCamera(entityPosition, cameraPosition, viewPortSize, sprite, overlapPoints);
 
                 if (!_IsEntityVisibleInView(overlapPoints, sprite->Size()))
                     continue;
 
-                ConsoleGraphX::Vector3 relativePosition = { entityPosition.x - cameraPosition.x, entityPosition.y - cameraPosition.y };
+                relativePosition.x = entityPosition.x - cameraPosition.x;
+                relativePosition.y = entityPosition.y - cameraPosition.y;
 
                 RenderSystem::_DrawSprite_SS(relativePosition, sprite, overlapPoints);
             }
         }
     }
 
-    void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
+    void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const OverlapPoints& overlapPoints)
     {
-        CGX_VERIFY(sprite);
+        CGX_VERIFY(sprite, "Null sprite");
 
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
         CHAR_INFO* pixels = sprite->GetPixels();
@@ -105,25 +109,6 @@ namespace ConsoleGraphX_Interal
             Screen::SetPixels_A(srcStart, srcEnd, dest);
 
             buffer_offset += screenWidth;
-        }
-    }
-
-
-    void RenderSystem::_DrawSprite_SP(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints)
-    {
-        CGX_VERIFY(sprite);
-
-        CHAR_INFO* pixels = sprite->GetPixels();
-
-        const int spriteWidth = sprite->GetWidth();
-        const int spriteHeight = sprite->GetHeight();
-
-        for (int y = 0; y < spriteHeight; y++)
-        {
-            for (int x = 0; x < spriteWidth; x++)
-            {
-                Screen::SetPixel_A(relEntityPosition.x + x, relEntityPosition.y + y, *pixels++);
-            }
         }
     }
 

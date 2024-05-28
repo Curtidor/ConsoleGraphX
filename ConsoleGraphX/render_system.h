@@ -5,12 +5,12 @@
 #include "vector2.h"
 #include "vector3.h"
 
-namespace ConsoleGraphX_Interal 
+namespace ConsoleGraphX_Internal 
 {
 	class RenderSystem
 	{
 	private:
-		struct _OverlapPoints
+		struct OverlapPoints
 		{
 			int left;
 			int right;
@@ -24,7 +24,7 @@ namespace ConsoleGraphX_Interal
 		 * @param spriteSize The size of the sprite.
 		 * @return True if the entity is visible in the camera's view, false otherwise.
 		 */
-		static bool _IsEntityVisibleInView(const _OverlapPoints& overlapPoints, const ConsoleGraphX::Vector2& spriteSize);
+		static bool _IsEntityVisibleInView(const OverlapPoints& overlapPoints, const ConsoleGraphX::Vector2& spriteSize);
 
 		/**
 		 * @brief Calculates the overlap of the entity's sprite with the camera's view.
@@ -34,15 +34,14 @@ namespace ConsoleGraphX_Interal
 		 * @param sprite Pointer to the sprite component of the entity.
 		 * @param overlapPoints Reference to store the calculated overlap points.
 		 */
-		static void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, _OverlapPoints& overlapPoints);
+		static void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, OverlapPoints& overlapPoints);
 		/**
 		 * @brief Draws a sprite onto the screen buffer within the camera's view.
 		 * @param relEntityPosition The relative position of the entity within the camera's view.
 		 * @param sprite Pointer to the sprite to be drawn.
 		 * @param overlapPoints The overlap points of the sprite with the camera's view.
 		 */
-		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints);
-		static void _DrawSprite_SP(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const _OverlapPoints& overlapPoints);
+		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const OverlapPoints& overlapPoints);
 
 	public:
 		/**

@@ -17,8 +17,8 @@ namespace ConsoleGraphX
     {
         std::string objectName = typeid(PlayerController).name();
 
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName , RegisterController);
-        ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterController);
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName , RegisterController);
+        ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterController);
     }
 
     void PlayerControllerSystem::Update(float deltaTime)

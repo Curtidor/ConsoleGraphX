@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "screen_buffer.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	class Screen
 	{
@@ -14,7 +14,6 @@ namespace ConsoleGraphX_Interal
 		const short _m_height;
 		const short _m_pixelWidth;
 		const short _m_pixelHeight;
-		const short _m_debuggerHeight;
 
 		std::size_t _m_bufferSizeB;
 		std::size_t _m_bufferSize;
@@ -25,7 +24,7 @@ namespace ConsoleGraphX_Interal
 		static const wchar_t s_blockPixel = L'\x2588';
 		static const wchar_t s_transparentPixel = L'‎‎';
 
-		Screen(short width, short height, short debuggerHeight, short fontWidth, short fontHeight);
+		Screen(short width, short height, short fontWidth, short fontHeight);
 		~Screen();
 
 		void SetPixel(int x, int y, CHAR_INFO& s_pixel);

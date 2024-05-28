@@ -27,7 +27,7 @@ namespace ConsoleGraphX
 
 
 
-    struct Sprite : ConsoleGraphX_Interal::Component
+    struct Sprite : ConsoleGraphX_Internal::Component
     {
     private:
         int _m_width;
@@ -49,7 +49,7 @@ namespace ConsoleGraphX
 
         ~Sprite() override;
 
-        ConsoleGraphX_Interal::Component* Clone() const override;
+        ConsoleGraphX_Internal::Component* Clone() const override;
         int GetID() const override;
 
         void HideSprite();

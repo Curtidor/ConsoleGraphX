@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX
 {
-    struct Transform : ConsoleGraphX_Interal::Component
+    struct Transform : ConsoleGraphX_Internal::Component
     {
     public:
         Vector3 m_position;
@@ -17,7 +17,7 @@ namespace ConsoleGraphX
         Transform(float x, float y, float scaleX, float scaleY);
         Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
-        ConsoleGraphX_Interal::Component* Clone() const override;
+        ConsoleGraphX_Internal::Component* Clone() const override;
         int GetID() const override;
 
         void SetPosition(float x, float y);

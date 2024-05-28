@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX
 {
-	struct Script : public ConsoleGraphX_Interal::Component
+	struct Script : public ConsoleGraphX_Internal::Component
 	{
 	protected:
 		bool _m_isEnabled;
@@ -21,7 +21,7 @@ namespace ConsoleGraphX
 
 		void SetState(bool state);
 
-		ConsoleGraphX_Interal::Component* Clone() const override;
+		ConsoleGraphX_Internal::Component* Clone() const override;
 		int GetID() const override;
 
 	};

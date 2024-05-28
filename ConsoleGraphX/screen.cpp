@@ -11,14 +11,14 @@
 #include <handleapi.h>
 #include "screen_buffer.h"
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	Screen* Screen::_s_activeScreen = nullptr;
 
-	Screen::Screen(short width, short height, short debugger_height, short fontWidth, short fontHeight)
-		: _m_width(width), _m_height(height), _m_debuggerHeight(debugger_height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
+	Screen::Screen(short width, short height, short fontWidth, short fontHeight)
+		: _m_width(width), _m_height(height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
-		_m_screenBuffer = new ConsoleGraphX_Interal::ScreenBuffer();
+		_m_screenBuffer = new ConsoleGraphX_Internal::ScreenBuffer();
 
 		_m_screenBuffer->hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 		if (_m_screenBuffer->hConsole == INVALID_HANDLE_VALUE)
@@ -27,13 +27,12 @@ namespace ConsoleGraphX_Interal
 		if (!SetConsoleActiveScreenBuffer(_m_screenBuffer->hConsole))
 			throw std::runtime_error("Failed set the screen buffer");
 		
-		short totalHeight = _m_height + _m_debuggerHeight;
 
-		_m_bufferSizeB = _m_width * (_m_height + _m_debuggerHeight) * sizeof(CHAR_INFO);
-		_m_bufferSize = _m_width * (_m_height + _m_debuggerHeight);
+		_m_bufferSizeB = _m_width * _m_height * sizeof(CHAR_INFO);
+		_m_bufferSize = _m_width * _m_height;
 
 		// Set the buffer size and allocate memory for the buffer
-		_m_screenBuffer->bufferSize = { _m_width, totalHeight };
+		_m_screenBuffer->bufferSize = { _m_width, _m_height};
 		_m_screenBuffer->bufferCoord = { 0, 0 };
 		_m_screenBuffer->buffer = new CHAR_INFO[_m_screenBuffer->bufferSize.X * _m_screenBuffer->bufferSize.Y];
 		_m_screenBuffer->writePosition = { 0, 0, static_cast<short>(_m_screenBuffer->bufferSize.X - 1), static_cast<short>(_m_screenBuffer->bufferSize.Y - 1) };
@@ -99,7 +98,7 @@ namespace ConsoleGraphX_Interal
 
 		// if the index is it side the screen buffer return
 		int index = y * _m_screenBuffer->bufferSize.X + x;
-		if (index < 0 || index >= _m_screenBuffer->bufferSize.X * (_m_screenBuffer->bufferSize.Y - _m_debuggerHeight))
+		if (index < 0 || index >= _m_screenBuffer->bufferSize.X * _m_screenBuffer->bufferSize.Y)
 			return;
 
 		_m_screenBuffer->buffer[index] = s_pixel;

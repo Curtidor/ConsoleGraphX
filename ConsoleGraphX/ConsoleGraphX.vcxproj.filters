@@ -79,12 +79,6 @@
     <Filter Include="Source Files\Engine\Graphics\GUI">
       <UniqueIdentifier>{d17b0aab-b564-47df-89ce-baddcccfdfa1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Testing">
-      <UniqueIdentifier>{8419b283-a08a-4a96-86f4-680bb268184e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Testing">
-      <UniqueIdentifier>{698166f8-7050-4415-bba7-93cf5ab7636a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Utils">
       <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
     </Filter>
@@ -156,9 +150,6 @@
     <ClInclude Include="text_box.h">
       <Filter>Header Files\Engine\Graphics\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="render_testing.h">
-      <Filter>Header Files\Testing</Filter>
-    </ClInclude>
     <ClInclude Include="random_numbers.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
@@ -170,9 +161,6 @@
     </ClInclude>
     <ClInclude Include="script.h">
       <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="test_script.h">
-      <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
@@ -242,9 +230,6 @@
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="debugger.cpp">
-      <Filter>Source Files\Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="scene.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
@@ -266,9 +251,6 @@
     <ClCompile Include="text_box.cpp">
       <Filter>Source Files\Engine\Graphics\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="rendering_test.cpp">
-      <Filter>Source Files\Testing</Filter>
-    </ClCompile>
     <ClCompile Include="random_numbers.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -277,9 +259,6 @@
     </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_script.cpp">
-      <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\Engine\Components</Filter>
@@ -301,6 +280,9 @@
     </ClCompile>
     <ClCompile Include="sprite_system.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
+    </ClCompile>
+    <ClCompile Include="debugger.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -36,7 +36,7 @@ namespace ConsoleGraphX
         _m_height = height;
     }
 
-    ConsoleGraphX_Interal::Component* Camera::Clone() const {
+    ConsoleGraphX_Internal::Component* Camera::Clone() const {
         return new Camera(*this);
     }
 

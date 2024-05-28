@@ -4,7 +4,7 @@
 #include "entity.h"
 #include <vector>
 
-namespace ConsoleGraphX_Interal
+namespace ConsoleGraphX_Internal
 {
 	struct SpriteComparator {
 		bool operator()(const ConsoleGraphX::Entity* entityA, const ConsoleGraphX::Entity* entityB) const;

@@ -65,7 +65,7 @@ namespace ConsoleGraphX
 	{
 		if (deltaTime <= _m_targetFrameDuration)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(_m_targetFrameDuration - deltaTime));
+			std::this_thread::sleep_for(std::chrono::milliseconds(_m_targetFrameDuration - deltaTime) - std::chrono::milliseconds(2));
 		}
 
 		if (_m_elapsedTime >= std::chrono::milliseconds(1000))
@@ -95,4 +95,10 @@ namespace ConsoleGraphX
 	{
 		return _m_deltaTime;
 	}
+
+	std::chrono::microseconds FrameRateController::GetTargetFrameDuration()
+	{
+		return _m_targetFrameDuration;
+	}
+
 }

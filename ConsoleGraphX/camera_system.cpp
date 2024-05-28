@@ -19,8 +19,8 @@ namespace ConsoleGraphX
 	{
 		std::string objectName = typeid(Camera).name();
 
-		ConsoleGraphX_Interal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, _DeregisterCameraAttachedToEntity);
-		Camera* backupCam = new Camera(ConsoleGraphX_Interal::Screen::GetWidth_A(), ConsoleGraphX_Interal::Screen::GetHeight_A(), Vector3());
+		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, _DeregisterCameraAttachedToEntity);
+		Camera* backupCam = new Camera(ConsoleGraphX_Internal::Screen::GetWidth_A(), ConsoleGraphX_Internal::Screen::GetHeight_A(), Vector3());
 
 		_s_backupCamera.insert(backupCam);
 
@@ -81,7 +81,7 @@ namespace ConsoleGraphX
 
 		if (itCam == _s_cameras.end())
 		{
-			ConsoleGraphX_Interal::Debugger::S_LogMessage("When using set camera state, the camera must be registered already");
+			ConsoleGraphX_Internal::Debugger::S_LogMessage("When using set camera state, the camera must be registered already");
 			return;
 		}
 
@@ -95,7 +95,7 @@ namespace ConsoleGraphX
 	{
 		if (_s_activeCameras.size() == 0)
 		{
-			ConsoleGraphX_Interal::Debugger::S_LogMessage("[CAMERA SYSTEM], using backup camera!");
+			ConsoleGraphX_Internal::Debugger::S_LogMessage("[CAMERA SYSTEM], using backup camera!");
 			return _s_backupCamera;
 		}
 

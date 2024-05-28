@@ -25,7 +25,7 @@ namespace ConsoleGraphX
         return ComponentID::transform;
     }
 
-    ConsoleGraphX_Interal::Component* Transform::Clone() const
+    ConsoleGraphX_Internal::Component* Transform::Clone() const
     {
         Transform* clone = new Transform(*this);
 

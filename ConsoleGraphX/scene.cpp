@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include "scene.h"
 #include "entity.h"
+#include "verify_macro.h"
 
 namespace ConsoleGraphX
 {
@@ -56,10 +57,8 @@ namespace ConsoleGraphX
                     itScripts = entity->RemoveComponentC(itScripts->second.get());
                 }
 
-                // Erase the entity from the scene
                 _m_entities.erase(it);
 
-                // Delete the entity itself
                 delete entity;
             }
         }

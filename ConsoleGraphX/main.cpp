@@ -7,14 +7,16 @@ Fastest Font:
 	Gothic: 800-900fps/avg
 */
 
+using namespace ConsoleGraphX;
+
 int main()
 {
-	ConsoleGraphX_Interal::Debugger debugger(10);
-	
-	Engine::InitializeEngine(300, 120, 3, 6, debugger);
+	ConsoleGraphX_Internal::Debugger debugger(L"Debugger");
+
+	Engine::Initialize(300, 120, 3, 6, debugger);
 
 	MainScene m("Main scene");
-	
+
 	Engine::Run();
 
 
