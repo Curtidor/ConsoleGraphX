@@ -72,14 +72,7 @@ public:
             if (dwWaitResult == WAIT_OBJECT_0) {
                 WaitForSingleObject(this->_m_hMutex, INFINITE);
                 
-                T data;
-                if constexpr (std::is_same<T, std::string>::value) {
-                    data = this->_m_pSharedMemory->data;
-
-                }
-                else {
-                    data = this->_m_pSharedMemory->data;
-                }
+                T data = this->_m_pSharedMemory->data;
 
                 ReleaseMutex(this->_m_hMutex);
 
