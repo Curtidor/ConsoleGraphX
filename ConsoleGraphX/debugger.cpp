@@ -7,6 +7,8 @@
 #include <processthreadsapi.h>
 #include <mutex>
 #include <condition_variable>
+#include <type_traits>
+#include <queue>
 #include "debugger.h"
 #include "../IPC/sender.h"
 
@@ -37,11 +39,16 @@ namespace ConsoleGraphX_Internal
 
     void Debugger::LogMessage(const std::string& message, LogLevel level)
     {
-        std::unique_lock<std::mutex> lock(_m_mutex);
-       
-        std::string formattedMessage = _GetFormattedLogMessage(message, level);
-        _m_messageQueue.push(formattedMessage);
-        
+        std::string msgCpy = message;
+        {
+            std::lock_guard<std::mutex> lock(_m_mutex);
+            _FormatLogMessage(msgCpy, level);
+
+            _m_messageQueue.push(msgCpy);
+
+            if (_m_messageQueue.size() > _m_maxMessages)
+                _m_messageQueue.pop();
+        }
         _m_cv.notify_one();
     }
 
@@ -49,17 +56,18 @@ namespace ConsoleGraphX_Internal
     {
         while (true)
         {
-            std::unique_lock<std::mutex> lock(_m_mutex);
-            _m_cv.wait(lock, [this]() { return !_m_messageQueue.empty() || _m_terminate; });
-
-            if (_m_terminate && _m_messageQueue.empty())
-                break;
-
-            while (!_m_messageQueue.empty())
+            std::string message;
             {
-                _m_sender->SendMessageIPC(_m_messageQueue.front());
+                std::unique_lock<std::mutex> lock(_m_mutex);
+                _m_cv.wait(lock, [this]() { return !_m_messageQueue.empty() || _m_terminate; });
+
+                if (_m_terminate && _m_messageQueue.empty())
+                    break;
+
+                message = std::move(_m_messageQueue.front());
                 _m_messageQueue.pop();
             }
+            _m_sender->SendMessageIPC(message);
         }
     }
 
@@ -69,7 +77,7 @@ namespace ConsoleGraphX_Internal
             _s_active_debugger->LogMessage(message, level);
     }
 
-    std::string Debugger::_GetFormattedLogMessage(const std::string& message, LogLevel level)
+    void Debugger::_FormatLogMessage(std::string& message, LogLevel level)
     {
         std::string levelStr;
         switch (level)
@@ -84,7 +92,9 @@ namespace ConsoleGraphX_Internal
             levelStr = "ERROR";
             break;
         }
-        return "[" + levelStr + "] " + message;
+
+        // Insert the level string at the beginning of the message
+        message.insert(0, "[" + levelStr + "] ");
     }
 
     void Debugger::_StartDebuggerReceiver()

@@ -16,6 +16,7 @@ namespace ConsoleGraphX_Internal
         static Debugger* _s_active_debugger;  // Singleton instance
 
         bool _m_terminate;  // Flag to terminate the queue processing
+        int _m_maxMessages = 1000;
         std::mutex _m_mutex;  // Mutex for synchronizing access to the message queue
         std::thread _m_thread;  // Thread for processing the message queue
         std::condition_variable _m_cv;  // Condition variable for queue processing
@@ -53,6 +54,6 @@ namespace ConsoleGraphX_Internal
         void _StartDebuggerReceiver();
 
         // Formats the log message with the specified log level
-        std::string _GetFormattedLogMessage(const std::string& message, LogLevel level);
+        void _FormatLogMessage(std::string& message, LogLevel level);
     };
 }
