@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-constexpr int BUFFER_SIZE = 4069;;
+constexpr int BUFFER_SIZE = 4069;
 
 template <typename T>
 struct SharedMemory {
