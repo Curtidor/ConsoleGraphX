@@ -1,4 +1,5 @@
 #pragma once
+#include <windows.h>
 #include "vector2.h"
 
 namespace ConsoleGraphX
@@ -78,19 +79,24 @@ namespace ConsoleGraphX
         Delete = 127
     };
 
+
     class InputSystem
     {
-    private:
+    public:
         static bool keys[255];
         static Vector2 mousePos;
-        static char GetKey();
-        static bool KeyPressed();
+        static bool leftMouseButtonDown;
+        static bool rightMouseButtonDown;
 
-    public:
+        static char GetKey();
         static void GetPressedKeys();
+        static bool KeyPressed();
         static bool IsKeyPressed(Key key);
         static void UpdateMousePosition();
-        const static Vector2 GetMousePosition();
+        static const Vector2 GetMousePosition();
+        static void HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent);
+        static void ProcessInput();
     };
+
 };
 

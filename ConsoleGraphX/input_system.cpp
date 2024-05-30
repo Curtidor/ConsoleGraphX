@@ -1,7 +1,7 @@
-#include "input_system.h"
 #include <windows.h>
 #include <conio.h>
 #include <cctype>
+#include "input_system.h"
 #include "screen.h"
 #include "vector2.h"
 
@@ -9,6 +9,8 @@ namespace ConsoleGraphX
 {
     bool InputSystem::keys[255];
     Vector2 InputSystem::mousePos;
+    bool InputSystem::leftMouseButtonDown = false;
+    bool InputSystem::rightMouseButtonDown = false;
 
     /**
      * Get the next character from the input buffer if available, otherwise return '\0'.
@@ -64,7 +66,6 @@ namespace ConsoleGraphX
         // Convert the key value to lowercase
         char lowercaseKey = std::tolower(static_cast<char>(key));
 
-        // Access the keys array using the lowercase key
         return InputSystem::keys[static_cast<int>(lowercaseKey)] || InputSystem::keys[static_cast<int>(key)];
     }
 
@@ -89,6 +90,71 @@ namespace ConsoleGraphX
     const Vector2 InputSystem::GetMousePosition()
     {
         return InputSystem::mousePos;
+    }
+
+    void InputSystem::HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent)
+    {
+        switch (mouseEvent.dwEventFlags)
+        {
+        case 0: // Button press/release events
+            if (mouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
+            {
+                leftMouseButtonDown = true;
+            }
+            else
+            {
+                leftMouseButtonDown = false;
+            }
+
+            if (mouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+            {
+                rightMouseButtonDown = true;
+            }
+            else
+            {
+                rightMouseButtonDown = false;
+            }
+            break;
+
+        case MOUSE_MOVED:
+            mousePos.x = mouseEvent.dwMousePosition.X;
+            mousePos.y = mouseEvent.dwMousePosition.Y;
+            break;
+        }
+    }
+
+    void InputSystem::ProcessInput()
+    {
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD cNumRead = 0;
+        DWORD i = 0;
+        INPUT_RECORD irInBuf[128];
+
+        DWORD x = 0;
+
+        // Read input events
+        GetNumberOfConsoleInputEvents(hStdin, &x);
+        if (x)
+            ReadConsoleInput(hStdin, irInBuf, 128, &cNumRead);
+
+
+        // Dispatch the events to the appropriate handler
+        for (i = 0; i < cNumRead; i++)
+        {
+            switch (irInBuf[i].EventType)
+            {
+            case KEY_EVENT: // keyboard input
+                // Handle keyboard events if necessary
+                break;
+
+            case MOUSE_EVENT: // mouse input
+                HandleMouseEvent(irInBuf[i].Event.MouseEvent);
+                break;
+
+            default:
+                break;
+            }
+        }
     }
 
 };
