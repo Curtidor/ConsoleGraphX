@@ -1,15 +1,13 @@
-﻿#include "screen.h"
-#include <consoleapi3.h>
-#include <windows.h>
+﻿#include <windows.h>
 #include <stdexcept>
-#include <consoleapi2.h>
 #include <utility>
 #include <algorithm>
 #include <string>
 #include <cstdlib>
-#include <processenv.h>
+#include <iostream>
 #include <handleapi.h>
 #include "screen_buffer.h"
+#include "screen.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -46,6 +44,13 @@ namespace ConsoleGraphX_Internal
 		// Set the console font size and window size
 		SetConsoleFontSize(fontWidth, fontHeight);
 		SetConsoleWindowSize(_m_screenBuffer->bufferSize.X, _m_screenBuffer->bufferSize.Y);
+		SetConsoleMode(_m_screenBuffer->hConsole, ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+
+		HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+		if (hStdin == INVALID_HANDLE_VALUE)
+			throw std::runtime_error("failed to get the console input handle");
+
+		SetConsoleMode(hStdin, ENABLE_MOUSE_INPUT | ENABLE_PROCESSED_INPUT);
 
 		MemFillScreen( 0 );
 
