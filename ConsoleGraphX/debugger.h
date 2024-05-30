@@ -31,7 +31,7 @@ namespace ConsoleGraphX_Internal
         {
             CGX_INFO = 1,
             CGX_WARNING = 2,
-            CGX_ERROR = 3  
+            CGX_ERROR = 3
         };
 
         // Constructor: Initializes the debugger with a name and starts the receiver
@@ -56,4 +56,4 @@ namespace ConsoleGraphX_Internal
         // Formats the log message with the specified log level
         void _FormatLogMessage(std::string& message, LogLevel level);
     };
-}
+};
