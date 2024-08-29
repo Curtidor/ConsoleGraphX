@@ -8,6 +8,7 @@
 #include "input_system.h"
 #include "camera.h"
 #include "vector3.h"
+#include "vector2.h"
 #include "debugger.h"
 
 using namespace ConsoleGraphX;
@@ -30,8 +31,9 @@ void Player::Update(Entity* owner)
 {
 	Vector3 playerPosition = owner->GetPosition();
 	Vector3 camPostion = _m_playerCam->GetPosition();
+	Vector2 viewPort = _m_playerCam->GetViewPort();
 
-	_m_playerCam->SetPosition(Vector3(playerPosition.x - _m_playerCam->GetWidth() * 0.5f, playerPosition.y - _m_playerCam->GetHeight() * 0.5f));
+	_m_playerCam->SetPosition(Vector3(playerPosition.x - viewPort.x * 0.5f, playerPosition.y - viewPort.y * 0.5f));
 
 	ConsoleGraphX_Internal::Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
 	ConsoleGraphX_Internal::Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));

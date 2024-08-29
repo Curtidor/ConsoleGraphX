@@ -79,9 +79,6 @@
     <Filter Include="Source Files\Engine\Graphics\GUI">
       <UniqueIdentifier>{d17b0aab-b564-47df-89ce-baddcccfdfa1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Utils">
-      <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
     </Filter>
@@ -90,6 +87,9 @@
     </Filter>
     <Filter Include="Source Files\Engine\Systems\SystemManaged">
       <UniqueIdentifier>{394aba2f-52f1-407f-96de-203311f3642b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Utils">
+      <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -151,7 +151,7 @@
       <Filter>Header Files\Engine\Graphics\GUI</Filter>
     </ClInclude>
     <ClInclude Include="random_numbers.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="snow.h">
       <Filter>Header Files\Game\Scripts</Filter>
@@ -166,7 +166,7 @@
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="verify_macro.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="frame_rate_controller.h">
       <Filter>Header Files\Engine\Core</Filter>
@@ -188,6 +188,21 @@
     </ClInclude>
     <ClInclude Include="base_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="component_manager.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="component_pool.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="meta_utilities.h">
+      <Filter>Header Files\Engine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="base_component_pool.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="component_id.h">
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -282,6 +297,9 @@
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
     <ClCompile Include="debugger.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="componenent_manager.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
   </ItemGroup>

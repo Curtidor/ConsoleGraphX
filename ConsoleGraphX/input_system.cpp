@@ -69,18 +69,6 @@ namespace ConsoleGraphX
         return InputSystem::keys[static_cast<int>(lowercaseKey)] || InputSystem::keys[static_cast<int>(key)];
     }
 
-    /**
-     * Update the mouse position based on the current cursor position.
-     */
-    void InputSystem::UpdateMousePosition()
-    {
-        POINT cursorPos;
-        GetCursorPos(&cursorPos);
-        ScreenToClient(ConsoleGraphX_Internal::Screen::GetActiveScreen_A()->GetConsoleWindowHandle(), &cursorPos);
-
-        InputSystem::mousePos.x = cursorPos.x;
-        InputSystem::mousePos.y = cursorPos.y;
-    }
 
     /**
      * Get the current mouse position.

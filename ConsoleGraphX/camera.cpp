@@ -1,20 +1,15 @@
 #include "camera.h"
-#include "component.h"
 #include "vector3.h"
+#include "vector2.h"
 
 namespace ConsoleGraphX
 {
-    Camera::Camera() : _m_width(0), _m_height(0), _m_position(Vector3()) {
-
-    }
-
-    Camera::Camera(int width, int height, const Vector3& position)
-        : _m_width(width), _m_height(height), _m_position(position)
+    Camera::Camera() : _m_width(1), _m_height(1), _m_position(Vector3()), _m_viewPort(1, 1)
     {}
 
-    const Vector3 Camera::GetPosition() {
-        return _m_position;
-    }
+    Camera::Camera(int width, int height, const Vector3& position)
+        : _m_width(width), _m_height(height), _m_position(position), _m_viewPort(width, height)
+    {}
 
     void Camera::SetPosition(const Vector3& position)
     {
@@ -23,26 +18,25 @@ namespace ConsoleGraphX
         _m_position.z = position.z;
     }
 
-    int Camera::GetWidth() {
-        return _m_width;
-    }
-
-    int Camera::GetHeight() {
-        return _m_height;
-    }
-
-    void Camera::SetCameraSize(int width, int height) {
+    void Camera::SetCameraSize(int width, int height) 
+    {
         _m_width = width;
         _m_height = height;
     }
 
-    ConsoleGraphX_Internal::Component* Camera::Clone() const {
-        return new Camera(*this);
+    const Vector3& Camera::GetPosition() const 
+    {
+        return _m_position;
     }
 
-    int Camera::GetID() const {
-        return ComponentID::camera;
+    const Vector2& Camera::GetViewPort() const 
+    {
+        return _m_viewPort;
     }
 
+    void Camera::Clone(Camera* camera) const 
+    {
+        *camera = *this;
+    }
 };
 

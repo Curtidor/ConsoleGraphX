@@ -13,10 +13,11 @@ namespace ConsoleGraphX_Internal
 	Component::~Component()
 	{}
 
-	int Component::GetID() const
+	void Component::Clone(Component* component) const
 	{
-		return ComponentID::base;
+		*component = *this;
 	}
+
 
 	const std::string Component::ComponentName() const
 	{

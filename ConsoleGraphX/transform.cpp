@@ -1,5 +1,4 @@
 #include "transform.h"
-#include "component.h"
 #include "vector3.h"
 
 namespace ConsoleGraphX
@@ -20,16 +19,9 @@ namespace ConsoleGraphX
         : m_position(x, y, z), m_world_position(x, y, z), m_scale(scaleX, scaleY, scaleZ), m_rotation(0.0f)
     {}
 
-    int Transform::GetID() const
+    void Transform::Clone(Transform* transform) const
     {
-        return ComponentID::transform;
-    }
-
-    ConsoleGraphX_Internal::Component* Transform::Clone() const
-    {
-        Transform* clone = new Transform(*this);
-
-        return clone;
+        *transform = *this;
     }
 
     void Transform::SetPosition(float x, float y)
@@ -52,8 +44,7 @@ namespace ConsoleGraphX
 
     void Transform::SetScale(float x, float y)
     {
-        m_scale.x = x;
-        m_scale.y = y;
+        SetScale(x, y, m_scale.z);
     }
 
     void Transform::SetScale(float x, float y, float z)
@@ -63,7 +54,7 @@ namespace ConsoleGraphX
         m_scale.z = z;
     }
 
-    const Vector3 Transform::GetPosition() const
+    const Vector3& Transform::GetPosition() const
     {
         return m_position;
     }

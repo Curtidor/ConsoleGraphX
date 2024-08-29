@@ -10,30 +10,23 @@ namespace ConsoleGraphX
 	Script::Script(const Script& script) : _m_isEnabled(true)
 	{}
 
+	void Script::Clone(Script*& script) const
+	{
+		script = new Script(*this);
+	}
+
 	void Script::Awake(Entity* owner) {}
 	void Script::Start(Entity* owner) {}
 	void Script::Update(Entity* owner) {}
 
-	bool Script::IsEnabled()
+	bool Script::IsEnabled() const
 	{
-		return this->_m_isEnabled;
+		return _m_isEnabled;
 	}
 
 	void Script::SetState(bool state)
 	{
-		this->_m_isEnabled = state;
-	}
-
-	int Script::GetID() const
-	{
-		return ComponentID::script;
-	}
-
-	ConsoleGraphX_Internal::Component* Script::Clone() const
-	{
-		Script* clone = new Script(*this);
-
-		return clone;
+		_m_isEnabled = state;
 	}
 
 };

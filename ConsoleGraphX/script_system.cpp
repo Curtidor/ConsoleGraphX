@@ -1,6 +1,5 @@
 #include <string>
 #include <unordered_set>
-#include <unordered_map>
 #include <typeindex>
 #include <memory>
 #include "component.h"
@@ -28,12 +27,9 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::Update(float delta_time)
 	{
-
-		for (Entity* entity : _s_scripts)
+		for (Entity* entity : _s_scripts) 
 		{
-			CGX_VERIFY(entity);
-
-			for (const auto& component: entity->GetScripts())
+			for (const auto& component : entity->GetScripts())
 			{
 				Script* script = static_cast<Script*>(component.second.get());
 
@@ -45,7 +41,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
 	{
-		const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& scripts = entity->GetScripts();
+		const std::map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& scripts = entity->GetScripts();
 
 		for (const auto& scriptPtr : scripts)
 		{

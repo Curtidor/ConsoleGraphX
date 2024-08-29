@@ -11,22 +11,10 @@ namespace ConsoleGraphX_Internal
     public:
         Component();
 
-        virtual ~Component();
-        virtual Component* Clone() const = 0;
-        virtual int GetID() const = 0;
+        virtual ~Component() = default;
 
+        void Clone(Component* component) const;
+        
         const std::string ComponentName() const;
     };
-};
-
-
-
-enum ComponentID
-{
-    base = 0,
-    playerController = 1,
-    script = 2,
-    sprite = 3,
-    transform = 4,
-    camera = 5
 };

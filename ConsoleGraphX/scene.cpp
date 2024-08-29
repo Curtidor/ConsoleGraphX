@@ -1,8 +1,8 @@
 #include <string>
 #include <unordered_set>
+#include <stdexcept>
 #include "scene.h"
 #include "entity.h"
-#include "verify_macro.h"
 
 namespace ConsoleGraphX
 {
@@ -12,67 +12,85 @@ namespace ConsoleGraphX
 
     Scene::~Scene()
     {
-        _m_entitiesToDelete.insert(_m_entities.begin(), _m_entities.end());
-
-        // DeleteEntities also removes the entity from _m_entities
-        DeleteEntities();
+        _m_entities.clear();
     }
 
     Entity* Scene::RegisterEntityN(std::string name)
     {
-        Entity* entity = new Entity(name);
 
-        _m_entities.insert(entity);
+        auto result = _m_entities.insert(Entity());
 
-        return entity;
-    }
-
-    void Scene::RegisterEntity(Entity* entity)
-    {
-        _m_entities.insert(entity);
-    }
-
-    void Scene::DeregisterEntity(Entity* entity)
-    {
-        this->_m_entitiesToDelete.insert(entity);
-    }
-
-    void Scene::DeleteEntities()
-    {
-        for (Entity* entity : this->_m_entitiesToDelete)
+        // check if the insertion was successful
+        if (!result.second)
         {
-            auto it = _m_entities.find(entity);
-
-            if (it != _m_entities.end())
-            {
-                auto& components = entity->GetComponents();
-                for (auto itComponents = components.begin(); itComponents != components.end();)
-                {
-                    itComponents = entity->RemoveComponentC(itComponents->second.get());
-                }
-
-                auto& scripts = entity->GetScripts();
-                for(auto itScripts = scripts.begin(); itScripts != scripts.end();)
-                {
-                    itScripts = entity->RemoveComponentC(itScripts->second.get());
-                }
-
-                _m_entities.erase(it);
-
-                delete entity;
-            }
+            throw std::runtime_error("Entity with the same ID already exists.");
         }
 
-        this->_m_entitiesToDelete.clear();
+        // NOTE TO FUTURE ME: Casting away const-ness is valid here because the `Entity` objects
+        // in the scene are mutable and intended to be modified. The `const_iterator`
+        // returned by `emplace` is a `const_iterator` to indicate that it is safe to
+        // read from, but since `Entity` objects are not actually const, removing
+        // the const qualifier to obtain a modifiable reference is appropriate in this case.
+        Entity& insertedEntity = const_cast<Entity&>(*result.first);
+
+        if (!insertedEntity.m_tag.empty())
+        {
+            _m_tagIDMap.emplace(insertedEntity.m_tag, insertedEntity.m_id);
+        }
+
+        return &insertedEntity;
     }
 
 
-    bool Scene::InScene(Entity* entity)
+    void Scene::DeregisterEntity(Entity& entity)
     {
-        return _m_entities.find(entity) != _m_entities.end();
+        auto itEntity = _m_entities.find(entity);
+        if (itEntity == _m_entities.end())
+        {
+            return;
+        }
+
+        auto itId = _m_tagIDMap.find(entity.m_tag);
+        if (itId != _m_tagIDMap.end())
+        {
+            _m_tagIDMap.erase(itId);
+        }
+
+        _m_entities.erase(itEntity);
     }
 
-    const std::unordered_set<Entity*>& Scene::GetEntities()
+    Entity* Scene::GetEntity(int id)
+    {
+        auto it = _m_entities.find(id);
+
+        if (it == _m_entities.end())
+        {
+            return nullptr;
+        }
+
+        return  &const_cast<Entity&>(*it);
+    }
+
+    Entity* Scene::GetEntity(const std::string& tag)
+    {
+        auto itID = _m_tagIDMap.find(tag);
+
+        if (itID == _m_tagIDMap.end())
+        {
+            return nullptr;
+        }
+
+        auto itEntity = _m_entities.find(itID->second);
+
+        if (itEntity == _m_entities.end())
+        {
+            return nullptr;
+        }
+
+        return  &const_cast<Entity&>(*itEntity);
+    }
+
+    const std::unordered_set<Entity, Entity::Hash, Entity::Equal>& Scene::GetEntities()
     {
         return _m_entities;
     }

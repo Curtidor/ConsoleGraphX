@@ -27,7 +27,7 @@ namespace ConsoleGraphX
 
 
 
-    struct Sprite : ConsoleGraphX_Internal::Component
+    struct Sprite : public ConsoleGraphX_Internal::Component
     {
     private:
         int _m_width;
@@ -38,29 +38,30 @@ namespace ConsoleGraphX
 
     public:
         int m_layer;
+        Vector2 m_size;
+
+    public:
 
         Sprite();
         Sprite(int width, int height, bool isTransparent = false);
         Sprite(int width, int height, int color, bool isTransparent = false);
         Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
         Sprite(const Sprite& other);
-
-        Vector2 Size();
-
         ~Sprite() override;
 
-        ConsoleGraphX_Internal::Component* Clone() const override;
-        int GetID() const override;
+        Sprite& operator=(const Sprite& other);
 
+        void Clone(Sprite* sprite) const;
         void HideSprite();
         void ShowSprite();
 
-        bool IsSpriteHidden();
-        bool IsTransparent();
+        bool IsSpriteHidden() const;
+        bool IsTransparent() const;
 
-        int GetWidth();
-        int GetHeight();
+        int GetWidth() const;
+        int GetHeight() const;
 
+        const Vector2& Size() const;
         CHAR_INFO* GetPixels();
     };
 };

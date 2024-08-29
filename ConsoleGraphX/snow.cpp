@@ -15,16 +15,16 @@ Snow::Snow(): Script(), _m_transform(nullptr)
 
 void Snow::Awake(Entity* owner)
 {
-	this->_m_transform = (Transform*)owner->GetComponent<Transform>();
+	_m_transform = (Transform*)owner->GetComponent<Transform>();
 }
 
 void Snow::Update(Entity* owner)
 {
 
-	this->_m_transform->m_position += Vector3(0, 0.05, 0);
+	_m_transform->m_position += Vector3(0, 0.05, 0);
 
 
-	if (this->_m_transform->m_position.y >= 94)
+	if (_m_transform->m_position.y >= 94)
 	{
 		if (owner->m_id == 0)
 		{

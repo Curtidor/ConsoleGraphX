@@ -74,7 +74,7 @@ namespace ConsoleGraphX
             _Update(std::chrono::duration<float>(deltaTime).count()); // Update with delta time in seconds
 
             active_screen->DrawScreen();
-            active_screen->MemFillScreen(0);
+            active_screen->FillScreen({ ConsoleGraphX_Internal::Screen::s_pixel, 0 });
 
             active_screen->SetConsoleName("FPS " + std::to_string(frameRateController.GetFramesPerSecond()));
 
@@ -90,14 +90,15 @@ namespace ConsoleGraphX
     void Engine::_Update(float deltaTime)
     {
         InputSystem::GetPressedKeys();
-        InputSystem::UpdateMousePosition();
+
+        //InputSystem::UpdateMousePosition();
 
         if (_systemManager)
         {
             _systemManager->Update(deltaTime);
         }
 
-        ConsoleGraphX_Internal::RenderSystem::DrawSprites(ConsoleGraphX_Internal::SpriteSystem::GetEntitySprites());
+        ConsoleGraphX_Internal::RenderSystem::DrawSprites();
 
         SceneSystem::GetActiveScene()->DeleteEntities();
     }

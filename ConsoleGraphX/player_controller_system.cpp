@@ -28,7 +28,7 @@ namespace ConsoleGraphX
             PlayerController* controller = controllerPair.second;
             Entity* owner = controllerPair.first;
 
-            Transform* transform = owner->GetComponent<Transform>();
+            Transform* transform = owner->GetTransform();
 
             controller->m_velocity.y -= controller->m_gravity * deltaTime;
 

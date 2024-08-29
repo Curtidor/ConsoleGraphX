@@ -1,5 +1,4 @@
 #include "player_controller.h"
-#include "component.h"
 
 namespace ConsoleGraphX
 {
@@ -10,15 +9,8 @@ namespace ConsoleGraphX
         m_moveSpeed(moveSpeed), m_jumpSpeed(jumpSpeed), m_gravity(gravity), m_velocity(0.0f)
     {}
 
-    int PlayerController::GetID() const
+    void PlayerController::Clone(PlayerController* pController) const
     {
-        return ComponentID::playerController;
-    }
-
-    ConsoleGraphX_Internal::Component* PlayerController::Clone() const
-    {
-        PlayerController* clone = new PlayerController(*this);
-
-        return clone;
+        *pController = *this;
     }
 };

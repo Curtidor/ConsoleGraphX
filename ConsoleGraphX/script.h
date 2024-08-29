@@ -17,12 +17,11 @@ namespace ConsoleGraphX
 		virtual void Start(Entity* owner);
 		virtual void Update(Entity* owner);
 
-		bool IsEnabled();
+		bool IsEnabled() const;
 
 		void SetState(bool state);
 
-		ConsoleGraphX_Internal::Component* Clone() const override;
-		int GetID() const override;
+		void Clone(Script*& script) const;
 
 	};
 };

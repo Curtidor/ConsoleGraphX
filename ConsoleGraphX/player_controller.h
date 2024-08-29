@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX 
 {
-	struct PlayerController : ConsoleGraphX_Internal::Component
+	struct PlayerController : public ConsoleGraphX_Internal::Component
 	{
 	public:
 		float m_moveSpeed;
@@ -16,7 +16,7 @@ namespace ConsoleGraphX
 		PlayerController();
 		PlayerController(float moveSpeed, float jumpSpeed, float gravity);
 
-		ConsoleGraphX_Internal::Component* Clone() const override;
-		int GetID() const override;
+		void Clone(PlayerController* pController) const;
+
 	};
 };
