@@ -1,4 +1,5 @@
 #pragma once
+#include "transform.h"
 #include "component.h"
 #include "vector3.h"
 
@@ -11,12 +12,13 @@ namespace ConsoleGraphX
 		float m_jumpSpeed;
 		float m_gravity;
 		Vector3 m_velocity;
+		Transform m_transform;
+
 
 	public:
 		PlayerController();
 		PlayerController(float moveSpeed, float jumpSpeed, float gravity);
 
 		void Clone(PlayerController* pController) const;
-
 	};
 };

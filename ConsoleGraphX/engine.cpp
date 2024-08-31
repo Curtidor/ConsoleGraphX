@@ -99,8 +99,6 @@ namespace ConsoleGraphX
         }
 
         ConsoleGraphX_Internal::RenderSystem::DrawSprites();
-
-        SceneSystem::GetActiveScene()->DeleteEntities();
     }
 
     BOOL WINAPI Engine::_CleanUp(DWORD ctrlType)

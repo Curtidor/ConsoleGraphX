@@ -24,7 +24,6 @@
 //    to non-script components. Scripts are managed in a separate map using a [ScriptID : IndexInPool]
 //    structure, this design choice means we can 
 
-
 namespace ConsoleGraphX_Internal
 {
     class ComponentManager
@@ -64,8 +63,8 @@ namespace ConsoleGraphX_Internal
         typename std::enable_if<IsScript<T>, ComponentPool<ConsoleGraphX::Script>*>::type
             GetComponentPool() 
         {
-            ComponentID compId = GenComponentID::Get<Script>();
-            return _GetPoolInternal<Script>(compId);
+            ComponentID compId = GenComponentID::Get<ConsoleGraphX::Script>();
+            return _GetPoolInternal<ConsoleGraphX::Script>(compId);
         }
 
         template <typename T>
@@ -81,7 +80,7 @@ namespace ConsoleGraphX_Internal
         {
             static_assert(std::is_base_of<Component, T>::value, "Type must inherit from Component");
 
-            using ComponentStorageType = typename std::conditional<IsScript<T>, Script, T>::type;
+            using ComponentStorageType = typename std::conditional<IsScript<T>, ConsoleGraphX::Script, T>::type;
 
             ComponentID compId = GetComponentID<T>();
 
@@ -114,7 +113,7 @@ namespace ConsoleGraphX_Internal
         template <typename T>
         void RemoveComponent(ComponentIndex compIndex) 
         {
-            using ComponentStorageType = typename std::conditional<IsScript<T>, Script, T>::type;
+            using ComponentStorageType = typename std::conditional<IsScript<T>, ConsoleGraphX::Script, T>::type;
 
             ComponentPool<ComponentStorageType>* pool = GetComponentPool<T>();
             pool->RemoveComponentFromPool(compIndex);

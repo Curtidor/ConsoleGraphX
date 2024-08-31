@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "component.h"
+#include "transform.h"
 #include "vector2.h"
 
 namespace ConsoleGraphX
@@ -39,6 +40,7 @@ namespace ConsoleGraphX
     public:
         int m_layer;
         Vector2 m_size;
+        Transform m_transform;
 
     public:
 
@@ -49,9 +51,10 @@ namespace ConsoleGraphX
         Sprite(const Sprite& other);
         ~Sprite() override;
 
+        void Clone(Sprite* sprite) const;
+
         Sprite& operator=(const Sprite& other);
 
-        void Clone(Sprite* sprite) const;
         void HideSprite();
         void ShowSprite();
 

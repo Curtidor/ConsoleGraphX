@@ -1,9 +1,10 @@
 #pragma once
 #include "component.h"
-#include "entity.h"
 
 namespace ConsoleGraphX
 {
+	class Entity;
+
 	struct Script : public ConsoleGraphX_Internal::Component
 	{
 	protected:

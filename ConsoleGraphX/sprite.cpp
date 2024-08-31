@@ -1,4 +1,5 @@
 ﻿#include <windows.h>
+#include <algorithm>
 #include "sprite.h"
 #include "vector2.h"
 

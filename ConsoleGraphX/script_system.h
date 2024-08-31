@@ -8,7 +8,7 @@ namespace ConsoleGraphX
 	class ScriptSystem : public BaseSystem
 	{
 	private:
-		static std::unordered_set<Entity*> _s_scripts;
+		static std::unordered_set<Entity*> _m_scripted_entities;
 
 		static void _DoScriptWarmUp(Entity*);
 

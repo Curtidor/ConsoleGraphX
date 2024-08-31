@@ -1,5 +1,4 @@
 #include "snow.h"
-#include "component.h"
 #include "debugger.h"
 #include "entity.h"
 #include "random_numbers.h"
@@ -43,11 +42,9 @@ void Snow::Update(Entity* owner)
 
 }
 
-ConsoleGraphX_Internal::Component* Snow::Clone() const
+void Snow::Clone(Snow* snow) const
 {
-	Snow* clone = new Snow();
-
-	return clone;
+	*snow = *this;
 }
 
 

@@ -7,8 +7,8 @@ namespace ConsoleGraphX
     struct Transform : public ConsoleGraphX_Internal::Component
     {
     public:
+        Transform* m_parent;
         Vector3 m_position;
-        Vector3 m_world_position;
         Vector3 m_scale;
         float m_rotation;
 
@@ -17,6 +17,7 @@ namespace ConsoleGraphX
         Transform(float x, float y, float scaleX, float scaleY);
         Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
+        void SetParent(Transform* parent);
         void Clone(Transform* transform) const;
 
         void SetPosition(float x, float y);
@@ -26,7 +27,10 @@ namespace ConsoleGraphX
         void SetScale(float x, float y, float z);
         void Translate(const Vector3& translation);
 
-        const Vector3& GetPosition() const;
+        const Vector3& GetLocalPosition() const;
+        const Vector3& GetWorldPosition() const;
+
+        Transform* GetParentTransform() const;
     };
 };
 

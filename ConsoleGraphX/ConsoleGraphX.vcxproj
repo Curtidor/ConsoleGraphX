@@ -152,9 +152,7 @@
     <ClInclude Include="debugger.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="dispatcher.h" />
-    <ClInclude Include="gui_element.h" />
     <ClInclude Include="input_system.h" />
-    <ClInclude Include="interactable.h" />
     <ClInclude Include="meta_utilities.h" />
     <ClInclude Include="verify_macro.h" />
     <ClInclude Include="main_scene.h" />
@@ -173,7 +171,6 @@
     <ClInclude Include="sprite.h" />
     <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system_manager.h" />
-    <ClInclude Include="text_box.h" />
     <ClInclude Include="frame_rate_controller.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="vector2.h" />
@@ -188,7 +185,6 @@
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="entity.h" />
-    <ClCompile Include="gui_element.cpp" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_scene.cpp" />
@@ -207,7 +203,6 @@
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system_manager.cpp" />
-    <ClCompile Include="text_box.cpp" />
     <ClCompile Include="frame_rate_controller.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="vector2.cpp" />

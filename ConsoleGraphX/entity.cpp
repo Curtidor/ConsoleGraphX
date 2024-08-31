@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <string>
+#include <queue>
 #include "entity.h"
 #include "dispatcher.h"
 #include "random_numbers.h"
@@ -9,8 +10,12 @@
 #include "base_component_pool.h"
 #include "component_manager.h"
 
+
 namespace ConsoleGraphX_Internal
 {
+    std::queue<size_t> EntityIDs::_s_recycledIds = std::queue<size_t>();
+    size_t EntityIDs::_s_currentID = 0;
+
     size_t EntityIDs::GetId()
     {
         size_t id;
@@ -36,15 +41,15 @@ namespace ConsoleGraphX_Internal
 namespace ConsoleGraphX
 {
 
-    Entity::Entity() : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag("")
+    Entity::Entity() : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""), _m_parent(nullptr)
     {
         m_tag = std::to_string(m_id);
     }
 
-    Entity::Entity(int id) : m_id(id), m_tag(std::to_string(id))
+    Entity::Entity(int id) : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr)
     {}
 
-    Entity::Entity(int id, const std::string& tag) : m_id(id), m_tag(tag)
+    Entity::Entity(int id, const std::string& tag) : m_id(id), m_tag(tag), _m_parent(nullptr)
     {}
 
     Entity::~Entity()
@@ -58,11 +63,6 @@ namespace ConsoleGraphX
 
     //std::string componentName = (comp->GetID() == ComponentID::script) ? "struct ConsoleGraphX::Script" : index.name();
     //ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("EntityCreation", spawnedEntity);
-
-    const Vector3& Entity::GetPosition() const
-    {
-        return GetTransform()->GetPosition();
-    }
 
     void Entity::Clone(Entity& entity)
     {
@@ -81,7 +81,7 @@ namespace ConsoleGraphX
             entity._m_componentIdToIndexMap.insert({ componentIdIndexPair.first, clonedComponentIndex });
         }
 
-        ConsoleGraphX_Internal::BaseComponentPool* scriptPool = compManager.GetComponentPoolFromId(GenComponentID::Get<Script>());
+        ConsoleGraphX_Internal::BaseComponentPool* scriptPool = compManager.GetComponentPoolFromId(ConsoleGraphX_Internal::GenComponentID::Get<Script>());
         for (const auto& scriptIdIndexPair : _m_scriptIdToIndexes)
         {
             ConsoleGraphX_Internal::ComponentIndex clonedComponentIndex = scriptPool->CloneComponent(scriptIdIndexPair.second);
@@ -94,7 +94,7 @@ namespace ConsoleGraphX
         float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
         float z = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.z, maxSpread.z);
 
-        Vector3 prefabPosition = GetTransform()->GetPosition();
+        Vector3 prefabPosition = GetTransform()->GetLocalPosition();
         Vector3 spawnPosition = Vector3(x, y, z) + prefabPosition;
         
         entity.GetTransform()->SetPosition(spawnPosition);
@@ -162,3 +162,4 @@ namespace ConsoleGraphX
         return m_id != other.m_id;
     }
 };
+

@@ -5,7 +5,7 @@ namespace ConsoleGraphX_Internal
 {
     ScreenBuffer::ScreenBuffer(HANDLE handle, const ConsoleGraphX::Vector2& size)
         : m_hConsole(handle),
-        m_size(size.x* size.y),
+        m_size(static_cast<size_t>(size.x* size.y)),
         m_buffer(new CHAR_INFO[size.x * size.y]),
         m_bufferCoord{ 0, 0 },
         m_bufferSize{ static_cast<short>(size.x), static_cast<short>(size.y) },

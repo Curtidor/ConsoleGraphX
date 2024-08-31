@@ -4,6 +4,10 @@
 #include <type_traits>
 #include "base_component_pool.h"
 
+namespace ConsoleGraphX
+{
+    struct Script;
+};
 
 /**
  * @brief A component pool for managing components of type T.
@@ -30,12 +34,19 @@ namespace ConsoleGraphX_Internal
             return _m_componentPool.size();
         }
 
-    public:
-        const std::vector<ComponentStorageType>* GetPoolItems() const
+        void _InsertComponentIntoPool(ComponentIndex index, const ComponentStorageType& component)
         {
-            return &_m_componentPool;
+            if (index == _m_componentPool.size())
+            {
+                _m_componentPool.push_back(component);
+            }
+            else
+            {
+                _m_componentPool[index] = component;
+            }
         }
 
+    public:
         template <typename T, typename... Args>
         [[nodiscard]] ComponentIndex CreateComponent(Args&&... args)
         {
@@ -52,12 +63,28 @@ namespace ConsoleGraphX_Internal
             return index;
         }
 
+        std::vector<ComponentStorageType>* GetPoolItems()
+        {
+            return &_m_componentPool;
+        }
+
+        [[nodiscard]] ComponentIndex CloneComponent(ComponentIndex index) override
+        {
+            ComponentIndex compIndex = CreateComponent<ComponentStorageType>();
+
+            GetComponentFromPool(index)->Clone(GetComponentFromPool(compIndex));
+
+            return compIndex;
+        }
+
         ComponentStorageType* GetComponentFromPool(ComponentIndex compIndex)
         {
+        #ifdef _DEBUG
             if (compIndex < 0 || compIndex >= _m_componentPool.size())
             {
                 return nullptr;
             }
+        #endif // _DEBUG
 
             return &_m_componentPool[compIndex];
         }
@@ -91,37 +118,51 @@ namespace ConsoleGraphX_Internal
             return _m_componentPool.size();
         }
 
-
-    public:
-        const std::vector<ConsoleGraphX::Script*>* GetPoolItems() const
+        void _InsertComponentIntoPool(ComponentIndex index, ConsoleGraphX::Script* script)
         {
-            return &_m_componentPool;
+            if (index == _m_componentPool.size())
+            {
+                _m_componentPool.push_back(script);
+            }
+            else
+            {
+                _m_componentPool[index] = script;
+            }
         }
 
+    public:
         template <typename T, typename... Args>
         [[nodiscard]] ComponentIndex CreateComponent(Args&&... args)
         {
             static_assert(std::is_base_of_v<ConsoleGraphX::Script, T>, "T must be derived from Script");
 
             ComponentIndex index = _GetOpenPoolIndex();
-            if (index == _m_componentPool.size())
-            {
-                _m_componentPool.push_back(new T(std::forward<Args>(args)...));
-            }
-            else
-            {
-                _m_componentPool[index] = new T(std::forward<Args>(args)...);
-            }
+
+            _InsertComponentIntoPool(index, new T(std::forward<Args>(args)...));
 
             return index;
         }
 
+        [[nodiscard]] ComponentIndex CloneComponent(ComponentIndex index) override
+        {
+            ConsoleGraphX::Script* clonedComponent = nullptr;
+            GetComponentFromPool(index)->Clone(clonedComponent); // Clone should allocate the appropriate derived type.
+
+            ComponentIndex newIndex = _GetOpenPoolIndex();
+            _InsertComponentIntoPool(newIndex, static_cast<ConsoleGraphX::Script*>(clonedComponent));
+
+            return newIndex;
+        }
+
+
         ConsoleGraphX::Script* GetComponentFromPool(ComponentIndex compIndex)
         {
+        #ifdef _DEBUG
             if (compIndex < 0 || compIndex >= _m_componentPool.size())
             {
                 return nullptr;
             }
+        #endif
 
             return _m_componentPool[compIndex];
         }

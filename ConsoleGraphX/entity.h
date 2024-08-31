@@ -5,12 +5,12 @@
 #include <unordered_map>
 #include <string>
 #include <type_traits>
+#include <stdexcept>
 #include "transform.h"
 #include "vector3.h"
 #include "component_id.h"
 #include "component_manager.h"
 #include "base_component_pool.h"
-
 
 namespace ConsoleGraphX_Internal
 {
@@ -88,12 +88,6 @@ namespace ConsoleGraphX
         const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& GetScripts() const;
 
         /**
-         * @brief Gets the world position of this entity by combining its local position with that of its children.
-         * @return The world position as a Vector3.
-         */
-        const Vector3& GetPosition() const;
-
-        /**
          * @brief Gets the unique ID of the entity.
          * @return The entity's ID.
          */
@@ -147,7 +141,7 @@ namespace ConsoleGraphX
         {
             ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
-            auto& indexMap = IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
+            auto& indexMap = ConsoleGraphX_Internal::IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
 
             auto it = indexMap.find(componentId);
 

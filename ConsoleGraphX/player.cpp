@@ -29,7 +29,7 @@ void Player::Awake(Entity* owner)
 
 void Player::Update(Entity* owner)
 {
-	Vector3 playerPosition = owner->GetPosition();
+	Vector3 playerPosition = owner->GetComponent<Transform>()->m_position;
 	Vector3 camPostion = _m_playerCam->GetPosition();
 	Vector2 viewPort = _m_playerCam->GetViewPort();
 

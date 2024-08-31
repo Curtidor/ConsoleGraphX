@@ -4,6 +4,7 @@
 #include <tuple>
 #include <utility>
 
+
 template <typename T>
 struct StripPointer
 {
@@ -14,7 +15,6 @@ template <typename T>
 struct StripPointer<T*>
 {
     using type = T;
-
 };
 
 // NOTE INDEX SUPPORTS ELEMENTS UP TO (size_t / 2)
@@ -31,8 +31,7 @@ struct IndexInTuple<T, std::tuple<U, Ts...>> : std::integral_constant<std::size_
 
 // default index for types not in tuple
 template <typename T>
-struct IndexInTuple<T, std::tuple<>> : std::integral_constant<std::size_t, std::numeric_limits<std::size_t>::max() / 2> {};
-
+struct IndexInTuple<T, std::tuple<>> : std::integral_constant<std::size_t, (std::numeric_limits<std::size_t>::max)() / 2> {};
 
 // check if type T is in a tuple of types
 template <typename T, typename Tuple>

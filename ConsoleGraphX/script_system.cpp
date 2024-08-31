@@ -1,17 +1,19 @@
 #include <string>
 #include <unordered_set>
-#include <typeindex>
-#include <memory>
-#include "component.h"
+#include <unordered_map>
 #include "dispatcher.h"
 #include "entity.h"
 #include "script.h"
 #include "script_system.h"
 #include "verify_macro.h"
+#include "base_component_pool.h"
+#include "component_id.h"
+#include "component_manager.h"
+#include "component_pool.h"
 
 namespace ConsoleGraphX
 {
-	std::unordered_set<Entity*> ScriptSystem::_s_scripts;
+	std::unordered_set<Entity*> ScriptSystem::_m_scripted_entities;
 
 	// TODO when script state changes we should stop calling update on that script or start calling update deping on the state
 
@@ -27,34 +29,46 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::Update(float delta_time)
 	{
-		for (Entity* entity : _s_scripts) 
-		{
-			for (const auto& component : entity->GetScripts())
-			{
-				Script* script = static_cast<Script*>(component.second.get());
+		std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> entityScriptIndexes;
+		ConsoleGraphX_Internal::ComponentPool<Script>* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
 
-				if (script->IsEnabled())
-					script->Update(entity);
+		for (auto it = _m_scripted_entities.begin(); it != _m_scripted_entities.end();)
+		{
+			Entity* entity = *it;
+			entityScriptIndexes = entity->GetScripts();
+
+			if (entityScriptIndexes.empty())
+			{
+				it = _m_scripted_entities.erase(it);
+				continue;
 			}
+
+			for (const auto& idIndexPair : entityScriptIndexes)
+			{
+				scriptPool->GetComponentFromPool(idIndexPair.second)->Update(entity);
+			}
+			++it;
 		}
+
 	}
 
 	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
 	{
-		const std::map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& scripts = entity->GetScripts();
 
-		for (const auto& scriptPtr : scripts)
+		for (const auto& scriptPair : entity->GetScripts())
 		{
-			Script* script = static_cast<Script*>(scriptPtr.second.get());
+			Script* script = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>()->GetComponentFromPool(scriptPair.second);
+			
 			if (script)
 			{
 				script->Awake(entity);
 			}
 		}
 
-		for (const auto& scriptPtr : scripts)
+		for (const auto& scriptPair : entity->GetScripts())
 		{
-			Script* script = static_cast<Script*>(scriptPtr.second.get());
+			Script* script = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>()->GetComponentFromPool(scriptPair.second);
+
 			if (script)
 			{
 				script->Start(entity);
@@ -64,7 +78,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::WarmUp()
 	{
-		for (Entity* entity : _s_scripts)
+		for (Entity* entity : _m_scripted_entities)
 		{
 			ScriptSystem::_DoScriptWarmUp(entity);
 		}
@@ -75,7 +89,7 @@ namespace ConsoleGraphX
 		CGX_VERIFY(entity);
 
 		if (entity->GetScripts().size() > 0)
-			_s_scripts.insert(entity);
+			_m_scripted_entities.insert(entity);
 	}
 
 	void ScriptSystem::RunTimeRegisterScript(Entity* entity)
@@ -93,12 +107,12 @@ namespace ConsoleGraphX
 	{
 		CGX_VERIFY(entity);
 
-		auto itEntity = _s_scripts.find(entity);
+		auto itEntity = _m_scripted_entities.find(entity);
 
-		if (itEntity == _s_scripts.end())
+		if (itEntity == _m_scripted_entities.end())
 			return;
 
 		if ((*itEntity)->GetScripts().size() == 1)
-			_s_scripts.erase(itEntity);
+			_m_scripted_entities.erase(itEntity);
 	}
 }

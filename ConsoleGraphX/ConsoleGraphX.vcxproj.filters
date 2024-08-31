@@ -73,12 +73,6 @@
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{1ac6daf9-953d-4d9d-8bde-3265162629d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Graphics\GUI">
-      <UniqueIdentifier>{a0830887-746a-4b4c-a329-f8f59fa76377}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Graphics\GUI">
-      <UniqueIdentifier>{d17b0aab-b564-47df-89ce-baddcccfdfa1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
     </Filter>
@@ -140,15 +134,6 @@
     </ClInclude>
     <ClInclude Include="player.h">
       <Filter>Header Files\Game\Scripts</Filter>
-    </ClInclude>
-    <ClInclude Include="interactable.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_element.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="text_box.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
     </ClInclude>
     <ClInclude Include="random_numbers.h">
       <Filter>Header Files\Engine\Utils</Filter>
@@ -259,12 +244,6 @@
     </ClCompile>
     <ClCompile Include="main_scene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="gui_element.cpp">
-      <Filter>Source Files\Engine\Graphics\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="text_box.cpp">
-      <Filter>Source Files\Engine\Graphics\GUI</Filter>
     </ClCompile>
     <ClCompile Include="random_numbers.cpp">
       <Filter>Source Files\Utils</Filter>

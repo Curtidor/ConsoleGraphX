@@ -42,10 +42,10 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite component of the entity.
 		 * @param overlapPoints Reference to store the calculated overlap points.
 		 */
-		static inline void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite* sprite, OverlapPoints& overlapPoints)
+		static inline void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite& sprite, OverlapPoints& overlapPoints)
 		{
-			const int spriteWidth = sprite->GetWidth();
-			const int spriteHeight = sprite->GetHeight();
+			const int spriteWidth = sprite.GetWidth();
+			const int spriteHeight = sprite.GetHeight();
 
 			overlapPoints.left = std::abs(std::min<int>(entityPosition.x - camPosition.x, 0));
 			overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityPosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
@@ -59,7 +59,7 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite to be drawn.
 		 * @param overlapPoints The overlap points of the sprite with the camera's view.
 		 */
-		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite* sprite, const OverlapPoints& overlapPoints);
+		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
 
 	public:
 		/**
@@ -67,7 +67,5 @@ namespace ConsoleGraphX_Internal
 		 * @param entities Vector of pointers to entities to be drawn.
 		 */
 		static void DrawSprites();
-
-		static void DrawLine(ConsoleGraphX::Vector2 origin, ConsoleGraphX::Vector2 end, int color);
 	};
 };
