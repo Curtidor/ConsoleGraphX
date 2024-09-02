@@ -44,7 +44,7 @@ namespace  ConsoleGraphX_Internal
     };
 
     // IF NEW COMPONENTS ARE ADDED/REMOVED UPDATE THIS REGISTRY AND FOWARD DEC's NO OTHER CODE NEEDS TO BE TOUCHED
-    using BuiltInComponentTypes = ComponentRegistry<Component, ConsoleGraphX::Script, ConsoleGraphX::Transform, ConsoleGraphX::PlayerController, ConsoleGraphX::Camera, ConsoleGraphX::Sprite>;
+    using BuiltInComponentTypes = ComponentRegistry<ConsoleGraphX::Script, ConsoleGraphX::Transform, ConsoleGraphX::PlayerController, ConsoleGraphX::Camera, ConsoleGraphX::Sprite>;
 
     /**
         * @brief Provides unique IDs for components.
@@ -93,6 +93,7 @@ namespace  ConsoleGraphX_Internal
 
     static inline bool IsScriptFromID(ComponentID id)
     {
+        // id == 0 or id >= all built in component types
         return id == GenComponentID::Get<ConsoleGraphX::Script>() || id >= BuiltInComponentTypes::count;
     }
 };

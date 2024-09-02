@@ -1,5 +1,7 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <wincontypes.h>
 #include "vector2.h"
 
 namespace ConsoleGraphX

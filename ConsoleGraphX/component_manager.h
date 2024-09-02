@@ -8,6 +8,7 @@
 #include "component_pool.h"
 #include "base_component_pool.h"
 #include "meta_utilities.h"
+#include "script.h"
 
 // OVERVIEW:
 // Each type of component gets its own pool. However, components that inherit from `Script` share a pool.
@@ -29,14 +30,17 @@ namespace ConsoleGraphX_Internal
     class ComponentManager
     {
     private:
-        std::array<BaseComponentPool*, BuiltInComponentTypes::count> _m_componentPools;
+        static inline ComponentManager* _s_Instance = nullptr;
+        static inline std::array<BaseComponentPool*, BuiltInComponentTypes::count> _s_componentPools;
 
+
+    private:
         ComponentManager();
 
         template <typename PoolType>
         void _AllocPoolItem()
         {
-            _m_componentPools[GenComponentID::Get<PoolType>()] = new ComponentPool<PoolType>();
+            _s_componentPools[GenComponentID::Get<PoolType>()] = new ComponentPool<PoolType>();
         }
 
         template <typename TupleT, std::size_t... Indexes>
@@ -49,13 +53,13 @@ namespace ConsoleGraphX_Internal
 
         template <typename ComponentType>
         ComponentPool<ComponentType>* _GetPoolInternal(ComponentID compId) {
-            return static_cast<ComponentPool<ComponentType>*>(_m_componentPools[compId]);
+            return static_cast<ComponentPool<ComponentType>*>(_s_componentPools[compId]);
         }
 
     public:
+        static void Initialize();
         static ComponentManager& Instance();
-
-        void FreePools();
+        static void ShutDown();
 
         BaseComponentPool* GetComponentPoolFromId(ComponentID id);
 
@@ -63,6 +67,11 @@ namespace ConsoleGraphX_Internal
         typename std::enable_if<IsScript<T>, ComponentPool<ConsoleGraphX::Script>*>::type
             GetComponentPool() 
         {
+            // Suppress warning C26498: "The function 'GenComponentID::Get' is constexpr; mark variable 'compId' constexpr if compile-time evaluation is desired."
+            // This suppression is necessary because the static code analyzer incorrectly assumes that `GenComponentID::Get<ConsoleGraphX::ScriptType>()` could always be constexpr.
+            // While `GenComponentID::Get` has a constexpr overload for built-in types, in this context, it selects the runtime path for non-built-in types like `Script`.
+            // Since the runtime overload cannot be constexpr, the warning is a false positive, and the suppression prevents unnecessary clutter.
+            #pragma warning( disable : 26498 )
             ComponentID compId = GenComponentID::Get<ConsoleGraphX::Script>();
             return _GetPoolInternal<ConsoleGraphX::Script>(compId);
         }

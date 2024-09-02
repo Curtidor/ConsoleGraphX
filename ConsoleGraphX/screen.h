@@ -1,4 +1,7 @@
 ﻿#pragma once
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <wincontypes.h>
 #include <string>
 #include "screen_buffer.h"
 
@@ -16,9 +19,9 @@ namespace ConsoleGraphX_Internal
 		static Screen* _s_activeScreen;
 
 
-	public:
-		static const wchar_t s_pixel = L'█';
-		static const wchar_t s_transparentPixel = L'‎‎';
+	public:									   
+		static const wchar_t s_pixel = L'\x2588';
+		static const wchar_t s_transparentPixel = L'‎';
 
 		Screen(short width, short height, short fontWidth, short fontHeight);
 		~Screen();
@@ -47,8 +50,6 @@ namespace ConsoleGraphX_Internal
 
 		bool DrawScreen();
 		bool SetConsoleFontSize(short width, short height);
-
-		HWND GetConsoleWindowHandle();
 
 		static Screen* GetActiveScreen_A();
 		static void SetActiveScreen_A(Screen* screen);

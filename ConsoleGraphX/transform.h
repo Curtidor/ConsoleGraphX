@@ -18,17 +18,20 @@ namespace ConsoleGraphX
         Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
         void SetParent(Transform* parent);
+
         void Clone(Transform* transform) const;
 
         void SetPosition(float x, float y);
         void SetPosition(float x, float y, float z);
         void SetPosition(const Vector3& position);
+
         void SetScale(float x, float y);
         void SetScale(float x, float y, float z);
+
         void Translate(const Vector3& translation);
 
         const Vector3& GetLocalPosition() const;
-        const Vector3& GetWorldPosition() const;
+        const Vector3 GetWorldPosition() const;
 
         Transform* GetParentTransform() const;
     };

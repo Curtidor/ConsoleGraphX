@@ -1,6 +1,4 @@
-#include <string>
 #include <vector>
-#include <typeinfo>
 #include "player_controller_system.h"
 #include "player_controller.h"
 #include "input_system.h"
@@ -15,10 +13,7 @@ namespace ConsoleGraphX
 
     void PlayerControllerSystem::Initialize()
     {
-        std::string objectName = typeid(PlayerController).name();
 
-        //ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName , RegisterController);
-        //ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterController);
     }
 
     void PlayerControllerSystem::Update(float deltaTime)

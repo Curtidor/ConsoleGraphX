@@ -154,6 +154,10 @@ namespace ConsoleGraphX_Internal
             return newIndex;
         }
 
+        std::vector<ConsoleGraphX::Script*>* GetPoolItems()
+        {
+            return &_m_componentPool;
+        }
 
         ConsoleGraphX::Script* GetComponentFromPool(ComponentIndex compIndex)
         {

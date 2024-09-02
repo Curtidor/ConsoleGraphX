@@ -20,7 +20,7 @@ void Snow::Awake(Entity* owner)
 void Snow::Update(Entity* owner)
 {
 
-	_m_transform->m_position += Vector3(0, 0.05, 0);
+	_m_transform->m_position += Vector3(0, 0.05f, 0);
 
 
 	if (_m_transform->m_position.y >= 94)

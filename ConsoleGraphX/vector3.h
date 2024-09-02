@@ -35,7 +35,7 @@ namespace ConsoleGraphX
         Vector3& operator/=(float scalar);
 
 
-        double Magnitude() const;
+        float Magnitude() const;
         void AbsVector();
         void Normalize();
     };

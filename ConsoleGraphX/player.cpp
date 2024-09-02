@@ -20,7 +20,9 @@ void Player::Awake(Entity* owner)
 {
 	_m_playerCam = owner->GetComponent<Camera>();
 
-	Sprite* sprite = (Sprite*)owner->AddComponent<Sprite>(7, 12, DarkYellow);
+	owner->AddComponent<Sprite>(7, 12, DarkYellow);
+	
+	Sprite* sprite = owner->GetComponent<Sprite>();
 	sprite->m_layer = 10;
 
 	owner->GetComponent<Transform>()->SetPosition(0,40);

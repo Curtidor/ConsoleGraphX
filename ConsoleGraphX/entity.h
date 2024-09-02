@@ -1,6 +1,5 @@
 #pragma once
 #include <queue>
-#include <utility>
 #include <unordered_set>
 #include <unordered_map>
 #include <string>
@@ -11,14 +10,16 @@
 #include "component_id.h"
 #include "component_manager.h"
 #include "base_component_pool.h"
+#include "position_component.h"
 
 namespace ConsoleGraphX_Internal
 {
     struct EntityIDs
     {
     private:
-        static std::queue<size_t> _s_recycledIds;
-        static size_t _s_currentID;
+        static inline std::queue<size_t> _s_recycledIds;
+        static inline size_t _s_currentID = 0;
+
     public:
         static size_t GetId();
         static void RecycleId(ConsoleGraphX::Entity& entity);
@@ -41,7 +42,7 @@ namespace ConsoleGraphX
         std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> _m_scriptIdToIndexes;
       
     public:
-        const long m_id;
+        const size_t m_id;
         std::string m_tag;
 
     public:
@@ -120,16 +121,33 @@ namespace ConsoleGraphX
             ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
             auto& indexMap = ConsoleGraphX_Internal::IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
-
+            
+            #ifdef  _DEBUG
             if (indexMap.find(componentId) != indexMap.end())
             {
                 throw std::runtime_error("Component already exists.");
             }
+            #endif
 
-            std::pair<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> idIndexPair = ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)...);
-            indexMap.insert(idIndexPair);
+            ConsoleGraphX_Internal::ComponentIndex compIndex;
 
-            return idIndexPair.second;
+            if constexpr (ConsoleGraphX_Internal::IsScript<T>)
+            {
+                _NotifyScriptSystemAdd();
+            }
+
+            if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value) 
+            {
+                compIndex = ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., GetComponent<Transform>()).second;
+            }
+            else 
+            {
+                compIndex = ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)...).second;
+            }
+
+            indexMap.emplace(componentId, compIndex); 
+
+            return compIndex;
         }
 
         /**
@@ -139,6 +157,8 @@ namespace ConsoleGraphX
         template <typename T>
         void RemoveComponent()
         {
+            static_assert(std::is_same_v<T, Transform>, "Cannot Remove Transforms!");
+
             ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
             auto& indexMap = ConsoleGraphX_Internal::IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
@@ -152,6 +172,11 @@ namespace ConsoleGraphX
 
             ConsoleGraphX_Internal::ComponentManager::Instance().RemoveComponent<T>(it->second);
             indexMap.erase(it);
+
+            if constexpr (ConsoleGraphX_Internal::IsScript<T>)
+            {
+                _NotifyScriptSystemRemove();
+            }
         }
 
         /**
@@ -160,11 +185,11 @@ namespace ConsoleGraphX
         * @return A pointer to the component, or nullptr if the component does not exist.
         */
         template <typename T>
-        typename std::enable_if<ConsoleGraphX_Internal::IsScript<T>, T*>::type
+        typename std::enable_if<ConsoleGraphX_Internal::IsScript<T>, Script*>::type
             GetComponent()
         {
             ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
-            return _GetComponentImpl<T>(componentId, _m_scriptIdToIndexes);
+            return _GetComponentImpl<Script>(componentId, _m_scriptIdToIndexes);
         }
 
         /**
@@ -197,37 +222,18 @@ namespace ConsoleGraphX
         {
             using is_transparent = void;
 
-            size_t operator()(const Entity& entity) const
-            {
-                return std::hash<int>()(entity.m_id);
-            }
-
-            size_t operator()(int id) const
-            {
-                return std::hash<int>()(id);
-            }
+            size_t operator()(const Entity& entity) const;
+            size_t operator()(int id) const;
         };
 
         struct Equal
         {
             using is_transparent = void;
 
-            bool operator()(const Entity& lhs, const Entity& rhs) const
-            {
-                return lhs.m_id == rhs.m_id && lhs.m_tag == rhs.m_tag;
-            }
-
-            bool operator()(const Entity& entity, int id) const
-            {
-                return entity.m_id == id;
-            }
-
-            bool operator()(int id, const Entity& entity) const
-            {
-                return id == entity.m_id;
-            }
+            bool operator()(const Entity& lhs, const Entity& rhs) const;
+            bool operator()(const Entity& entity, int id) const;
+            bool operator()(int id, const Entity& entity) const;
         };
-
         /**
          * @brief Inequality operator for comparing entities.
          * @param other The entity to compare with.
@@ -256,5 +262,8 @@ namespace ConsoleGraphX
 
             return ConsoleGraphX_Internal::ComponentManager::Instance().GetComponent<T>(it->second);
         }
+
+        void _NotifyScriptSystemAdd();
+        void _NotifyScriptSystemRemove();
     };
 };

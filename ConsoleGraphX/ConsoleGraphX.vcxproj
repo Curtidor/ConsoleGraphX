@@ -144,7 +144,6 @@
     <ClInclude Include="base_component_pool.h" />
     <ClInclude Include="base_system.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="camera_system.h" />
     <ClInclude Include="component.h" />
     <ClInclude Include="component_id.h" />
     <ClInclude Include="component_manager.h" />
@@ -154,6 +153,7 @@
     <ClInclude Include="dispatcher.h" />
     <ClInclude Include="input_system.h" />
     <ClInclude Include="meta_utilities.h" />
+    <ClInclude Include="position_component.h" />
     <ClInclude Include="verify_macro.h" />
     <ClInclude Include="main_scene.h" />
     <ClInclude Include="player.h" />
@@ -169,7 +169,6 @@
     <ClInclude Include="script_system.h" />
     <ClInclude Include="snow.h" />
     <ClInclude Include="sprite.h" />
-    <ClInclude Include="sprtite_system.h" />
     <ClInclude Include="system_manager.h" />
     <ClInclude Include="frame_rate_controller.h" />
     <ClInclude Include="transform.h" />
@@ -178,7 +177,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="camera_system.cpp" />
     <ClCompile Include="componenent_manager.cpp" />
     <ClCompile Include="component.cpp" />
     <ClCompile Include="debugger.cpp" />
@@ -191,6 +189,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="player_controller.cpp" />
     <ClCompile Include="player_controller_system.cpp" />
+    <ClCompile Include="position_component.cpp" />
     <ClCompile Include="random_numbers.cpp" />
     <ClCompile Include="render_system.cpp" />
     <ClCompile Include="scene.cpp" />
@@ -201,7 +200,6 @@
     <ClCompile Include="script_system.cpp" />
     <ClCompile Include="snow.cpp" />
     <ClCompile Include="sprite.cpp" />
-    <ClCompile Include="sprite_system.cpp" />
     <ClCompile Include="system_manager.cpp" />
     <ClCompile Include="frame_rate_controller.cpp" />
     <ClCompile Include="transform.cpp" />

@@ -1,9 +1,7 @@
 #include "scene_system.h"
-#include <functional>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include "dispatcher.h"
 #include "entity.h"
 #include "scene.h"
 

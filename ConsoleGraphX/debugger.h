@@ -1,11 +1,11 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <string>
 #include <queue>
 #include <mutex>
 #include <thread>
 #include <memory>
-#include <condition_variable>
 #include "../IPC/sender.h"
 
 namespace ConsoleGraphX_Internal

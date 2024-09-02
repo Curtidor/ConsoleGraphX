@@ -1,9 +1,7 @@
 #pragma once
-#include <vector>
 #include <utility>
 #include <cmath>
 #include "sprite.h"
-#include "entity.h"
 #include "vector2.h"
 #include "vector3.h"
 

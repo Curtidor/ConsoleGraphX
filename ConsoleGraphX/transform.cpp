@@ -8,9 +8,9 @@ namespace ConsoleGraphX
         m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f), m_parent(nullptr)
     {}
 
-    Transform::Transform(const Transform& transform)
-        : m_position(Vector3(transform.m_position)), 
-        m_scale(Vector3(transform.m_scale)), m_rotation(transform.m_rotation), m_parent(nullptr)
+    Transform::Transform(const Transform& other)
+        : m_position(Vector3(other.m_position)), 
+        m_scale(Vector3(other.m_scale)), m_rotation(other.m_rotation), m_parent(other.m_parent)
     {}
 
     Transform::Transform(float x, float y, float scaleX, float scaleY)
@@ -74,7 +74,7 @@ namespace ConsoleGraphX
         return m_position;
     }
 
-    const Vector3& Transform::GetWorldPosition() const
+    const Vector3 Transform::GetWorldPosition() const
     {
         if (m_parent != nullptr)
         {

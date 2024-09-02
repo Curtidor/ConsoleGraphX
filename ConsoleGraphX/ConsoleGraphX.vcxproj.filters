@@ -85,6 +85,12 @@
     <Filter Include="Header Files\Engine\Utils">
       <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Components\PositionComponents">
+      <UniqueIdentifier>{650d484c-fb6b-4007-8a94-42a6032a4c41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Components\PositionComponents">
+      <UniqueIdentifier>{5cbef222-1440-4735-8977-477da25a5bd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="screen.h">
@@ -100,12 +106,6 @@
       <Filter>Header Files\Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="render_system.h">
@@ -141,9 +141,6 @@
     <ClInclude Include="snow.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="player_controller.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
     <ClInclude Include="script.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
@@ -156,16 +153,10 @@
     <ClInclude Include="frame_rate_controller.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="camera_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
     <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
     <ClInclude Include="script_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
-    <ClInclude Include="sprtite_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
     <ClInclude Include="system_manager.h">
@@ -189,6 +180,18 @@
     <ClInclude Include="component_id.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="player_controller.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="position_component.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="screen.cpp">
@@ -206,12 +209,6 @@
     <ClCompile Include="vector3.cpp">
       <Filter>Source Files\Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="transform.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
@@ -223,9 +220,6 @@
     </ClCompile>
     <ClCompile Include="scene_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
-    </ClCompile>
-    <ClCompile Include="player_controller.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
@@ -263,16 +257,10 @@
     <ClCompile Include="system_manager.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
-    <ClCompile Include="camera_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
     <ClCompile Include="player_controller_system.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
     <ClCompile Include="script_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
-    <ClCompile Include="sprite_system.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
     <ClCompile Include="debugger.cpp">
@@ -280,6 +268,18 @@
     </ClCompile>
     <ClCompile Include="componenent_manager.cpp">
       <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="player_controller.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="position_component.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

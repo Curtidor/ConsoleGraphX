@@ -1,6 +1,6 @@
 #include <unordered_map>
 #include <string>
-#include <queue>
+#include <type_traits>
 #include "entity.h"
 #include "dispatcher.h"
 #include "random_numbers.h"
@@ -9,13 +9,13 @@
 #include "component_id.h"
 #include "base_component_pool.h"
 #include "component_manager.h"
+#include "script.h"
+#include "dispatcher.h"
+
 
 
 namespace ConsoleGraphX_Internal
 {
-    std::queue<size_t> EntityIDs::_s_recycledIds = std::queue<size_t>();
-    size_t EntityIDs::_s_currentID = 0;
-
     size_t EntityIDs::GetId()
     {
         size_t id;
@@ -44,25 +44,23 @@ namespace ConsoleGraphX
     Entity::Entity() : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""), _m_parent(nullptr)
     {
         m_tag = std::to_string(m_id);
+        AddComponent<Transform>();
     }
 
     Entity::Entity(int id) : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr)
-    {}
+    {
+        AddComponent<Transform>();
+    }
 
     Entity::Entity(int id, const std::string& tag) : m_id(id), m_tag(tag), _m_parent(nullptr)
-    {}
+    {
+        AddComponent<Transform>();
+    }
 
     Entity::~Entity()
     {
         DestroyEntity();
     }
-  
-    //ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("RunTimeScriptAddition", spawnedEntity);
-    /* std::string componentName = isScript ? "struct ConsoleGraphX::Script" : index.name();
-     ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("RemoveComponent" + componentName, this);*/
-
-    //std::string componentName = (comp->GetID() == ComponentID::script) ? "struct ConsoleGraphX::Script" : index.name();
-    //ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("EntityCreation", spawnedEntity);
 
     void Entity::Clone(Entity& entity)
     {
@@ -156,6 +154,40 @@ namespace ConsoleGraphX
         return this->GetComponent<Transform>();
     }
 
+    void Entity::_NotifyScriptSystemAdd()
+    {
+        ConsoleGraphX_Internal::Dispatcher<size_t>::Notify("AddScript", m_id);
+    }
+
+    void Entity::_NotifyScriptSystemRemove()
+    {
+        ConsoleGraphX_Internal::Dispatcher<size_t>::Notify("RemoveScript", m_id);
+    }
+
+    size_t Entity::Hash::operator()(const Entity& entity) const
+    {
+        return std::hash<int>()(entity.m_id);
+    }
+
+    size_t Entity::Hash::operator()(int id) const
+    {
+        return std::hash<int>()(id);
+    }
+
+    bool Entity::Equal::operator()(const Entity& lhs, const Entity& rhs) const
+    {
+        return lhs.m_id == rhs.m_id && lhs.m_tag == rhs.m_tag;
+    }
+
+    bool Entity::Equal::operator()(const Entity& entity, int id) const
+    {
+        return entity.m_id == id;
+    }
+
+    bool Entity::Equal::operator()(int id, const Entity& entity) const
+    {
+        return id == entity.m_id;
+    }
 
     bool Entity::operator!=(const Entity& other) const 
     {

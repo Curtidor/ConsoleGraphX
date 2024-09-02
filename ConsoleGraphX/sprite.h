@@ -1,6 +1,8 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "component.h"
+#include <wincontypes.h>
+#include "position_component.h"
 #include "transform.h"
 #include "vector2.h"
 
@@ -28,7 +30,7 @@ namespace ConsoleGraphX
 
 
 
-    struct Sprite : public ConsoleGraphX_Internal::Component
+    struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase
     {
     private:
         int _m_width;
@@ -43,11 +45,13 @@ namespace ConsoleGraphX
         Transform m_transform;
 
     public:
-
         Sprite();
-        Sprite(int width, int height, bool isTransparent = false);
-        Sprite(int width, int height, int color, bool isTransparent = false);
-        Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
+        Sprite(Transform* transform);
+        Sprite(int width, int height, bool isTransparent = false, Transform* transform = nullptr);
+        Sprite(int width, int height, int color, Transform* transform = nullptr);
+        Sprite(int width, int height, int color, bool isTransparent = false, Transform* transform = nullptr);
+        Sprite(int width, int height, CHAR_INFO* pixels, Transform* transform = nullptr);
+        
         Sprite(const Sprite& other);
         ~Sprite() override;
 

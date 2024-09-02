@@ -1,6 +1,5 @@
 #pragma once
 #include "script.h"
-#include "component.h"
 #include "entity.h"
 #include "transform.h"
 

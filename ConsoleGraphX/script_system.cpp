@@ -1,59 +1,53 @@
-#include <string>
-#include <unordered_set>
-#include <unordered_map>
-#include "dispatcher.h"
 #include "entity.h"
 #include "script.h"
 #include "script_system.h"
 #include "verify_macro.h"
-#include "base_component_pool.h"
-#include "component_id.h"
 #include "component_manager.h"
 #include "component_pool.h"
+#include "scene_system.h"
+#include "scene.h"
+#include "dispatcher.h"
 
 namespace ConsoleGraphX
 {
-	std::unordered_set<Entity*> ScriptSystem::_m_scripted_entities;
-
-	// TODO when script state changes we should stop calling update on that script or start calling update deping on the state
 
 	void ScriptSystem::Initialize() 
 	{
-		std::string objectName = typeid(Script).name();
-
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
-		// TODO need to add support for removing single scripts
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
+		ConsoleGraphX_Internal::Dispatcher<EntityID>::RegisterListener("AddScript", RegisterScriptedEntity);
+		ConsoleGraphX_Internal::Dispatcher<EntityID>::RegisterListener("AddScriptRunTime", RunTimeRegisterScript);
+		ConsoleGraphX_Internal::Dispatcher<EntityID>::RegisterListener("RemoveScript", DeregisterScript);
 	}
 
 	void ScriptSystem::Update(float delta_time)
 	{
-		std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> entityScriptIndexes;
 		ConsoleGraphX_Internal::ComponentPool<Script>* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
-
+		
+		Scene* activeScene = SceneSystem::GetActiveScene();
 		for (auto it = _m_scripted_entities.begin(); it != _m_scripted_entities.end();)
 		{
-			Entity* entity = *it;
-			entityScriptIndexes = entity->GetScripts();
+			EntityID entityId = *it;
+			Entity* entity = activeScene->GetEntity(entityId);
 
-			if (entityScriptIndexes.empty())
-			{
-				it = _m_scripted_entities.erase(it);
-				continue;
-			}
+			const auto& entityScriptIndexes = entity->GetScripts();
 
 			for (const auto& idIndexPair : entityScriptIndexes)
 			{
-				scriptPool->GetComponentFromPool(idIndexPair.second)->Update(entity);
+				Script* script = scriptPool->GetComponentFromPool(idIndexPair.second);
+
+				if (script->IsEnabled())
+				{
+					script->Update(entity);
+				}
 			}
 			++it;
 		}
-
 	}
 
-	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
+	void ScriptSystem::_ScriptWarmUpImpl(EntityID entityId)
 	{
+		Entity* entity = SceneSystem::GetActiveScene()->GetEntity(entityId);
+
+		CGX_VERIFY(entity);
 
 		for (const auto& scriptPair : entity->GetScripts())
 		{
@@ -76,43 +70,37 @@ namespace ConsoleGraphX
 		}
 	}
 
-	void ScriptSystem::WarmUp()
+	void ScriptSystem::ScriptWarmUp()
 	{
-		for (Entity* entity : _m_scripted_entities)
+		for (EntityID entityId : _m_scripted_entities)
 		{
-			ScriptSystem::_DoScriptWarmUp(entity);
+			ScriptSystem::_ScriptWarmUpImpl(entityId);
 		}
 	}
 
-	void ScriptSystem::RegisterScript(Entity* entity)
+	void ScriptSystem::RegisterScriptedEntity(EntityID entityId)
 	{
-		CGX_VERIFY(entity);
-
-		if (entity->GetScripts().size() > 0)
-			_m_scripted_entities.insert(entity);
+		_m_scripted_entities.insert(entityId);
 	}
 
-	void ScriptSystem::RunTimeRegisterScript(Entity* entity)
+	void ScriptSystem::RunTimeRegisterScript(EntityID entityId)
 	{
-		CGX_VERIFY(entity);
-
-		if (entity->GetScripts().size() > 0)
-		{
-			RegisterScript(entity);
-			ScriptSystem::_DoScriptWarmUp(entity);
-		}
+		RegisterScriptedEntity(entityId);
+		ScriptSystem::_ScriptWarmUpImpl(entityId);
 	}
 
-	void ScriptSystem::DeregisterScript(Entity* entity)
+	void ScriptSystem::DeregisterScript(EntityID entityId)
 	{
-		CGX_VERIFY(entity);
+		auto itEntityId = _m_scripted_entities.find(entityId);
 
-		auto itEntity = _m_scripted_entities.find(entity);
-
-		if (itEntity == _m_scripted_entities.end())
+		if (itEntityId == _m_scripted_entities.end())
 			return;
 
-		if ((*itEntity)->GetScripts().size() == 1)
-			_m_scripted_entities.erase(itEntity);
+		Entity* entity = SceneSystem::GetActiveScene()->GetEntity(entityId);
+		
+		CGX_VERIFY(entity);
+
+		if (entity->GetScripts().size() == 0)
+			_m_scripted_entities.erase(itEntityId);
 	}
 }

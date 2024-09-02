@@ -8,18 +8,12 @@
 #include "input_system.h"
 #include "player_controller_system.h"
 #include "render_system.h"
-#include "scene_system.h"
+#include "component_manager.h"
 #include "screen.h"
 #include "script_system.h"
-#include "sprtite_system.h"
-#include "camera_system.h"
 
 namespace ConsoleGraphX
 {
-    ConsoleGraphX_Internal::SystemManager* Engine::_systemManager = nullptr;
-    ConsoleGraphX_Internal::Debugger* Engine::_debugger = nullptr;
-    bool Engine::_m_isRunning = false;
-
     void Engine::Initialize(short screen_width, short screen_height, short pixel_width, short pixel_height, ConsoleGraphX_Internal::Debugger& debugger)
     {
         _debugger = &debugger;
@@ -30,9 +24,9 @@ namespace ConsoleGraphX
 
         _systemManager = new ConsoleGraphX_Internal::SystemManager();
         _systemManager->RegisterSystem<ScriptSystem>();
-        _systemManager->RegisterSystem<ConsoleGraphX_Internal::SpriteSystem>();
         _systemManager->RegisterSystem<PlayerControllerSystem>();
-        _systemManager->RegisterSystem<CameraSystem>();
+
+        ConsoleGraphX_Internal::ComponentManager::Initialize();
     }
 
     void Engine::Shutdown()
@@ -44,6 +38,8 @@ namespace ConsoleGraphX
         }
 
         delete _systemManager;
+
+        ConsoleGraphX_Internal::ComponentManager::ShutDown();
     }
 
     void Engine::Run()
@@ -60,7 +56,7 @@ namespace ConsoleGraphX
             return;
         }
 
-        ScriptSystem::WarmUp();
+        ScriptSystem::ScriptWarmUp();
 
         ConsoleGraphX_Internal::Screen* active_screen = ConsoleGraphX_Internal::Screen::GetActiveScreen_A();
 
@@ -81,7 +77,7 @@ namespace ConsoleGraphX
             auto frameEndTime = std::chrono::high_resolution_clock::now(); // End frame time capture
             deltaTime = frameEndTime - frameStartTime; // Calculate delta time
 
-            frameRateController.WaitForNextFrame(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime));
+            //frameRateController.WaitForNextFrame(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime));
 
             frameRateController.CaptureFrame(); // Capture the end of the frame
         }
