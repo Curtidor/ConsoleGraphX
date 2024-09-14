@@ -67,10 +67,10 @@ namespace ConsoleGraphX
         {
             auto frameStartTime = std::chrono::high_resolution_clock::now(); // Start frame time capture
 
-            _Update(std::chrono::duration<float>(deltaTime).count()); // Update with delta time in seconds
+            _Update(0.0083f); // Update with delta time in seconds
 
             active_screen->DrawScreen();
-            active_screen->FillScreen({ ConsoleGraphX_Internal::Screen::s_pixel, 0 });
+            active_screen->FillScreen({ ConsoleGraphX_Internal::Screen::s_pixel, Color::DarkYellow});
 
             active_screen->SetConsoleName("FPS " + std::to_string(frameRateController.GetFramesPerSecond()));
 
