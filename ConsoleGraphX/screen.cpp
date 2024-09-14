@@ -1,4 +1,7 @@
-﻿#include "screen.h"
+﻿#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+#include "wincontypes.h"
+#include "screen.h"
 #include "screen_buffer.h"
 #include <consoleapi2.h>
 #include <consoleapi3.h>
@@ -9,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <array>
 
 
 namespace ConsoleGraphX_Internal
@@ -67,6 +71,7 @@ namespace ConsoleGraphX_Internal
 			}
 		}
 	}
+
 	/// <summary>
 	/// Set the pixel at the specified coordinates in the screen buffer
 	/// </summary>
@@ -124,21 +129,6 @@ namespace ConsoleGraphX_Internal
 				return (currentElement.Char.UnicodeChar != transparentChar) ? currentElement : *previousDestPosition;
 			}
 		);
-
-		//CHAR_INFO* src = srcStart;
-
-		//for (size_t i = 0; i < maxLength; ++i) {
-		//	// Increment destPrer outside the lambda
-		//	destPrer++;
-
-		//	// Perform the check and copy only necessary values
-		//	if (src[i].Char.UnicodeChar != transparentChar) {
-		//		dest[i] = src[i];
-		//	}
-		//	else {
-		//		dest[i] = *destPrer;
-		//	}
-		//}
 	}
 
 	void Screen::SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
@@ -162,7 +152,6 @@ namespace ConsoleGraphX_Internal
 			_m_screenBuffer->m_buffer[index + i] = { c, white_text_color };
 		}
 	}
-
 
 	void Screen::SetText_A(int x, int y, const std::string& text)
 	{
@@ -222,31 +211,45 @@ namespace ConsoleGraphX_Internal
 		SetConsoleTitleA(name.c_str());
 	}
 
-
-
 	/// <summary>
 	/// Get the width of the screen
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetWidth() { return _m_width; }
+	int Screen::GetWidth() const { return _m_width; }
 
 	/// <summary>
 	/// Get the height of the screen
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetHeight() { return _m_height; }
+	int Screen::GetHeight() const { return _m_height; }
 
 	/// <summary>
 	/// Get the width of a pixel
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetPixelWidth() { return _m_pixelWidth; }
+	int Screen::GetPixelWidth() const { return _m_pixelWidth; }
 
 	/// <summary>
 	/// Get the height of a pixel
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetPixelHeight() { return _m_pixelHeight; }
+	int Screen::GetPixelHeight() const { return _m_pixelHeight; }
+
+	void Screen::SetPalletColors(const std::array<RGB_CGX, 16>& colors) 
+	{
+		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
+		consoleInfo.cbSize = sizeof(consoleInfo);
+
+		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+
+		for (size_t i = 0; i < colors.size(); i++) 
+		{
+			consoleInfo.ColorTable[i] = RGB(colors[i].r, colors[i].g, colors[i].b);
+		}
+
+		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+	}
+
 
 	int Screen::GetWidth_A() { return Screen::_s_activeScreen->_m_width; }
 	int Screen::GetHeight_A() { return Screen::_s_activeScreen->_m_height; }
