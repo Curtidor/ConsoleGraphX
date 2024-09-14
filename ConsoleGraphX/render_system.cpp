@@ -41,7 +41,7 @@ namespace ConsoleGraphX_Internal
             ConsoleGraphX::Vector3 relativePosition;
             for (std::vector<ConsoleGraphX::Sprite>::const_iterator itSprite = sprites->begin(); itSprite != sprites->end(); ++itSprite)
             {
-                //when derferecning sprites take a ref to avoid copying as they have dynmic memory allocated
+                //when dereferencing sprites take a ref to avoid copying as they have dynamic memory allocated
                 const ConsoleGraphX::Sprite& sprite = *itSprite;
                 spritePosition = sprite.GetTransform()->GetWorldPosition();
 
