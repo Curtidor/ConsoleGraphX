@@ -6,13 +6,13 @@ Welcome to ConsoleGraph-X, a minimalistic game engine designed to create retro-s
 # Features
 * **Console-Based:** Create games that run on the Windows console, delivering a retro gaming experience with a modern touch.
 
-* **Entity-Component-System (ECS):** A powerful entity-component system that allows efficient management of game entities and their associated behaviors.
+* **Component-based architecture (CBA):** A powerful entity-component system that efficiently manages game entities and their associated components.
   
 * **Scripting System:** Add custom game logic using a powerful scripting system.
 
 * **Sprite Rendering:** Display sprites and animations (WIP) with customizable layers for a polished visual presentation.
 
-* **Scene System:** The scene system facilitates the organization and management of different game scenes, allowing for seamless transitions between levels, menus, and other sections of the game.
+* **Scene System:** The scene system facilitates the organization and management of different game scenes, allowing for seamless transitions between levels, menus, and other sections of the game (WIP).
 
 ## Demos
 ![Screenshot (28)](https://github.com/Curtidor/ConsoleGraphX/assets/103538997/6cc061ea-79d0-41e6-b3f2-f4d2a7d2e323)
