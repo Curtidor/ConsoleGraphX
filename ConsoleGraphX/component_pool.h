@@ -1,13 +1,11 @@
 #pragma once
 #include <vector>
-#include <queue>
 #include <type_traits>
 #include "base_component_pool.h"
+#include "base_component_pool_impl.h"
+#include "script.h"
+#include "sprite.h"
 
-namespace ConsoleGraphX
-{
-    struct Script;
-};
 
 /**
  * @brief A component pool for managing components of type T.
@@ -15,121 +13,21 @@ namespace ConsoleGraphX
  */
 namespace ConsoleGraphX_Internal
 {
-    template <typename ComponentStorageType>
-    class ComponentPool : public BaseComponentPool
+    class ComponentPoolSprite : public BaseComponentPoolImpl<ConsoleGraphX::Sprite>
     {
-    private:
-        std::vector<ComponentStorageType> _m_componentPool;
-        std::queue<ComponentIndex> _m_openPoolIndexes;
-
-        [[nodiscard]] ComponentIndex _GetOpenPoolIndex()
-        {
-            if (!_m_openPoolIndexes.empty())
-            {
-                ComponentIndex index = _m_openPoolIndexes.front();
-                _m_openPoolIndexes.pop();
-                return index;
-            }
-
-            return _m_componentPool.size();
-        }
-
-        void _InsertComponentIntoPool(ComponentIndex index, const ComponentStorageType& component)
-        {
-            if (index == _m_componentPool.size())
-            {
-                _m_componentPool.push_back(component);
-            }
-            else
-            {
-                _m_componentPool[index] = component;
-            }
-        }
-
     public:
-        template <typename T, typename... Args>
-        [[nodiscard]] ComponentIndex CreateComponent(Args&&... args)
+        [[nodiscard]] ComponentIndex CloneComponentWithTransform(ComponentIndex index, size_t transformID)
         {
-            ComponentIndex index = _GetOpenPoolIndex();
-            if (index == _m_componentPool.size())
-            {
-                _m_componentPool.emplace_back(std::forward<Args>(args)...);
-            }
-            else
-            {
-                _m_componentPool[index] = ComponentStorageType(std::forward<Args>(args)...);
-            }
-
-            return index;
-        }
-
-        std::vector<ComponentStorageType>* GetPoolItems()
-        {
-            return &_m_componentPool;
-        }
-
-        [[nodiscard]] ComponentIndex CloneComponent(ComponentIndex index) override
-        {
-            ComponentIndex compIndex = CreateComponent<ComponentStorageType>();
+            ComponentIndex compIndex = CreateComponent<ConsoleGraphX::Sprite>(transformID); // MAIN ARG ERROR SOURCE
 
             GetComponentFromPool(index)->Clone(GetComponentFromPool(compIndex));
 
             return compIndex;
         }
-
-        ComponentStorageType* GetComponentFromPool(ComponentIndex compIndex)
-        {
-        #ifdef _DEBUG
-            if (compIndex < 0 || compIndex >= _m_componentPool.size())
-            {
-                return nullptr;
-            }
-        #endif // _DEBUG
-
-            return &_m_componentPool[compIndex];
-        }
-
-        void RemoveComponentFromPool(ComponentIndex index) override
-        {
-            if (index < 0 || index >= _m_componentPool.size())
-                return;
-
-            _m_openPoolIndexes.push(index);
-        }
     };
 
-
-    template <>
-    class ComponentPool<ConsoleGraphX::Script> : public BaseComponentPool
+    class ComponentPoolScript : public BaseComponentPoolImpl<ConsoleGraphX::Script*>
     {
-    private:
-        std::vector<ConsoleGraphX::Script*> _m_componentPool;
-        std::queue<ComponentIndex> _m_openPoolIndexes;
-
-        [[nodiscard]] ComponentIndex _GetOpenPoolIndex()
-        {
-            if (!_m_openPoolIndexes.empty())
-            {
-                ComponentIndex index = _m_openPoolIndexes.front();
-                _m_openPoolIndexes.pop();
-                return index;
-            }
-
-            return _m_componentPool.size();
-        }
-
-        void _InsertComponentIntoPool(ComponentIndex index, ConsoleGraphX::Script* script)
-        {
-            if (index == _m_componentPool.size())
-            {
-                _m_componentPool.push_back(script);
-            }
-            else
-            {
-                _m_componentPool[index] = script;
-            }
-        }
-
     public:
         template <typename T, typename... Args>
         [[nodiscard]] ComponentIndex CreateComponent(Args&&... args)
@@ -143,32 +41,17 @@ namespace ConsoleGraphX_Internal
             return index;
         }
 
-        [[nodiscard]] ComponentIndex CloneComponent(ComponentIndex index) override
+        [[nodiscard]] ComponentIndex CloneComponentWithEntity(ComponentIndex index, ConsoleGraphX::Entity* owner)
         {
             ConsoleGraphX::Script* clonedComponent = nullptr;
-            GetComponentFromPool(index)->Clone(clonedComponent); // Clone should allocate the appropriate derived type.
+            ConsoleGraphX::Script* script = GetComponentFromPool(index); // Clone should allocate the appropriate derived type.
+
+            script->Clone(clonedComponent, owner);
 
             ComponentIndex newIndex = _GetOpenPoolIndex();
-            _InsertComponentIntoPool(newIndex, static_cast<ConsoleGraphX::Script*>(clonedComponent));
+            _InsertComponentIntoPool(newIndex, clonedComponent);
 
             return newIndex;
-        }
-
-        std::vector<ConsoleGraphX::Script*>* GetPoolItems()
-        {
-            return &_m_componentPool;
-        }
-
-        ConsoleGraphX::Script* GetComponentFromPool(ComponentIndex compIndex)
-        {
-        #ifdef _DEBUG
-            if (compIndex < 0 || compIndex >= _m_componentPool.size())
-            {
-                return nullptr;
-            }
-        #endif
-
-            return _m_componentPool[compIndex];
         }
 
         void RemoveComponentFromPool(ComponentIndex index) override
@@ -177,6 +60,7 @@ namespace ConsoleGraphX_Internal
                 return;
 
             delete _m_componentPool[index];
+            _m_componentPool[index] = nullptr;
             _m_openPoolIndexes.push(index);
         }
     };

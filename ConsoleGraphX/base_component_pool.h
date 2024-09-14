@@ -8,7 +8,7 @@ namespace ConsoleGraphX_Internal
     /**
      * @brief Abstract base class for component pools.
      *
-     * This class provides a common interface for managing component pools.
+     * This class provides a common non templated interface for managing component pools.
      */
     class BaseComponentPool
     {
@@ -25,6 +25,7 @@ namespace ConsoleGraphX_Internal
          * @param index The index of the component to remove.
          */
         virtual void RemoveComponentFromPool(ComponentIndex index) = 0;
+        
         [[nodiscard]] virtual ComponentIndex CloneComponent(ComponentIndex index) = 0;
     };
 };

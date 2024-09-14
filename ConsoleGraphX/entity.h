@@ -11,6 +11,7 @@
 #include "component_manager.h"
 #include "base_component_pool.h"
 #include "position_component.h"
+#include "script.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -40,7 +41,38 @@ namespace ConsoleGraphX
        
         std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> _m_componentIdToIndexMap;
         std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> _m_scriptIdToIndexes;
-      
+    private:
+        void _CheckComponentExists(ConsoleGraphX_Internal::ComponentID componentId, const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& indexMap);
+
+        template <typename T>
+        std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& GetIndexMap() {
+            if constexpr (ConsoleGraphX_Internal::IsScript<T>) 
+            {
+                return _m_scriptIdToIndexes;
+            }
+            else 
+            {
+                return _m_componentIdToIndexMap;
+            }
+        }
+
+
+        template <typename T, typename... Args>
+        ConsoleGraphX_Internal::ComponentIndex CreateComponentInPool(Args&&... args) {
+            if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value) 
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenComponentID::Get<Transform>()]).second;
+            }
+            else if constexpr (ConsoleGraphX_Internal::IsScript<T>)
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., this).second;
+            }
+            else 
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)...).second;
+            }
+        }
+
     public:
         const size_t m_id;
         std::string m_tag;
@@ -92,7 +124,7 @@ namespace ConsoleGraphX
          * @brief Gets the unique ID of the entity.
          * @return The entity's ID.
          */
-        long GetId() const;
+        size_t GetId() const;
 
         /**
          * @brief Creates a clone of the entity.
@@ -116,36 +148,14 @@ namespace ConsoleGraphX
          * @return Pointer to the added component.
          */
         template <typename T, typename... Args>
-        ConsoleGraphX_Internal::ComponentIndex AddComponent(Args&&... args)
-        {
+        ConsoleGraphX_Internal::ComponentIndex AddComponent(Args&&... args) {
             ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
-            auto& indexMap = ConsoleGraphX_Internal::IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
-            
-            #ifdef  _DEBUG
-            if (indexMap.find(componentId) != indexMap.end())
-            {
-                throw std::runtime_error("Component already exists.");
-            }
-            #endif
+            auto& indexMap = GetIndexMap<T>();
+            _CheckComponentExists(componentId, indexMap);
 
-            ConsoleGraphX_Internal::ComponentIndex compIndex;
-
-            if constexpr (ConsoleGraphX_Internal::IsScript<T>)
-            {
-                _NotifyScriptSystemAdd();
-            }
-
-            if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value) 
-            {
-                compIndex = ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., GetComponent<Transform>()).second;
-            }
-            else 
-            {
-                compIndex = ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)...).second;
-            }
-
-            indexMap.emplace(componentId, compIndex); 
+            ConsoleGraphX_Internal::ComponentIndex compIndex = CreateComponentInPool<T>(std::forward<Args>(args)...);
+            indexMap.emplace(componentId, compIndex);
 
             return compIndex;
         }
@@ -172,11 +182,6 @@ namespace ConsoleGraphX
 
             ConsoleGraphX_Internal::ComponentManager::Instance().RemoveComponent<T>(it->second);
             indexMap.erase(it);
-
-            if constexpr (ConsoleGraphX_Internal::IsScript<T>)
-            {
-                _NotifyScriptSystemRemove();
-            }
         }
 
         /**
@@ -243,7 +248,7 @@ namespace ConsoleGraphX
 
     private:
         // The reason we split the function into is script and not is to allow for the use of constexpr
-        // as during profiling getting builtin componets was a hot spot
+        // as during profiling getting builtin components was a hot spot
         /**
         * @brief Helper function to retrieve a component.
         * @tparam T The type of the component.
@@ -262,8 +267,5 @@ namespace ConsoleGraphX
 
             return ConsoleGraphX_Internal::ComponentManager::Instance().GetComponent<T>(it->second);
         }
-
-        void _NotifyScriptSystemAdd();
-        void _NotifyScriptSystemRemove();
     };
 };

@@ -6,9 +6,11 @@
 #include "component.h"
 #include "component_id.h"
 #include "component_pool.h"
+#include "base_component_pool_impl.h"
 #include "base_component_pool.h"
 #include "meta_utilities.h"
 #include "script.h"
+#include "sprite.h"
 
 // OVERVIEW:
 // Each type of component gets its own pool. However, components that inherit from `Script` share a pool.
@@ -38,33 +40,46 @@ namespace ConsoleGraphX_Internal
         ComponentManager();
 
         template <typename PoolType>
-        void _AllocPoolItem()
+        void _AllocatePoolForComponentType()
         {
-            _s_componentPools[GenComponentID::Get<PoolType>()] = new ComponentPool<PoolType>();
+            _s_componentPools[GenComponentID::Get<PoolType>()] = new BaseComponentPoolImpl<PoolType>();
+        }
+
+        template<>
+        void _AllocatePoolForComponentType<ConsoleGraphX::Sprite>()
+        {
+            _s_componentPools[GenComponentID::Get<ConsoleGraphX::Sprite>()] = new ComponentPoolSprite();
+        }
+
+        template<>
+        void _AllocatePoolForComponentType<ConsoleGraphX::Script>()
+        {
+            _s_componentPools[GenComponentID::Get<ConsoleGraphX::Script>()] = new ComponentPoolScript();
         }
 
         template <typename TupleT, std::size_t... Indexes>
         void _LoopOverTuple(std::index_sequence<Indexes...>)
         {
-            (_AllocPoolItem<std::tuple_element_t<Indexes, TupleT>>(), ...);
+            (_AllocatePoolForComponentType<std::tuple_element_t<Indexes, TupleT>>(), ...);
         }
 
         void _BuildComponentPoolArray();
 
         template <typename ComponentType>
-        ComponentPool<ComponentType>* _GetPoolInternal(ComponentID compId) {
-            return static_cast<ComponentPool<ComponentType>*>(_s_componentPools[compId]);
+            BaseComponentPoolImpl<ComponentType>* _GetPoolInternal(ComponentID compId) {
+            return static_cast<BaseComponentPoolImpl<ComponentType>*>(_s_componentPools[compId]);
         }
+
 
     public:
         static void Initialize();
-        static ComponentManager& Instance();
         static void ShutDown();
+        static ComponentManager& Instance();
 
         BaseComponentPool* GetComponentPoolFromId(ComponentID id);
 
         template <typename T>
-        typename std::enable_if<IsScript<T>, ComponentPool<ConsoleGraphX::Script>*>::type
+        typename std::enable_if<IsScript<T>,  ConsoleGraphX_Internal::ComponentPoolScript*>::type
             GetComponentPool() 
         {
             // Suppress warning C26498: "The function 'GenComponentID::Get' is constexpr; mark variable 'compId' constexpr if compile-time evaluation is desired."
@@ -72,12 +87,12 @@ namespace ConsoleGraphX_Internal
             // While `GenComponentID::Get` has a constexpr overload for built-in types, in this context, it selects the runtime path for non-built-in types like `Script`.
             // Since the runtime overload cannot be constexpr, the warning is a false positive, and the suppression prevents unnecessary clutter.
             #pragma warning( disable : 26498 )
-            ComponentID compId = GenComponentID::Get<ConsoleGraphX::Script>();
-            return _GetPoolInternal<ConsoleGraphX::Script>(compId);
+            constexpr ComponentID compId = GenComponentID::Get<ConsoleGraphX::Script>();
+            return static_cast<ComponentPoolScript*>(_s_componentPools[compId]);
         }
 
         template <typename T>
-        typename std::enable_if<!IsScript<T>, ComponentPool<T>*>::type
+        typename std::enable_if<!IsScript<T>, BaseComponentPoolImpl<T>*>::type
             constexpr GetComponentPool() 
         {
             constexpr ComponentID compId = GenComponentID::Get<T>();
@@ -92,9 +107,18 @@ namespace ConsoleGraphX_Internal
             using ComponentStorageType = typename std::conditional<IsScript<T>, ConsoleGraphX::Script, T>::type;
 
             ComponentID compId = GetComponentID<T>();
-
-            ComponentPool<ComponentStorageType>* pool = GetComponentPool<ComponentStorageType>();
-            ComponentIndex index = pool->CreateComponent<T>(std::forward<Args>(args)...);
+            ComponentIndex index;
+            
+            if constexpr (IsScript<T>)
+            {
+                ConsoleGraphX_Internal::ComponentPoolScript* pool = GetComponentPool<ConsoleGraphX::Script>();
+                index = pool->CreateComponent<T>(std::forward<Args>(args)...);
+            }
+            else
+            {
+                BaseComponentPoolImpl<ComponentStorageType>* pool = GetComponentPool<ComponentStorageType>();
+                index = pool->CreateComponent<T>(std::forward<Args>(args)...);
+            }
 
             return { compId, index };
         }
@@ -115,7 +139,7 @@ namespace ConsoleGraphX_Internal
 
         template <typename T>
         T* GetComponent(ComponentIndex compIndex) {
-            ComponentPool<T>* pool = GetComponentPool<T>();
+            BaseComponentPoolImpl<T>* pool = GetComponentPool<T>();
             return pool->GetComponentFromPool(compIndex);
         }
 
@@ -124,7 +148,7 @@ namespace ConsoleGraphX_Internal
         {
             using ComponentStorageType = typename std::conditional<IsScript<T>, ConsoleGraphX::Script, T>::type;
 
-            ComponentPool<ComponentStorageType>* pool = GetComponentPool<T>();
+            BaseComponentPoolImpl<ComponentStorageType>* pool = GetComponentPool<T>();
             pool->RemoveComponentFromPool(compIndex);
         }
 

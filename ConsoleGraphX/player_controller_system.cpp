@@ -5,8 +5,7 @@
 #include "transform.h"
 #include "vector3.h"
 #include "component_manager.h"
-#include "component_pool.h"
-
+#include "base_component_pool_impl.h"
 
 namespace ConsoleGraphX
 {
@@ -18,12 +17,15 @@ namespace ConsoleGraphX
 
     void PlayerControllerSystem::Update(float deltaTime)
     {
-        ConsoleGraphX_Internal::ComponentPool<PlayerController>* controllerPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<PlayerController>();
+        ConsoleGraphX_Internal::BaseComponentPoolImpl<PlayerController>* controllerPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<PlayerController>();
         std::vector<PlayerController>* controllers = controllerPool->GetPoolItems();
+
+        ConsoleGraphX_Internal::BaseComponentPoolImpl<Transform>* tPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Transform>();
+
 
         for (PlayerController& controller : *controllers)
         {
-            Transform* transform =  controller.m_transform.GetParentTransform();
+            Transform* transform = controller.GetTransform();
 
             controller.m_velocity.y -= controller.m_gravity * deltaTime;
 

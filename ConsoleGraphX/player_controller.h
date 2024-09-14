@@ -2,10 +2,11 @@
 #include "position_component.h"
 #include "vector3.h"
 #include "transform.h"
+#include "component.h"
 
 namespace ConsoleGraphX 
 {
-	struct PlayerController : public ConsoleGraphX_Internal::PositionComponentBase
+	struct PlayerController : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
 	{
 	public:
 		float m_moveSpeed;
@@ -16,8 +17,8 @@ namespace ConsoleGraphX
 
 	public:
 		PlayerController();
-		PlayerController(Transform* transform);
-		PlayerController(float moveSpeed, float jumpSpeed, float gravity, Transform* transform);
+		PlayerController(TransformID transform);
+		PlayerController(float moveSpeed, float jumpSpeed, float gravity, TransformID transform);
 
 		void Clone(PlayerController* pController) const;
 	};
