@@ -4,6 +4,40 @@
 #include <tuple>
 #include <utility>
 
+template<typename... Types>
+using TupleOfTypes = std::tuple<Types...>;
+
+template <typename T>
+struct CompileTimeFalse : std::false_type { };
+
+template <typename T>
+constexpr bool CompileTimeFalseV = CompileTimeFalse<T>::value;
+
+template <typename T>
+void TriggerTypeNameInError(T&&)
+{
+	static_assert(CompileTimeFalseV<T>,
+		"Compilation failed because you wanted to know the type; see below:");
+}
+
+template <typename T>
+void PrintSingleTypeSTAT()
+{
+	TriggerTypeNameInError<T>(std::forward<T>(T()));
+}
+
+template <typename TupleT, std::size_t... Indexes>
+void ForEachTypeInTupleSTAT(std::index_sequence<Indexes...>)
+{
+	(PrintSingleTypeSTAT<std::tuple_element_t<Indexes, TupleT>>(), ...);
+}
+
+template <typename... Args>
+void PrintTypesInPackSTAT()
+{
+	using TupleOfArgs = TupleOfTypes<Args...>;
+	ForEachTypeInTupleSTAT<TupleOfArgs>(std::make_index_sequence<std::tuple_size_v<TupleOfArgs>>{});
+}
 
 template <typename T>
 struct StripPointer
@@ -15,6 +49,12 @@ template <typename T>
 struct StripPointer<T*>
 {
     using type = T;
+};
+
+template <typename T>
+struct StripPointer<T**>
+{
+	using type = T*;
 };
 
 // NOTE INDEX SUPPORTS ELEMENTS UP TO (size_t / 2)
