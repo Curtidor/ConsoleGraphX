@@ -2,17 +2,13 @@
 #include <string>
 #include <type_traits>
 #include "entity.h"
-#include "dispatcher.h"
 #include "random_numbers.h"
 #include "transform.h"
 #include "vector3.h"
 #include "component_id.h"
-#include "base_component_pool.h"
 #include "component_manager.h"
 #include "script.h"
-#include "dispatcher.h"
-
-
+#include "base_component_pool.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -59,7 +55,7 @@ namespace ConsoleGraphX
 
     Entity::~Entity()
     {
-        DestroyEntity();
+       // DestroyEntity();
     }
 
     void Entity::Clone(Entity& entity)
@@ -72,17 +68,36 @@ namespace ConsoleGraphX
         ConsoleGraphX_Internal::ComponentManager compManager = ConsoleGraphX_Internal::ComponentManager::Instance();
         for (const auto& componentIdIndexPair : _m_componentIdToIndexMap)
         {
+            if (componentIdIndexPair.first == ConsoleGraphX_Internal::GenComponentID::Get<Transform>())
+            {
+                continue;
+            }
+
             ConsoleGraphX_Internal::BaseComponentPool* pool = compManager.GetComponentPoolFromId(componentIdIndexPair.first);
 
-            ConsoleGraphX_Internal::ComponentIndex clonedComponentIndex = pool->CloneComponent(componentIdIndexPair.second);
+            ConsoleGraphX_Internal::ComponentIndex clonedComponentIndex;
 
+            if (auto* spritePool = dynamic_cast<ConsoleGraphX_Internal::ComponentPoolSprite*>(pool))
+            {
+                // If the cast succeeds, clone the component with transform for Sprite
+                clonedComponentIndex = spritePool->CloneComponentWithTransform(
+                    componentIdIndexPair.second, entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenComponentID::Get<Transform>()]
+                );
+            }
+            else
+            {
+                clonedComponentIndex = pool->CloneComponent(componentIdIndexPair.second);
+            }
+
+            // insert the cloned component index into the new entity's map
             entity._m_componentIdToIndexMap.insert({ componentIdIndexPair.first, clonedComponentIndex });
         }
 
-        ConsoleGraphX_Internal::BaseComponentPool* scriptPool = compManager.GetComponentPoolFromId(ConsoleGraphX_Internal::GenComponentID::Get<Script>());
+
+        ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = static_cast<ConsoleGraphX_Internal::ComponentPoolScript*>(compManager.GetComponentPoolFromId(ConsoleGraphX_Internal::GenComponentID::Get<Script>()));
         for (const auto& scriptIdIndexPair : _m_scriptIdToIndexes)
         {
-            ConsoleGraphX_Internal::ComponentIndex clonedComponentIndex = scriptPool->CloneComponent(scriptIdIndexPair.second);
+            ConsoleGraphX_Internal::ComponentIndex clonedComponentIndex = scriptPool->CloneComponentWithEntity(scriptIdIndexPair.second, &entity);
 
             entity._m_scriptIdToIndexes.insert({ scriptIdIndexPair.first, clonedComponentIndex });
         }
@@ -140,11 +155,11 @@ namespace ConsoleGraphX
 
     void Entity::KillEntity()
     {
-        ConsoleGraphX_Internal::Dispatcher<Entity*>::Notify("EntityDeletionEvent", this);
+        DestroyEntity();
         ConsoleGraphX_Internal::EntityIDs::RecycleId(*this);
     }
 
-    long Entity::GetId() const
+    size_t Entity::GetId() const
     {
         return m_id;
     }
@@ -154,14 +169,13 @@ namespace ConsoleGraphX
         return this->GetComponent<Transform>();
     }
 
-    void Entity::_NotifyScriptSystemAdd()
+    void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ComponentID componentId, const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& indexMap)
     {
-        ConsoleGraphX_Internal::Dispatcher<size_t>::Notify("AddScript", m_id);
-    }
-
-    void Entity::_NotifyScriptSystemRemove()
-    {
-        ConsoleGraphX_Internal::Dispatcher<size_t>::Notify("RemoveScript", m_id);
+        #ifdef _DEBUG
+        if (indexMap.find(componentId) != indexMap.end()) {
+            throw std::runtime_error("Component already exists.");
+        }
+        #endif
     }
 
     size_t Entity::Hash::operator()(const Entity& entity) const
