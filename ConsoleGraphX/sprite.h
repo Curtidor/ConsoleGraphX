@@ -1,7 +1,11 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "component.h"
+#include <wincontypes.h>
+#include "position_component.h"
+#include "transform.h"
 #include "vector2.h"
+#include "component.h"
 
 namespace ConsoleGraphX
 {
@@ -27,7 +31,7 @@ namespace ConsoleGraphX
 
 
 
-    struct Sprite : ConsoleGraphX_Internal::Component
+    struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
     {
     private:
         int _m_width;
@@ -38,30 +42,34 @@ namespace ConsoleGraphX
 
     public:
         int m_layer;
+        Vector2 m_size;
 
+    public:
         Sprite();
-        Sprite(int width, int height, bool isTransparent = false);
-        Sprite(int width, int height, int color, bool isTransparent = false);
-        Sprite(int width, int height, CHAR_INFO* pixels, bool isTransparent = false);
+        Sprite(TransformID transform);
+        Sprite(int width, int height, bool isTransparent = false, TransformID transform = -1);
+        Sprite(int width, int height, int color, TransformID transform = -1);
+        Sprite(int width, int height, int color, bool isTransparent = false, TransformID transform = -1);
+        Sprite(int width, int height, CHAR_INFO* pixels, TransformID transform = -1);
+        
         Sprite(const Sprite& other);
-
-        Vector2 Size();
-
         ~Sprite() override;
 
-        ConsoleGraphX_Internal::Component* Clone() const override;
-        int GetID() const override;
+        void Clone(Sprite* sprite) const;
+
+        Sprite& operator=(const Sprite& other);
 
         void HideSprite();
         void ShowSprite();
 
-        bool IsSpriteHidden();
-        bool IsTransparent();
+        bool IsSpriteHidden() const;
+        bool IsTransparent() const;
 
-        int GetWidth();
-        int GetHeight();
+        int GetWidth() const;
+        int GetHeight() const;
 
-        CHAR_INFO* GetPixels();
+        const Vector2& Size() const;
+        CHAR_INFO* GetPixels() const;
     };
 };
 

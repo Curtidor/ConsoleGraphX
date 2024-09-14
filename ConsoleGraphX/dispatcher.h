@@ -7,9 +7,11 @@
 namespace ConsoleGraphX_Internal
 {
     template <typename T>
-    class Dispatcher {
+    class Dispatcher 
+    {
     private:
-        struct Listener {
+        struct Listener
+        {
         public:
 
             std::function<void(const T&)> m_callback;
@@ -17,11 +19,11 @@ namespace ConsoleGraphX_Internal
             int m_priority;
 
             Listener(std::function<void(const T&)> callback, const std::string& eventName, int priority = 0)
-                : m_callback(callback), m_eventName(eventName), m_priority(priority) {}
+                : m_callback(callback), m_eventName(eventName), m_priority(priority) 
+            {}
 
-          
-
-            bool operator<(const Listener& other) const {
+            bool operator<(const Listener& other) const 
+            {
                 return m_priority < other.m_priority;
             }
 
@@ -33,20 +35,21 @@ namespace ConsoleGraphX_Internal
 
         static std::unordered_map<std::string, std::priority_queue<Listener>> _s_eventRegistry;
 
-
     public:
         /**
        * @brief Notifies all listeners for a specific event with event data.
        * @param event_name The name of the event.
        * @param eventData The event data.
        */
-        static void Notify(const std::string& eventName, const T& eventData) {
+        static void Notify(const std::string& eventName, const T& eventData) 
+        {
             const auto& it = _s_eventRegistry.find(eventName);
             if (it == _s_eventRegistry.end())
                 return;
 
             std::priority_queue<Listener> queueCopy = it->second;
             while (!queueCopy.empty()) {
+
                 Listener l = queueCopy.top();
                 l.m_callback(eventData);
                 queueCopy.pop();
@@ -59,7 +62,8 @@ namespace ConsoleGraphX_Internal
         * @param callback The listener callback.
         * @param priority The priority level (default is 0).
         */
-        static void RegisterListener(const std::string& eventName, std::function<void(const T&)> callback, int priority = 0) {
+        static void RegisterListener(const std::string& eventName, std::function<void(const T&)> callback, int priority = 0) 
+        {
             _s_eventRegistry[eventName].emplace(callback, eventName, priority);
         }
        
@@ -69,7 +73,8 @@ namespace ConsoleGraphX_Internal
         * @param callback The listener callback to deregister.
         * @param priority The priority level (default is 0).
         */
-        static void DeregisterListener(const std::string& eventName, std::function<void(const T&)> callback, int priority = 0) {
+        static void DeregisterListener(const std::string& eventName, std::function<void(const T&)> callback, int priority = 0) 
+        {
             auto it = _s_eventRegistry.find(eventName);
 
             if (it == _s_eventRegistry.end())
@@ -80,7 +85,8 @@ namespace ConsoleGraphX_Internal
 
             while (!listenerQueue.empty()) {
                 const Listener& listener = listenerQueue.top();
-                if (!(listener.callback == callback && listener.m_eventName == eventName && listener.priority == priority)) {
+                if (!(listener.callback == callback && listener.m_eventName == eventName && listener.priority == priority)) 
+                {
                     newQueue.push(listener);
                 }
                 listenerQueue.pop();

@@ -1,35 +1,49 @@
+#include <limits>
 #include "transform.h"
-#include "component.h"
 #include "vector3.h"
+#include "component_pool.h"
+#include "component_manager.h"
 
 namespace ConsoleGraphX
 {
     Transform::Transform()
-        : m_position(0.0f, 0.0f, 0.0f), m_world_position(0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f)
+        : m_position(0.0f, 0.0f, 0.0f), 
+        m_scale(1.0f, 1.0f, 1.0f), m_rotation(0.0f), m_parent((std::numeric_limits<TransformID>::max)())
     {}
 
-    Transform::Transform(const Transform& transform)
-        : m_position(Vector3(transform.m_position)), m_world_position(Vector3(transform.m_world_position)), m_scale(Vector3(transform.m_scale)), m_rotation(transform.m_rotation)
-    {}
+    Transform::Transform(const Transform& other)
+        : m_position(Vector3(other.m_position)), 
+        m_scale(Vector3(other.m_scale)), m_rotation(other.m_rotation), m_parent(other.m_parent)
+    {
+        other;
+    }
 
     Transform::Transform(float x, float y, float scaleX, float scaleY)
-        : m_position(x, y, 0.0f), m_world_position(x, y, 0.0f), m_scale(scaleX, scaleY, 1.0f), m_rotation(0.0f)
+        : m_position(x, y, 0.0f), m_scale(scaleX, scaleY, 1.0f), m_rotation(0.0f), m_parent((std::numeric_limits<TransformID>::max)())
     {}
 
     Transform::Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ)
-        : m_position(x, y, z), m_world_position(x, y, z), m_scale(scaleX, scaleY, scaleZ), m_rotation(0.0f)
+        : m_position(x, y, z), m_scale(scaleX, scaleY, scaleZ), m_rotation(0.0f), m_parent((std::numeric_limits<TransformID>::max)())
     {}
 
-    int Transform::GetID() const
+    void Transform::SetParent(TransformID parent)
     {
-        return ComponentID::transform;
+        m_parent = parent;
     }
 
-    ConsoleGraphX_Internal::Component* Transform::Clone() const
+    Transform* Transform::GetParent() const
     {
-        Transform* clone = new Transform(*this);
+        if (m_parent != (std::numeric_limits<TransformID>::max)())
+        {
+            return ConsoleGraphX_Internal::ComponentManager::Instance().GetComponent<ConsoleGraphX::Transform>(m_parent);
+        }
 
-        return clone;
+        return nullptr;
+    }
+
+    void Transform::Clone(Transform* transform) const
+    {
+        *transform = *this;
     }
 
     void Transform::SetPosition(float x, float y)
@@ -52,8 +66,7 @@ namespace ConsoleGraphX
 
     void Transform::SetScale(float x, float y)
     {
-        m_scale.x = x;
-        m_scale.y = y;
+        SetScale(x, y, m_scale.z);
     }
 
     void Transform::SetScale(float x, float y, float z)
@@ -63,14 +76,26 @@ namespace ConsoleGraphX
         m_scale.z = z;
     }
 
-    const Vector3 Transform::GetPosition() const
-    {
-        return m_position;
-    }
-
     void Transform::Translate(const Vector3& translation)
     {
         m_position += translation;
     }
 
+    const Vector3& Transform::GetLocalPosition() const
+    {
+        return m_position;
+    }
+
+    const Vector3 Transform::GetWorldPosition() const
+    {
+        // We keep getting a null error here because when objects are added to pools, 
+        // the pools may resize, causing pointers (like m_parent) to become invalid.
+        // This breaks the parent-child chain, leading to a null reference.
+        if (m_parent != -1)
+        {
+            return m_position + GetParent()->GetWorldPosition();
+        }
+
+        return m_position;
+    }
 };

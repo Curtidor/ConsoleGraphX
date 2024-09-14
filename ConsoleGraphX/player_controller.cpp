@@ -1,24 +1,22 @@
 #include "player_controller.h"
-#include "component.h"
+#include "position_component.h"
+#include "transform.h"
 
 namespace ConsoleGraphX
 {
-    PlayerController::PlayerController() : m_moveSpeed(0), m_jumpSpeed(0), m_gravity(0), m_velocity(0.0f)
-    {}
-
-    PlayerController::PlayerController(float moveSpeed, float jumpSpeed, float gravity) :
-        m_moveSpeed(moveSpeed), m_jumpSpeed(jumpSpeed), m_gravity(gravity), m_velocity(0.0f)
-    {}
-
-    int PlayerController::GetID() const
+    PlayerController::PlayerController() : PositionComponentBase(), m_moveSpeed(0), m_jumpSpeed(0), m_gravity(0), m_velocity(0.0f)
     {
-        return ComponentID::playerController;
     }
 
-    ConsoleGraphX_Internal::Component* PlayerController::Clone() const
-    {
-        PlayerController* clone = new PlayerController(*this);
+    PlayerController::PlayerController(TransformID transformID) : PositionComponentBase(transformID),  m_moveSpeed(0), m_jumpSpeed(0), m_gravity(0), m_velocity(0.0f)
+    {}
 
-        return clone;
+    PlayerController::PlayerController(float moveSpeed, float jumpSpeed, float gravity, TransformID transformID) :
+        PositionComponentBase(transformID), m_moveSpeed(moveSpeed), m_jumpSpeed(jumpSpeed), m_gravity(gravity), m_velocity(0.0f)
+    {}
+
+    void PlayerController::Clone(PlayerController* pController) const
+    {
+        *pController = *this;
     }
 };

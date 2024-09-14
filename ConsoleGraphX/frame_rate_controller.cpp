@@ -65,7 +65,7 @@ namespace ConsoleGraphX
 	{
 		if (deltaTime <= _m_targetFrameDuration)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(_m_targetFrameDuration - deltaTime) - std::chrono::milliseconds(2));
+			//std::this_thread::sleep_for(std::chrono::milliseconds(_m_targetFrameDuration - deltaTime) - std::chrono::milliseconds(2));
 		}
 
 		if (_m_elapsedTime >= std::chrono::milliseconds(1000))

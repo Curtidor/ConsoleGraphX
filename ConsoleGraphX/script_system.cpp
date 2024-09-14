@@ -1,108 +1,48 @@
-#include <string>
-#include <unordered_set>
-#include <unordered_map>
-#include <typeindex>
-#include <memory>
-#include "component.h"
-#include "dispatcher.h"
-#include "entity.h"
+#include <vector>
 #include "script.h"
 #include "script_system.h"
-#include "verify_macro.h"
+#include "component_manager.h"
+#include "component_pool.h"
 
 namespace ConsoleGraphX
 {
-	std::unordered_set<Entity*> ScriptSystem::_s_scripts;
-
-	// TODO when script state changes we should stop calling update on that script or start calling update deping on the state
-
 	void ScriptSystem::Initialize() 
+	{}
+
+	void ScriptSystem::Update(float deltaTime)
 	{
-		std::string objectName = typeid(Script).name();
+		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
+		std::vector<Script*>& scripts = *scriptPool->GetPoolItems();
 
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("AddComponent" + objectName, RegisterScript);
-		// TODO need to add support for removing single scripts
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RemoveComponent" + objectName, DeregisterScript);
-		ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("RunTimeScriptAddition" + objectName, RunTimeRegisterScript);
-	}
-
-	void ScriptSystem::Update(float delta_time)
-	{
-
-		for (Entity* entity : _s_scripts)
+		for (Script* script : scripts)
 		{
-			CGX_VERIFY(entity);
-
-			for (const auto& component: entity->GetScripts())
+			if (script != nullptr && script->IsEnabled())
 			{
-				Script* script = static_cast<Script*>(component.second.get());
-
-				if (script->IsEnabled())
-					script->Update(entity);
+				script->Update(deltaTime);
 			}
 		}
 	}
 
-	void ScriptSystem::_DoScriptWarmUp(Entity* entity)
+	void ScriptSystem::ScriptWarmUp()
 	{
-		const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& scripts = entity->GetScripts();
+		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
+		std::vector<Script*>& scripts = *scriptPool->GetPoolItems();
 
-		for (const auto& scriptPtr : scripts)
+		for (Script* script : scripts)
 		{
-			Script* script = static_cast<Script*>(scriptPtr.second.get());
-			if (script)
+			if (script != nullptr)
 			{
-				script->Awake(entity);
+				script->Awake();
 			}
 		}
 
-		for (const auto& scriptPtr : scripts)
+		for (Script* script : scripts)
 		{
-			Script* script = static_cast<Script*>(scriptPtr.second.get());
-			if (script)
+
+			if (script != nullptr)
 			{
-				script->Start(entity);
+				script->Start();
 			}
 		}
-	}
-
-	void ScriptSystem::WarmUp()
-	{
-		for (Entity* entity : _s_scripts)
-		{
-			ScriptSystem::_DoScriptWarmUp(entity);
-		}
-	}
-
-	void ScriptSystem::RegisterScript(Entity* entity)
-	{
-		CGX_VERIFY(entity);
-
-		if (entity->GetScripts().size() > 0)
-			_s_scripts.insert(entity);
-	}
-
-	void ScriptSystem::RunTimeRegisterScript(Entity* entity)
-	{
-		CGX_VERIFY(entity);
-
-		if (entity->GetScripts().size() > 0)
-		{
-			RegisterScript(entity);
-			ScriptSystem::_DoScriptWarmUp(entity);
-		}
-	}
-
-	void ScriptSystem::DeregisterScript(Entity* entity)
-	{
-		CGX_VERIFY(entity);
-
-		auto itEntity = _s_scripts.find(entity);
-
-		if (itEntity == _s_scripts.end())
-			return;
-
-		if ((*itEntity)->GetScripts().size() == 1)
-			_s_scripts.erase(itEntity);
 	}
 }

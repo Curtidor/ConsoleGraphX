@@ -7,9 +7,9 @@ namespace ConsoleGraphX
     class Engine
     {
     private:
-        static ConsoleGraphX_Internal::SystemManager* _systemManager;
-        static ConsoleGraphX_Internal::Debugger* _debugger;
-        static bool _m_isRunning;
+        static inline ConsoleGraphX_Internal::SystemManager* _systemManager = nullptr;
+        static inline ConsoleGraphX_Internal::Debugger* _debugger = nullptr;
+        static inline bool _m_isRunning = false;
 
     private:
         static BOOL WINAPI _CleanUp(DWORD ctrlType);

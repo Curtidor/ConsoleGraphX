@@ -1,6 +1,5 @@
 #pragma once
 #include "script.h"
-#include "component.h"
 #include "entity.h"
 #include "transform.h"
 
@@ -13,9 +12,12 @@ private:
 
 public:
 	Snow();
+	Snow(Entity* owner);
+	Snow(const Snow& other, Entity* owner);
 
-	void Awake(Entity* owner) override;
-	void Update(Entity* owner) override;
+	void Awake() override;
+	void Update(float deltaTime) override;
 
-	ConsoleGraphX_Internal::Component* Clone() const override;
+	void Clone(Script*& script) override;
+	void Clone(Script*& script, Entity* owner) override;
 };

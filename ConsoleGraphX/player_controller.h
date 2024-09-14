@@ -1,10 +1,12 @@
 #pragma once
-#include "component.h"
+#include "position_component.h"
 #include "vector3.h"
+#include "transform.h"
+#include "component.h"
 
 namespace ConsoleGraphX 
 {
-	struct PlayerController : ConsoleGraphX_Internal::Component
+	struct PlayerController : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
 	{
 	public:
 		float m_moveSpeed;
@@ -12,11 +14,12 @@ namespace ConsoleGraphX
 		float m_gravity;
 		Vector3 m_velocity;
 
+
 	public:
 		PlayerController();
-		PlayerController(float moveSpeed, float jumpSpeed, float gravity);
+		PlayerController(TransformID transform);
+		PlayerController(float moveSpeed, float jumpSpeed, float gravity, TransformID transform);
 
-		ConsoleGraphX_Internal::Component* Clone() const override;
-		int GetID() const override;
+		void Clone(PlayerController* pController) const;
 	};
 };

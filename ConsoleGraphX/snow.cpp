@@ -1,5 +1,4 @@
 #include "snow.h"
-#include "component.h"
 #include "debugger.h"
 #include "entity.h"
 #include "random_numbers.h"
@@ -9,30 +8,45 @@
 
 using namespace ConsoleGraphX;
 
-
-Snow::Snow(): Script(), _m_transform(nullptr)
+Snow::Snow() : Script(), _m_transform(nullptr)
 {}
 
-void Snow::Awake(Entity* owner)
+Snow::Snow(Entity* owner): Script(owner), _m_transform(nullptr)
+{}
+
+Snow::Snow(const Snow& other, Entity* owner) : Script(other, owner), _m_transform(nullptr)
+{}
+
+void Snow::Clone(Script*& script)
 {
-	this->_m_transform = (Transform*)owner->GetComponent<Transform>();
+	script = new Snow(*this, const_cast<Entity*>(script->GetOwner()));
 }
 
-void Snow::Update(Entity* owner)
+void Snow::Clone(Script*& script, Entity* owner)
 {
+	script = new Snow(*this, owner);
+}
 
-	this->_m_transform->m_position += Vector3(0, 0.05, 0);
+void Snow::Awake()
+{
+	_m_transform = _m_owner->GetComponent<Transform>();
+}
+
+void Snow::Update(float deltaTime)
+{
+	_m_transform->m_position += Vector3(0, 0.25f, 0);
+	ConsoleGraphX_Internal::Debugger::S_LogMessage("SNOW");
 
 
-	if (this->_m_transform->m_position.y >= 94)
+	if (_m_transform->m_position.y >= 109)
 	{
-		if (owner->m_id == 0)
+		if (_m_owner->m_id == 0)
 		{
 			ConsoleGraphX_Internal::Debugger::S_LogMessage("prefab died");
 		}
 
 		Vector3 minSpread = Vector3(0, 0, 0);
-		Vector3 maxSpread = Vector3(270, 80, 0);
+		Vector3 maxSpread = Vector3(300, 80, 0);
 
 		float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
 		float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
@@ -40,15 +54,4 @@ void Snow::Update(Entity* owner)
 
 		_m_transform->SetPosition(x,y,z);
 	}
-
 }
-
-ConsoleGraphX_Internal::Component* Snow::Clone() const
-{
-	Snow* clone = new Snow();
-
-	return clone;
-}
-
-
-

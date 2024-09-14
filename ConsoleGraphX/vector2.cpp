@@ -8,6 +8,8 @@ namespace ConsoleGraphX
     const Vector2 Vector2::up(0.0f, 1.0f);
     const Vector2 Vector2::down(0.0f, -1.0f);
 
+    Vector2::Vector2() : x(0), y(0) {}
+    Vector2::Vector2(int x, int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
     Vector2::Vector2(float x, float y) : x(x), y(y) {}
 
     Vector2 Vector2::operator+(const Vector2& other) const {
@@ -51,18 +53,18 @@ namespace ConsoleGraphX
         return *this;
     }
 
-    void Vector2::PerpendicularPoint(const Vector2& start, const Vector2& end, Vector2& o_perpendicular_point)
+    void Vector2::PerpendicularPoint(const Vector2& start, const Vector2& end, Vector2& oPerpendicularPoint)
     {
-        o_perpendicular_point.x = end.y - start.y;
-        o_perpendicular_point.y = end.x - start.x;
+        oPerpendicularPoint.x = end.y - start.y;
+        oPerpendicularPoint.y = end.x - start.x;
     }
 
-    double Vector2::Magnitude() const {
+    float Vector2::Magnitude() const {
         return std::sqrt(x * x + y * y);
     }
 
     void Vector2::Normalize() {
-        double magnitude = Magnitude();
+        float magnitude = Magnitude();
         x /= magnitude;
         y /= magnitude;
     }

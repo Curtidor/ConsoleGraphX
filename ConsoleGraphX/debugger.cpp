@@ -1,14 +1,13 @@
-#include <string>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <memory>
-#include <thread>
 #include <handleapi.h>
 #include <errhandlingapi.h>
 #include <processthreadsapi.h>
+#include <string>
+#include <memory>
+#include <thread>
 #include <mutex>
-#include <condition_variable>
 #include <type_traits>
-#include <queue>
 #include "debugger.h"
 #include "../IPC/sender.h"
 

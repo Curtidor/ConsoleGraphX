@@ -1,14 +1,20 @@
-#include "input_system.h"
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <conio.h>
+#include <wincontypes.h>
+#include <processenv.h>
 #include <cctype>
-#include "screen.h"
+#include <conio.h>
+#include <algorithm> // false postive algo is used
+#include <consoleapi.h>
+#include "input_system.h"
 #include "vector2.h"
 
 namespace ConsoleGraphX
 {
     bool InputSystem::keys[255];
     Vector2 InputSystem::mousePos;
+    bool InputSystem::leftMouseButtonDown = false;
+    bool InputSystem::rightMouseButtonDown = false;
 
     /**
      * Get the next character from the input buffer if available, otherwise return '\0'.
@@ -64,22 +70,9 @@ namespace ConsoleGraphX
         // Convert the key value to lowercase
         char lowercaseKey = std::tolower(static_cast<char>(key));
 
-        // Access the keys array using the lowercase key
         return InputSystem::keys[static_cast<int>(lowercaseKey)] || InputSystem::keys[static_cast<int>(key)];
     }
 
-    /**
-     * Update the mouse position based on the current cursor position.
-     */
-    void InputSystem::UpdateMousePosition()
-    {
-        POINT cursorPos;
-        GetCursorPos(&cursorPos);
-        ScreenToClient(ConsoleGraphX_Internal::Screen::GetActiveScreen_A()->GetConsoleWindowHandle(), &cursorPos);
-
-        InputSystem::mousePos.x = cursorPos.x;
-        InputSystem::mousePos.y = cursorPos.y;
-    }
 
     /**
      * Get the current mouse position.
@@ -89,6 +82,71 @@ namespace ConsoleGraphX
     const Vector2 InputSystem::GetMousePosition()
     {
         return InputSystem::mousePos;
+    }
+    #pragma warning (disable: VCIC001)
+    void InputSystem::HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent)
+    {
+        switch (mouseEvent.dwEventFlags)
+        {
+        case 0: // Button press/release events
+            if (mouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
+            {
+                leftMouseButtonDown = true;
+            }
+            else
+            {
+                leftMouseButtonDown = false;
+            }
+
+            if (mouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+            {
+                rightMouseButtonDown = true;
+            }
+            else
+            {
+                rightMouseButtonDown = false;
+            }
+            break;
+
+        case MOUSE_MOVED:
+            mousePos.x = mouseEvent.dwMousePosition.X;
+            mousePos.y = mouseEvent.dwMousePosition.Y;
+            break;
+        }
+    }
+
+    void InputSystem::ProcessInput()
+    {
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD cNumRead = 0;
+        DWORD i = 0;
+        INPUT_RECORD irInBuf[128];
+
+        DWORD x = 0;
+
+        // Read input events
+        GetNumberOfConsoleInputEvents(hStdin, &x);
+        if (x)
+            ReadConsoleInput(hStdin, irInBuf, 128, &cNumRead);
+
+
+        // Dispatch the events to the appropriate handler
+        for (i = 0; i < cNumRead; i++)
+        {
+            switch (irInBuf[i].EventType)
+            {
+            case KEY_EVENT: // keyboard input
+                // Handle keyboard events if necessary
+                break;
+
+            case MOUSE_EVENT: // mouse input
+                HandleMouseEvent(irInBuf[i].Event.MouseEvent);
+                break;
+
+            default:
+                break;
+            }
+        }
     }
 
 };

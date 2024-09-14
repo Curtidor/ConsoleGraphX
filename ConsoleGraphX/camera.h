@@ -1,6 +1,7 @@
 #pragma once
 #include "component.h"
 #include "vector3.h"
+#include "vector2.h"
 
 namespace ConsoleGraphX
 {
@@ -10,20 +11,19 @@ namespace ConsoleGraphX
 		int _m_width;
 		int _m_height;
 
+		Vector2 _m_viewPort;
 		Vector3 _m_position;
 
 	public:
 		Camera();
 		Camera(int width, int hegith, const Vector3& position);
 
-		int GetWidth();
-		int GetHeight();
-		const Vector3 GetPosition();
+		void Clone(Camera* camera) const;
+
 		void SetPosition(const Vector3& position);
 		void SetCameraSize(int width, int height);
 
-		ConsoleGraphX_Internal::Component* Clone() const override;
-		int GetID() const override;
-
+		const Vector2& GetViewPort() const;
+		const Vector3& GetPosition() const;
 	};
 };

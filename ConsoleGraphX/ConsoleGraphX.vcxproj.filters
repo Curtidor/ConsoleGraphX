@@ -73,15 +73,6 @@
     <Filter Include="Source Files\Game\Scenes">
       <UniqueIdentifier>{1ac6daf9-953d-4d9d-8bde-3265162629d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Graphics\GUI">
-      <UniqueIdentifier>{a0830887-746a-4b4c-a329-f8f59fa76377}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Graphics\GUI">
-      <UniqueIdentifier>{d17b0aab-b564-47df-89ce-baddcccfdfa1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Utils">
-      <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
     </Filter>
@@ -90,6 +81,15 @@
     </Filter>
     <Filter Include="Source Files\Engine\Systems\SystemManaged">
       <UniqueIdentifier>{394aba2f-52f1-407f-96de-203311f3642b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Utils">
+      <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Components\PositionComponents">
+      <UniqueIdentifier>{650d484c-fb6b-4007-8a94-42a6032a4c41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Components\PositionComponents">
+      <UniqueIdentifier>{5cbef222-1440-4735-8977-477da25a5bd5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -106,12 +106,6 @@
       <Filter>Header Files\Engine\Math</Filter>
     </ClInclude>
     <ClInclude Include="component.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="sprite.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="render_system.h">
@@ -141,38 +135,20 @@
     <ClInclude Include="player.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="interactable.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_element.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="text_box.h">
-      <Filter>Header Files\Engine\Graphics\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="random_numbers.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="snow.h">
       <Filter>Header Files\Game\Scripts</Filter>
-    </ClInclude>
-    <ClInclude Include="player_controller.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="script.h">
-      <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="verify_macro.h">
-      <Filter>Header Files\Utils</Filter>
+      <Filter>Header Files\Engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="frame_rate_controller.h">
       <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="camera_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
     <ClInclude Include="player_controller_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
@@ -180,14 +156,44 @@
     <ClInclude Include="script_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
-    <ClInclude Include="sprtite_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
     <ClInclude Include="system_manager.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
     </ClInclude>
     <ClInclude Include="base_system.h">
       <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
+    </ClInclude>
+    <ClInclude Include="component_manager.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="component_pool.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="meta_utilities.h">
+      <Filter>Header Files\Engine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="base_component_pool.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="component_id.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="sprite.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="player_controller.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="position_component.h">
+      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="base_component_pool_impl.h">
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -206,12 +212,6 @@
     <ClCompile Include="vector3.cpp">
       <Filter>Source Files\Engine\Math</Filter>
     </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="transform.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="render_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
@@ -224,9 +224,6 @@
     <ClCompile Include="scene_system.cpp">
       <Filter>Source Files\Engine\Systems</Filter>
     </ClCompile>
-    <ClCompile Include="player_controller.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
@@ -236,20 +233,11 @@
     <ClCompile Include="entity.h">
       <Filter>Header Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="script.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
-    </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
     <ClCompile Include="main_scene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="gui_element.cpp">
-      <Filter>Source Files\Engine\Graphics\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="text_box.cpp">
-      <Filter>Source Files\Engine\Graphics\GUI</Filter>
     </ClCompile>
     <ClCompile Include="random_numbers.cpp">
       <Filter>Source Files\Utils</Filter>
@@ -269,20 +257,32 @@
     <ClCompile Include="system_manager.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
-    <ClCompile Include="camera_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
     <ClCompile Include="player_controller_system.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
     <ClCompile Include="script_system.cpp">
       <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
     </ClCompile>
-    <ClCompile Include="sprite_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
     <ClCompile Include="debugger.cpp">
       <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="componenent_manager.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="player_controller.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="sprite.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="position_component.cpp">
+      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

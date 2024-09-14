@@ -1,11 +1,11 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <string>
 #include <queue>
 #include <mutex>
 #include <thread>
 #include <memory>
-#include <condition_variable>
 #include "../IPC/sender.h"
 
 namespace ConsoleGraphX_Internal
@@ -31,7 +31,7 @@ namespace ConsoleGraphX_Internal
         {
             CGX_INFO = 1,
             CGX_WARNING = 2,
-            CGX_ERROR = 3  
+            CGX_ERROR = 3
         };
 
         // Constructor: Initializes the debugger with a name and starts the receiver
@@ -56,4 +56,4 @@ namespace ConsoleGraphX_Internal
         // Formats the log message with the specified log level
         void _FormatLogMessage(std::string& message, LogLevel level);
     };
-}
+};

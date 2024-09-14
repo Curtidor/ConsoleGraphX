@@ -1,5 +1,4 @@
 ﻿#include "player.h"
-#include <string>
 #include "entity.h"
 #include "player_controller.h"
 #include "script.h"
@@ -12,32 +11,37 @@
 
 using namespace ConsoleGraphX;
 
-Player::Player() : Script(), _m_playerCam(nullptr)
+Player::Player() : Script(nullptr), _m_playerCam(nullptr)
 {}
 
-void Player::Awake(Entity* owner)
+Player::Player(Entity* owner) : Script(owner), _m_playerCam(nullptr)
+{}
+
+void Player::Awake()
 {
-	_m_playerCam = owner->GetComponent<Camera>();
+	_m_playerCam = _m_owner->GetComponent<Camera>();
 
-	Sprite* sprite = (Sprite*)owner->AddComponent<Sprite>(7, 12, DarkYellow);
-	sprite->m_layer = 10;
+	_m_owner->AddComponent<Sprite>(7, 12, Cyan);
 
-	owner->GetComponent<Transform>()->SetPosition(0,40);
-	owner->AddComponent<PlayerController>(100, 5, 9);
+	Transform* transform = _m_owner->GetTransform();
+	Sprite* sprite = _m_owner->GetComponent<Sprite>();
+
+	_m_owner->GetComponent<Transform>()->SetPosition(50,50);
+	_m_owner->AddComponent<PlayerController>(100, 5, 9);
 }
 
-void Player::Update(Entity* owner)
+void Player::Update(float deltaTime)
 {
-	Vector3 playerPosition = owner->GetPosition();
-	Vector3 camPostion = _m_playerCam->GetPosition();
+	Vector3 playerPosition = _m_owner->GetComponent<Transform>()->m_position;
 
-	_m_playerCam->SetPosition(Vector3(playerPosition.x - _m_playerCam->GetWidth() * 0.5f, playerPosition.y - _m_playerCam->GetHeight() * 0.5f));
-
-	ConsoleGraphX_Internal::Debugger::S_LogMessage("cam x: " + std::to_string(camPostion.x) + " y: " + std::to_string(camPostion.y));
-	ConsoleGraphX_Internal::Debugger::S_LogMessage("player x: " + std::to_string(playerPosition.x) + " y: " + std::to_string(playerPosition.y));
+	ConsoleGraphX_Internal::Debugger::S_LogMessage("player stuff");
 
 	if (InputSystem::IsKeyPressed(Key::B))
-		owner->KillEntity();
+	{
+		_m_owner->KillEntity();
+		ConsoleGraphX_Internal::Debugger::S_LogMessage("dead!");
+
+	}
 }
 
 

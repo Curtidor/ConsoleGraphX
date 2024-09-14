@@ -8,18 +8,12 @@
 #include "input_system.h"
 #include "player_controller_system.h"
 #include "render_system.h"
-#include "scene_system.h"
+#include "component_manager.h"
 #include "screen.h"
 #include "script_system.h"
-#include "sprtite_system.h"
-#include "camera_system.h"
 
 namespace ConsoleGraphX
 {
-    ConsoleGraphX_Internal::SystemManager* Engine::_systemManager = nullptr;
-    ConsoleGraphX_Internal::Debugger* Engine::_debugger = nullptr;
-    bool Engine::_m_isRunning = false;
-
     void Engine::Initialize(short screen_width, short screen_height, short pixel_width, short pixel_height, ConsoleGraphX_Internal::Debugger& debugger)
     {
         _debugger = &debugger;
@@ -30,9 +24,9 @@ namespace ConsoleGraphX
 
         _systemManager = new ConsoleGraphX_Internal::SystemManager();
         _systemManager->RegisterSystem<ScriptSystem>();
-        _systemManager->RegisterSystem<ConsoleGraphX_Internal::SpriteSystem>();
         _systemManager->RegisterSystem<PlayerControllerSystem>();
-        _systemManager->RegisterSystem<CameraSystem>();
+
+        ConsoleGraphX_Internal::ComponentManager::Initialize();
     }
 
     void Engine::Shutdown()
@@ -44,6 +38,8 @@ namespace ConsoleGraphX
         }
 
         delete _systemManager;
+
+        ConsoleGraphX_Internal::ComponentManager::ShutDown();
     }
 
     void Engine::Run()
@@ -60,7 +56,7 @@ namespace ConsoleGraphX
             return;
         }
 
-        ScriptSystem::WarmUp();
+        ScriptSystem::ScriptWarmUp();
 
         ConsoleGraphX_Internal::Screen* active_screen = ConsoleGraphX_Internal::Screen::GetActiveScreen_A();
 
@@ -71,17 +67,17 @@ namespace ConsoleGraphX
         {
             auto frameStartTime = std::chrono::high_resolution_clock::now(); // Start frame time capture
 
-            _Update(std::chrono::duration<float>(deltaTime).count()); // Update with delta time in seconds
+            _Update(0.0083f); // Update with delta time in seconds
 
             active_screen->DrawScreen();
-            active_screen->MemFillScreen(0);
+            active_screen->FillScreen({ ConsoleGraphX_Internal::Screen::s_pixel, Color::DarkYellow});
 
             active_screen->SetConsoleName("FPS " + std::to_string(frameRateController.GetFramesPerSecond()));
 
             auto frameEndTime = std::chrono::high_resolution_clock::now(); // End frame time capture
             deltaTime = frameEndTime - frameStartTime; // Calculate delta time
 
-            frameRateController.WaitForNextFrame(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime));
+            //frameRateController.WaitForNextFrame(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime));
 
             frameRateController.CaptureFrame(); // Capture the end of the frame
         }
@@ -90,16 +86,15 @@ namespace ConsoleGraphX
     void Engine::_Update(float deltaTime)
     {
         InputSystem::GetPressedKeys();
-        InputSystem::UpdateMousePosition();
+
+        //InputSystem::UpdateMousePosition();
 
         if (_systemManager)
         {
             _systemManager->Update(deltaTime);
         }
 
-        ConsoleGraphX_Internal::RenderSystem::DrawSprites(ConsoleGraphX_Internal::SpriteSystem::GetEntitySprites());
-
-        SceneSystem::GetActiveScene()->DeleteEntities();
+        ConsoleGraphX_Internal::RenderSystem::DrawSprites();
     }
 
     BOOL WINAPI Engine::_CleanUp(DWORD ctrlType)

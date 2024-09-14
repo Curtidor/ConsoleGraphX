@@ -1,9 +1,7 @@
 #include "scene_system.h"
-#include <functional>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include "dispatcher.h"
 #include "entity.h"
 #include "scene.h"
 
@@ -16,8 +14,8 @@ namespace ConsoleGraphX
     {
         _s_scenes[scene->GetSceneName()] = scene;
 
-        ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
-        ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
+       // ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
+       // ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
     }
 
     void SceneSystem::DeregisterScene(const std::string& name)
@@ -50,7 +48,7 @@ namespace ConsoleGraphX
         if (it != _s_scenes.end())
         {
             Scene* scene = it->second;
-            for (Entity* entity : scene->GetEntities())
+            for (Entity entity : scene->GetEntities())
             {
                 scene->DeregisterEntity(entity);
             }

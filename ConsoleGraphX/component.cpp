@@ -1,6 +1,4 @@
 #include "component.h"
-#include <typeindex>
-#include <string>
 
 /**
  * @brief Default constructor for the base Component class.
@@ -10,17 +8,9 @@ namespace ConsoleGraphX_Internal
 	Component::Component()
 	{}
 
-	Component::~Component()
-	{}
-
-	int Component::GetID() const
+	void Component::Clone(Component* component) const
 	{
-		return ComponentID::base;
-	}
-
-	const std::string Component::ComponentName() const
-	{
-		return typeid(*this).name();
+		*component = *this;
 	}
 };
 

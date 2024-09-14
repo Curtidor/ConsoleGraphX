@@ -1,12 +1,31 @@
 #pragma once
-#include <memory>
-#include <unordered_map>
+#include <queue>
 #include <unordered_set>
-#include <typeindex>
+#include <unordered_map>
 #include <string>
 #include <type_traits>
-#include "component.h"
+#include <stdexcept>
+#include "transform.h"
 #include "vector3.h"
+#include "component_id.h"
+#include "component_manager.h"
+#include "base_component_pool.h"
+#include "position_component.h"
+#include "script.h"
+
+namespace ConsoleGraphX_Internal
+{
+    struct EntityIDs
+    {
+    private:
+        static inline std::queue<size_t> _s_recycledIds;
+        static inline size_t _s_currentID = 0;
+
+    public:
+        static size_t GetId();
+        static void RecycleId(ConsoleGraphX::Entity& entity);
+    };
+};
 
 namespace ConsoleGraphX
 {
@@ -16,54 +35,60 @@ namespace ConsoleGraphX
     class Entity
     {
     private:
-        static long _s_totalEntities;
-
         Entity* _m_parent;
+
         std::unordered_set<Entity*> _m_children;
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>> _m_components;
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>> _m_scripts;
+       
+        std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> _m_componentIdToIndexMap;
+        std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex> _m_scriptIdToIndexes;
+    private:
+        void _CheckComponentExists(ConsoleGraphX_Internal::ComponentID componentId, const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& indexMap);
 
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator _RemoveScript(std::type_index index, ConsoleGraphX_Internal::Component* script);
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator _RemoveComponent(std::type_index type, ConsoleGraphX_Internal::Component* comp);
+        template <typename T>
+        std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& GetIndexMap() {
+            if constexpr (ConsoleGraphX_Internal::IsScript<T>) 
+            {
+                return _m_scriptIdToIndexes;
+            }
+            else 
+            {
+                return _m_componentIdToIndexMap;
+            }
+        }
 
 
-        void _CloneComponents(Entity* spawnedEntity) const;
-        void _AddComponent(std::type_index inded, std::unique_ptr<ConsoleGraphX_Internal::Component> comp);
-        
-      
+        template <typename T, typename... Args>
+        ConsoleGraphX_Internal::ComponentIndex CreateComponentInPool(Args&&... args) {
+            if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value) 
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenComponentID::Get<Transform>()]).second;
+            }
+            else if constexpr (ConsoleGraphX_Internal::IsScript<T>)
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)..., this).second;
+            }
+            else 
+            {
+                return ConsoleGraphX_Internal::ComponentManager::Instance().CreateComponent<T>(std::forward<Args>(args)...).second;
+            }
+        }
+
     public:
-        const long m_id;
-        const std::string m_name;
+        const size_t m_id;
+        std::string m_tag;
+
+    public:
 
         /**
          * @brief Default constructor for creating an entity.
          */
         Entity();
 
-        /**
-         * @brief Constructor for creating an entity with a specified name.
-         * @param entityName The name of the entity.
-         */
-        Entity(const std::string& entityName);
+        Entity(int id);
 
-        /**
-         * @brief Gets a component by its ID.
-         * @param id The ID of the component to retrieve.
-         * @return Pointer to the component with the specified ID, or nullptr if not found.
-         */
-        ConsoleGraphX_Internal::Component* GetComponentByID(int id);
+        Entity(int id, const std::string& tag);
 
-        /**
-         * @brief Removes a component by its ID.
-         * @param id The ID of the component to be removed.
-         */
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator RemoveComponentById(int id);
-
-        /**
-         * @brief Removes a component by a pointer reference.
-         * @param component The component to be removed.
-         */
-        std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>::iterator RemoveComponentC(ConsoleGraphX_Internal::Component* component);
+        ~Entity();
 
         /**
          * @brief Sets the parent of the entity.
@@ -92,26 +117,20 @@ namespace ConsoleGraphX
          * @brief Gets a reference to the components associated with this entity.
          * @return A reference to the components map.
          */
-        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& GetComponents() const;
-        const std::unordered_map<std::type_index, std::unique_ptr<ConsoleGraphX_Internal::Component>>& GetScripts() const;
-
-        /**
-         * @brief Gets the world position of this entity by combining its local position with that of its children.
-         * @return The world position as a Vector3.
-         */
-        const Vector3 GetPosition() const;
+        const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& GetComponents() const;
+        const std::unordered_map<ConsoleGraphX_Internal::ComponentID, ConsoleGraphX_Internal::ComponentIndex>& GetScripts() const;
 
         /**
          * @brief Gets the unique ID of the entity.
          * @return The entity's ID.
          */
-        long GetId() const;
+        size_t GetId() const;
 
         /**
          * @brief Creates a clone of the entity.
          * @return Pointer to the cloned entity.
          */
-        Entity* CloneEntity();
+        void Clone(Entity& entity);
 
         /**
          * @brief Creates a clone of the entity with a specified spread for randomizing the position.
@@ -119,7 +138,7 @@ namespace ConsoleGraphX
          * @param maxSpread The maximum spread for randomizing the position.
          * @return Pointer to the cloned entity.
          */
-        Entity* CloneEntity(Vector3 minSpread, Vector3 maxSpread);
+        void Clone(Entity& entity, const Vector3& minSpread, const Vector3& maxSpread);
 
         /**
          * @brief Adds a new component of type T to the entity.
@@ -129,16 +148,16 @@ namespace ConsoleGraphX
          * @return Pointer to the added component.
          */
         template <typename T, typename... Args>
-        T* AddComponent(Args&&... args) {
-            static_assert(std::is_base_of<ConsoleGraphX_Internal::Component, T>::value, "The passed type must be derived from Component.");
+        ConsoleGraphX_Internal::ComponentIndex AddComponent(Args&&... args) {
+            ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
-            // Create a new instance of the component with arguments and add it to the components map
-            auto component = std::make_unique<T>(std::forward<Args>(args)...);
-            T* componentPtr = component.get();
-            std::type_index index = typeid(T);
-            this->_AddComponent(index, std::move(component));
+            auto& indexMap = GetIndexMap<T>();
+            _CheckComponentExists(componentId, indexMap);
 
-            return componentPtr;
+            ConsoleGraphX_Internal::ComponentIndex compIndex = CreateComponentInPool<T>(std::forward<Args>(args)...);
+            indexMap.emplace(componentId, compIndex);
+
+            return compIndex;
         }
 
         /**
@@ -146,74 +165,107 @@ namespace ConsoleGraphX
          * @tparam T The type of component to be removed.
          */
         template <typename T>
-        void RemoveComponent() {
-            std::type_index type = typeid(T);
-            auto it = _m_components.find(type);
-            // If the component is not present in the components map, check in the scripts map
-            if (it == _m_components.end())
-                it = _m_scripts.find(type);
-            // If the component is not present in either map, return early
-            if (it == _m_components.end() && it == _m_scripts.end())
-                return;
+        void RemoveComponent()
+        {
+            static_assert(std::is_same_v<T, Transform>, "Cannot Remove Transforms!");
 
-            this->_RemoveComponent(it->first, it->second.get());
-        }
+            ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
 
+            auto& indexMap = ConsoleGraphX_Internal::IsScript<T> ? _m_scriptIdToIndexes : _m_componentIdToIndexMap;
 
-        /**
-         * @brief Checks if the entity has a component of type T.
-         * @tparam T The type of component to check for.
-         * @return True if the entity has the specified component, false otherwise.
-         */
-        template <typename T>
-        bool HasComponent() const {
-            return _m_components.find(typeid(T)) != _m_components.end() || _m_scripts.find(typeid(T) != _m_scripts.end());
-        }
+            auto it = indexMap.find(componentId);
 
-        /**
-         * @brief Gets a pointer to the component of type T.
-         * @tparam T The type of component to retrieve.
-         * @return Pointer to the component of type T, or nullptr if not found.
-         */
-        template <typename T>
-        T* GetComponent() const {
-            std::type_index type = typeid(T);
-
-            // Check if the component is present in the components map
-            auto compIt = _m_components.find(type);
-            if (compIt != _m_components.end()) {
-                return static_cast<T*>(compIt->second.get());
+            if (it == indexMap.end())
+            {
+                throw std::runtime_error("Component not found.");
             }
 
-            // Check if the component is present in the scripts map
-            auto scriptIt = _m_scripts.find(type);
-            if (scriptIt != _m_scripts.end()) {
-                return static_cast<T*>(scriptIt->second.get());
-            }
-
-            // Component not found in either map
-            return nullptr;
+            ConsoleGraphX_Internal::ComponentManager::Instance().RemoveComponent<T>(it->second);
+            indexMap.erase(it);
         }
 
+        /**
+        * @brief Gets a pointer to the component of the specified type.
+        * @tparam T The type of the component.
+        * @return A pointer to the component, or nullptr if the component does not exist.
+        */
+        template <typename T>
+        typename std::enable_if<ConsoleGraphX_Internal::IsScript<T>, Script*>::type
+            GetComponent()
+        {
+            ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
+            return _GetComponentImpl<Script>(componentId, _m_scriptIdToIndexes);
+        }
 
         /**
-         * @brief Calculates the hash value of the entity.
-         * @return The hash value of the entity.
+         * @brief Gets a pointer to the component of the specified type.
+         * @tparam T The type of the component.
+         * @return A pointer to the component, or nullptr if the component does not exist.
          */
-        size_t hash() const;
+        template <typename T>
+        typename std::enable_if<!ConsoleGraphX_Internal::IsScript<T>, T*>::type
+            GetComponent()
+        {
+            constexpr ConsoleGraphX_Internal::ComponentID componentId = ConsoleGraphX_Internal::ComponentManager::GetComponentID<T>();
+            return _GetComponentImpl<T>(componentId, _m_componentIdToIndexMap);
+        }
+
+        Transform* GetTransform();
+
+        void DestroyEntity() const
+        {
+            ConsoleGraphX_Internal::ComponentManager::Instance().DestroyEntityComponents(_m_componentIdToIndexMap);
+            ConsoleGraphX_Internal::ComponentManager::Instance().DestroyEntityComponents(_m_scriptIdToIndexes);
+        }
 
         /**
          * @brief Equality operator for comparing entities.
          * @param other The entity to compare with.
          * @return True if the entities are equal, false otherwise.
          */
-        bool operator==(const Entity& other) const;
+        struct Hash
+        {
+            using is_transparent = void;
 
+            size_t operator()(const Entity& entity) const;
+            size_t operator()(int id) const;
+        };
+
+        struct Equal
+        {
+            using is_transparent = void;
+
+            bool operator()(const Entity& lhs, const Entity& rhs) const;
+            bool operator()(const Entity& entity, int id) const;
+            bool operator()(int id, const Entity& entity) const;
+        };
         /**
          * @brief Inequality operator for comparing entities.
          * @param other The entity to compare with.
          * @return True if the entities are not equal, false otherwise.
          */
         bool operator!=(const Entity& other) const;
+
+    private:
+        // The reason we split the function into is script and not is to allow for the use of constexpr
+        // as during profiling getting builtin components was a hot spot
+        /**
+        * @brief Helper function to retrieve a component.
+        * @tparam T The type of the component.
+        * @param componentId The ID of the component.
+        * @param indexMap The map to use for the lookup.
+        * @return A pointer to the component, or nullptr if the component does not exist.
+        */
+        template <typename T>
+        inline T* _GetComponentImpl(ConsoleGraphX_Internal::ComponentID componentId, const std::unordered_map<ConsoleGraphX_Internal::ComponentID, size_t>& indexMap)
+        {
+            auto it = indexMap.find(componentId);
+            if (it == indexMap.end())
+            {
+                return nullptr;
+            }
+
+            return ConsoleGraphX_Internal::ComponentManager::Instance().GetComponent<T>(it->second);
+        }
     };
 };

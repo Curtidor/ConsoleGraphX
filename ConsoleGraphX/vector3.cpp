@@ -31,12 +31,12 @@ namespace ConsoleGraphX
         return Vector3(x / scalar, y / scalar, z / scalar);
     }
 
-    double Vector3::Magnitude() const {
+    float Vector3::Magnitude() const {
         return std::sqrt(x * x + y * y + z * z);
     }
 
     void Vector3::Normalize() {
-        double magnitude = Magnitude();
+        float magnitude = Magnitude();
         x /= magnitude;
         y /= magnitude;
         z /= magnitude;
