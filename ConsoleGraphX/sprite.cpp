@@ -10,59 +10,54 @@
 namespace ConsoleGraphX
 {
 	Sprite::Sprite()
-		: PositionComponentBase(Transform()), _m_width(1), _m_height(1),
-		_m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false),
-		m_layer(0), m_size(0, 0) {}
-
-	Sprite::Sprite(Transform* transform)
-		: PositionComponentBase(Transform()), _m_width(1), _m_height(1),
+		: PositionComponentBase(), _m_width(1), _m_height(1),
 		_m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
 	{
-		m_transform.SetParent(transform);
 	}
 
-	Sprite::Sprite(int width, int height, bool isTransparent, Transform* transform)
-		: PositionComponentBase(Transform()), _m_width(width), _m_height(height),
+	Sprite::Sprite(TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(1), _m_height(1),
+		_m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false),
+		m_layer(0), m_size(0, 0) 
+	{
+	}
+
+	Sprite::Sprite(int width, int height, bool isTransparent, TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
 		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(isTransparent),
 		m_layer(0), m_size(width, height) 
 	{
-		m_transform.SetParent(transform);
 		CHAR_INFO c = { L'█', Color::Magenta };
 		std::fill(_m_pixels, _m_pixels + (width * height), c);
 	}
 
-
-	Sprite::Sprite(int width, int height, int color, bool isTransparent, Transform* transform)
-		: PositionComponentBase(Transform()), _m_width(width), _m_height(height),
+	Sprite::Sprite(int width, int height, int color, bool isTransparent, TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
 		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(isTransparent),
 		m_layer(0), m_size(width, height) 
 	{
-		m_transform.SetParent(transform);
-		CHAR_INFO c = { L'█', color };
+		CHAR_INFO c = { L'█', static_cast<WORD>(color) };
 		std::fill(_m_pixels, _m_pixels + (width * height), c);
 	}
 
-	Sprite::Sprite(int width, int height, int color, Transform* transform)
-		: PositionComponentBase(Transform()), _m_width(width), _m_height(height),
+	Sprite::Sprite(int width, int height, int color, TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
 		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		m_transform.SetParent(transform);
-		CHAR_INFO c = { L'█', color };
+		CHAR_INFO c = { L'█', static_cast<WORD>(color) };
 		std::fill(_m_pixels, _m_pixels + (width * height), c);
 	}
 
-	Sprite::Sprite(int width, int height, CHAR_INFO* pixels, Transform* transform)
-		: PositionComponentBase(Transform()), _m_width(width), _m_height(height),
+	Sprite::Sprite(int width, int height, CHAR_INFO* pixels, TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
 		_m_pixels(pixels), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height) 
-	{
-		m_transform.SetParent(transform);
-	}
+	{}
 
 	Sprite::Sprite(const Sprite& other)
-		: PositionComponentBase(other.m_transform), _m_width(other._m_width), _m_height(other._m_height),
+		: PositionComponentBase(other.m_transformID), _m_width(other._m_width), _m_height(other._m_height),
 		_m_isVisible(other._m_isVisible), _m_isTransparent(other._m_isTransparent),
 		m_layer(other.m_layer), m_size(other.m_size) 
 	{
@@ -93,7 +88,7 @@ namespace ConsoleGraphX
 		_m_height = other._m_height;
 		_m_isVisible = other._m_isVisible;
 		_m_isTransparent = other._m_isTransparent;
-		m_transform = other.m_transform;
+
 		m_layer = other.m_layer;
 		m_size = other.m_size;
 
@@ -118,5 +113,5 @@ namespace ConsoleGraphX
 	int Sprite::GetWidth() const { return _m_width; }
 
 
-	CHAR_INFO* Sprite::GetPixels() { return _m_pixels; }
+	CHAR_INFO* Sprite::GetPixels() const { return _m_pixels; }
 };
