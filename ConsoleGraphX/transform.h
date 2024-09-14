@@ -4,10 +4,12 @@
 
 namespace ConsoleGraphX
 {
+    using TransformID = size_t;
+
     struct Transform : public ConsoleGraphX_Internal::Component
     {
     public:
-        Transform* m_parent;
+        TransformID m_parent;
         Vector3 m_position;
         Vector3 m_scale;
         float m_rotation;
@@ -17,7 +19,8 @@ namespace ConsoleGraphX
         Transform(float x, float y, float scaleX, float scaleY);
         Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
-        void SetParent(Transform* parent);
+        void SetParent(TransformID parent);
+        Transform* GetParent() const;
 
         void Clone(Transform* transform) const;
 
@@ -32,8 +35,6 @@ namespace ConsoleGraphX
 
         const Vector3& GetLocalPosition() const;
         const Vector3 GetWorldPosition() const;
-
-        Transform* GetParentTransform() const;
     };
 };
 
