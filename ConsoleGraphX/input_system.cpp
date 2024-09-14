@@ -4,7 +4,8 @@
 #include <processenv.h>
 #include <cctype>
 #include <conio.h>
-#include <algorithm>
+#include <algorithm> // false postive algo is used
+#include <consoleapi.h>
 #include "input_system.h"
 #include "vector2.h"
 
