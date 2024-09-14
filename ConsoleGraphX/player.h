@@ -12,7 +12,8 @@ private:
 
 public:
 	Player();
+	Player(Entity* owner);
 
-	void Awake(Entity* owner) override;
-	void Update(Entity* owner) override;
+	void Awake() override;
+	void Update(float deltaTime) override;
 };

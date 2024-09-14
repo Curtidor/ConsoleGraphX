@@ -12,9 +12,12 @@ private:
 
 public:
 	Snow();
+	Snow(Entity* owner);
+	Snow(const Snow& other, Entity* owner);
 
-	void Awake(Entity* owner) override;
-	void Update(Entity* owner) override;
+	void Awake() override;
+	void Update(float deltaTime) override;
 
-	void Clone(Snow* snow) const;
+	void Clone(Script*& script) override;
+	void Clone(Script*& script, Entity* owner) override;
 };
