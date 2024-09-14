@@ -12,8 +12,6 @@ namespace ConsoleGraphX
         const std::string _m_scene_name;
 
         std::unordered_set<Entity, Entity::Hash, Entity::Equal> _m_entities;
-        std::unordered_set<Entity*> _m_entitiesToDelete;
-
         std::unordered_map<std::string, int> _m_tagIDMap;
 
     public:
