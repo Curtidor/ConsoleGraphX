@@ -1,9 +1,9 @@
 #pragma once
 #include <utility>
-#include <cmath>
 #include "sprite.h"
 #include "vector2.h"
 #include "vector3.h"
+#include <cstdlib>
 
 namespace ConsoleGraphX_Internal 
 {
@@ -12,10 +12,11 @@ namespace ConsoleGraphX_Internal
 	private:
 		struct OverlapPoints
 		{
-			int left;
-			int right;
-			int top;
-			int bottom;
+			// floats where choosen as this means we don't have to worry about static casting to another type as vectors use float
+			float left;
+			float right;
+			float top;
+			float bottom;
 		};
 
 		/**
@@ -40,16 +41,16 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite component of the entity.
 		 * @param overlapPoints Reference to store the calculated overlap points.
 		 */
-		static inline void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& entityPosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, ConsoleGraphX::Sprite& sprite, OverlapPoints& overlapPoints)
+		static inline void _CalculateEntityOverlapWithCamera(const ConsoleGraphX::Vector3& spritePosition, const ConsoleGraphX::Vector3& camPosition, const ConsoleGraphX::Vector2& viewPortSize, const ConsoleGraphX::Sprite& sprite, OverlapPoints& overlapPoints)
 		{
 			const int spriteWidth = sprite.GetWidth();
 			const int spriteHeight = sprite.GetHeight();
 
-			overlapPoints.left = std::abs(std::min<int>(entityPosition.x - camPosition.x, 0));
-			overlapPoints.right = std::max<int>(0, ((overlapPoints.left > 0 ? 0 : entityPosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
+			overlapPoints.left = std::abs(std::min<float>(spritePosition.x - camPosition.x, 0.0f));
+			overlapPoints.right = std::max<float>(0.0f, ((overlapPoints.left > 0 ? 0 : spritePosition.x - camPosition.x) + spriteWidth - overlapPoints.left) - viewPortSize.x);
 
-			overlapPoints.top = std::abs(std::min<int>(entityPosition.y - camPosition.y, 0));
-			overlapPoints.bottom = std::max<int>(0, ((overlapPoints.top > 0 ? 0 : entityPosition.y - camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
+			overlapPoints.top = std::abs(std::min<float>(spritePosition.y - camPosition.y, 0.0f));
+			overlapPoints.bottom = std::max<float>(0.0f, ((overlapPoints.top > 0.0f ? 0.0f : spritePosition.y - camPosition.y) + spriteHeight - overlapPoints.top) - viewPortSize.y);
 		}
 		/**
 		 * @brief Draws a sprite onto the screen buffer within the camera's view.
@@ -57,7 +58,7 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite to be drawn.
 		 * @param overlapPoints The overlap points of the sprite with the camera's view.
 		 */
-		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
+		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
 
 	public:
 		/**

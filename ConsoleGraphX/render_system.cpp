@@ -6,7 +6,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "component_manager.h"
-#include "component_pool.h"
+#include "base_component_pool_impl.h"
 #include "camera.h"
 #include "verify_macro.h"
 
@@ -21,14 +21,14 @@ namespace ConsoleGraphX_Internal
 {
     void RenderSystem::DrawSprites()
     {
-        ComponentPool<ConsoleGraphX::Camera>* cameraPool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Camera>();
-        ComponentPool<ConsoleGraphX::Sprite>* spritePool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Sprite>();
+        BaseComponentPoolImpl<ConsoleGraphX::Camera>* cameraPool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Camera>();
+        BaseComponentPoolImpl<ConsoleGraphX::Sprite>* spritePool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Sprite>();
         
         std::vector<ConsoleGraphX::Camera>* cameras = cameraPool->GetPoolItems();
         std::vector<ConsoleGraphX::Sprite>* sprites = spritePool->GetPoolItems();
         for (std::vector<ConsoleGraphX::Camera>::const_iterator itCamera = cameras->begin(); itCamera != cameras->end(); ++itCamera)
         {
-            ConsoleGraphX::Camera cam = *itCamera;
+            const ConsoleGraphX::Camera& cam = *itCamera;
 
             ConsoleGraphX::Vector3 cameraPosition = cam.GetPosition();
 
@@ -41,8 +41,9 @@ namespace ConsoleGraphX_Internal
             ConsoleGraphX::Vector3 relativePosition;
             for (std::vector<ConsoleGraphX::Sprite>::const_iterator itSprite = sprites->begin(); itSprite != sprites->end(); ++itSprite)
             {
-                ConsoleGraphX::Sprite sprite = *itSprite;
-                spritePosition = sprite.m_transform.GetWorldPosition();
+                //when derferecning sprites take a ref to avoid copying as they have dynmic memory allocated
+                const ConsoleGraphX::Sprite& sprite = *itSprite;
+                spritePosition = sprite.GetTransform()->GetWorldPosition();
 
                 spritePosition.y = std::roundf(spritePosition.y);
                 spritePosition.x = std::roundf(spritePosition.x);
@@ -61,7 +62,7 @@ namespace ConsoleGraphX_Internal
         }
     }
 
-    void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
+    void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
     {
         CGX_VERIFY(sprite, "Null sprite");
 
@@ -75,10 +76,11 @@ namespace ConsoleGraphX_Internal
 
         int buffer_offset = static_cast<int>((overlapPoints.left > 0 ? 0 : relEntityPosition.x) + (overlapPoints.top > 0 ? 0 : relEntityPosition.y) * screenWidth);
 
-        CHAR_INFO* pixelStartOffset = pixels + overlapPoints.left;
-        CHAR_INFO* pixelEndOffset = pixels - overlapPoints.right;
-
-        for (int y = overlapPoints.top; y < spriteHeight - overlapPoints.bottom; y++)
+        CHAR_INFO* pixelStartOffset = pixels + static_cast<int>(overlapPoints.left);
+        CHAR_INFO* pixelEndOffset = pixels - static_cast<int>(overlapPoints.right);
+        
+        // overlapoints are rounded so casting to int wont loss any data
+        for (int y = static_cast<int>(overlapPoints.top); y < spriteHeight - overlapPoints.bottom; y++)
         {
             CHAR_INFO* srcStart = pixelStartOffset + (y * spriteWidth);
             CHAR_INFO* srcEnd = pixelEndOffset + ((y + 1) * spriteWidth);
