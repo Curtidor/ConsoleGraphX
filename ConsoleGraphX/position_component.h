@@ -4,11 +4,14 @@
 
 namespace ConsoleGraphX_Internal
 {
-	struct PositionComponentBase : public Component
+	struct PositionComponentBase
 	{
-		ConsoleGraphX::Transform m_transform;
+		ConsoleGraphX::TransformID m_transformID;
 
 		PositionComponentBase();
 		PositionComponentBase(const ConsoleGraphX::Transform& other);
+		PositionComponentBase(const ConsoleGraphX::TransformID other);
+
+		ConsoleGraphX::Transform* GetTransform() const;
 	};
 };
