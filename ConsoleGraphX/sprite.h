@@ -5,6 +5,7 @@
 #include "position_component.h"
 #include "transform.h"
 #include "vector2.h"
+#include "component.h"
 
 namespace ConsoleGraphX
 {
@@ -30,7 +31,7 @@ namespace ConsoleGraphX
 
 
 
-    struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase
+    struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
     {
     private:
         int _m_width;
@@ -42,15 +43,14 @@ namespace ConsoleGraphX
     public:
         int m_layer;
         Vector2 m_size;
-        Transform m_transform;
 
     public:
         Sprite();
-        Sprite(Transform* transform);
-        Sprite(int width, int height, bool isTransparent = false, Transform* transform = nullptr);
-        Sprite(int width, int height, int color, Transform* transform = nullptr);
-        Sprite(int width, int height, int color, bool isTransparent = false, Transform* transform = nullptr);
-        Sprite(int width, int height, CHAR_INFO* pixels, Transform* transform = nullptr);
+        Sprite(TransformID transform);
+        Sprite(int width, int height, bool isTransparent = false, TransformID transform = -1);
+        Sprite(int width, int height, int color, TransformID transform = -1);
+        Sprite(int width, int height, int color, bool isTransparent = false, TransformID transform = -1);
+        Sprite(int width, int height, CHAR_INFO* pixels, TransformID transform = -1);
         
         Sprite(const Sprite& other);
         ~Sprite() override;
@@ -69,7 +69,7 @@ namespace ConsoleGraphX
         int GetHeight() const;
 
         const Vector2& Size() const;
-        CHAR_INFO* GetPixels();
+        CHAR_INFO* GetPixels() const;
     };
 };
 
