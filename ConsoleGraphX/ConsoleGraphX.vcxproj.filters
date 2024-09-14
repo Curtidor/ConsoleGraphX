@@ -141,9 +141,6 @@
     <ClInclude Include="snow.h">
       <Filter>Header Files\Game\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="script.h">
-      <Filter>Header Files\Engine\Components</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
@@ -186,11 +183,17 @@
     <ClInclude Include="player_controller.h">
       <Filter>Header Files\Engine\Components\PositionComponents</Filter>
     </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Header Files\Engine\Components</Filter>
+    </ClInclude>
     <ClInclude Include="position_component.h">
       <Filter>Header Files\Engine\Components\PositionComponents</Filter>
     </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header Files\Engine\Components</Filter>
+    <ClInclude Include="base_component_pool_impl.h">
+      <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,9 +232,6 @@
     </ClCompile>
     <ClCompile Include="entity.h">
       <Filter>Header Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="script.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
@@ -276,6 +276,9 @@
       <Filter>Source Files\Engine\Components\PositionComponents</Filter>
     </ClCompile>
     <ClCompile Include="transform.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="position_component.cpp">

@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="base_component_pool.h" />
+    <ClInclude Include="base_component_pool_impl.h" />
     <ClInclude Include="base_system.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="component.h" />
