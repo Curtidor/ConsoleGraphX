@@ -1,5 +1,6 @@
 #include "vector2.h"
 #include <cmath>
+#include <cstdint>
 
 namespace ConsoleGraphX
 {
@@ -9,8 +10,10 @@ namespace ConsoleGraphX
     const Vector2 Vector2::down(0.0f, -1.0f);
 
     Vector2::Vector2() : x(0), y(0) {}
-    Vector2::Vector2(int x, int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
     Vector2::Vector2(float x, float y) : x(x), y(y) {}
+    Vector2::Vector2(int x, int y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
+    Vector2::Vector2(uint32_t x, uint32_t y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
+
 
     Vector2 Vector2::operator+(const Vector2& other) const {
         return Vector2(x + other.x, y + other.y);

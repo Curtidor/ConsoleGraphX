@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 namespace ConsoleGraphX
 {
@@ -16,6 +17,7 @@ namespace ConsoleGraphX
         Vector2();
         Vector2(int x, int y);
         Vector2(float x, float y);
+        Vector2(uint32_t x, uint32_t y);
 
         Vector2 operator+(const Vector2& other) const;
         Vector2& operator+=(const Vector2& other);
