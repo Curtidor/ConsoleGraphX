@@ -5,10 +5,11 @@
 #include "sprite.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "component_manager.h"
-#include "base_component_pool_impl.h"
+#include "resourcec_manager.h"
+#include "resource_pool.h"
 #include "camera.h"
 #include "verify_macro.h"
+#include "texture.h"
 
 
 /*
@@ -21,8 +22,8 @@ namespace ConsoleGraphX_Internal
 {
     void RenderSystem::DrawSprites()
     {
-        BaseComponentPoolImpl<ConsoleGraphX::Camera>* cameraPool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Camera>();
-        BaseComponentPoolImpl<ConsoleGraphX::Sprite>* spritePool = ComponentManager::Instance().GetComponentPool<ConsoleGraphX::Sprite>();
+        ResourcePool<ConsoleGraphX::Camera>* cameraPool = ResourceManager::Instance().GetResourcePool<ConsoleGraphX::Camera>();
+        ResourcePool<ConsoleGraphX::Sprite>* spritePool = ResourceManager::Instance().GetResourcePool<ConsoleGraphX::Sprite>();
         
         std::vector<ConsoleGraphX::Camera>* cameras = cameraPool->GetPoolItems();
         std::vector<ConsoleGraphX::Sprite>* sprites = spritePool->GetPoolItems();
@@ -64,10 +65,10 @@ namespace ConsoleGraphX_Internal
 
     void RenderSystem::_DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
     {
-        CGX_VERIFY(sprite, "Null sprite");
-
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
-        CHAR_INFO* pixels = sprite.GetPixels();
+        CHAR_INFO* pixels = ResourceManager::Instance().GetResourcePool<Texture>()->GetResourceFromPool(sprite.m_textureIndex)->GetPixels();
+
+        CGX_VERIFY(pixels, "Null texture");
 
         const int spriteWidth = sprite.GetWidth();
         const int spriteHeight = sprite.GetHeight();
@@ -79,7 +80,7 @@ namespace ConsoleGraphX_Internal
         CHAR_INFO* pixelStartOffset = pixels + static_cast<int>(overlapPoints.left);
         CHAR_INFO* pixelEndOffset = pixels - static_cast<int>(overlapPoints.right);
         
-        // overlapoints are rounded so casting to int wont loss any data
+        // overlap points are rounded so casting to int wont loss any data
         for (int y = static_cast<int>(overlapPoints.top); y < spriteHeight - overlapPoints.bottom; y++)
         {
             CHAR_INFO* srcStart = pixelStartOffset + (y * spriteWidth);

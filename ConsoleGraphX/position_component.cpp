@@ -1,7 +1,7 @@
 #include <limits>
 #include "position_component.h"
 #include "transform.h"
-#include "component_manager.h"
+#include "resourcec_manager.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -17,6 +17,6 @@ namespace ConsoleGraphX_Internal
 
 	ConsoleGraphX::Transform* PositionComponentBase::GetTransform() const
 	{
-		return ComponentManager::Instance().GetComponent<ConsoleGraphX::Transform>(m_transformID);
+		return ResourceManager::Instance().GetResource<ConsoleGraphX::Transform>(m_transformID);
 	}
 };

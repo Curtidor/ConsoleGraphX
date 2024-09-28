@@ -1,7 +1,7 @@
 #include <vector>
 #include "script.h"
 #include "script_system.h"
-#include "component_manager.h"
+#include "resourcec_manager.h"
 #include "component_pool.h"
 
 namespace ConsoleGraphX
@@ -11,7 +11,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::Update(float deltaTime)
 	{
-		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
+		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ResourceManager::Instance().GetResourcePool<Script>();
 		std::vector<Script*>& scripts = *scriptPool->GetPoolItems();
 
 		for (Script* script : scripts)
@@ -25,7 +25,7 @@ namespace ConsoleGraphX
 
 	void ScriptSystem::ScriptWarmUp()
 	{
-		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ComponentManager::Instance().GetComponentPool<Script>();
+		ConsoleGraphX_Internal::ComponentPoolScript* scriptPool = ConsoleGraphX_Internal::ResourceManager::Instance().GetResourcePool<Script>();
 		std::vector<Script*>& scripts = *scriptPool->GetPoolItems();
 
 		for (Script* script : scripts)
