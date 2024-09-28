@@ -2,7 +2,7 @@
 #include "script.h"
 #include "script_system.h"
 #include "resourcec_manager.h"
-#include "component_pool.h"
+#include "component_script_pool.h"
 
 namespace ConsoleGraphX
 {
