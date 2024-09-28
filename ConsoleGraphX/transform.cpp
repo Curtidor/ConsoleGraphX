@@ -1,7 +1,6 @@
 #include <limits>
 #include "transform.h"
 #include "vector3.h"
-#include "component_pool.h"
 #include "resourcec_manager.h"
 
 namespace ConsoleGraphX
