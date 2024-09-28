@@ -1,5 +1,4 @@
 #include "main_scene.h"
-#include "debugger.h"
 #include "engine.h"
 #include "screen.h"
 
@@ -52,15 +51,13 @@ int main()
  } };
 
 
-	ConsoleGraphX_Internal::Debugger debugger(L"Debugger");
+	Engine engine = Engine(400, 140, 3, 6);
 
-	Engine::Initialize(300, 120, 3, 6, debugger);
-
-    ConsoleGraphX_Internal::Screen::SetPalletColors(colors);
+    ConsoleGraphX_Internal::Screen::SetPalletColors_A(colors);
 
 	MainScene m("Main scene");
 
-	Engine::Run();
+    engine.Run();
 
 	return 0;
 }
