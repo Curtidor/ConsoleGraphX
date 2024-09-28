@@ -1,59 +1,36 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <wincontypes.h>
+#include <cstdint>
 #include "position_component.h"
 #include "transform.h"
 #include "vector2.h"
 #include "component.h"
+#include "base_resource_pool.h"
 
 namespace ConsoleGraphX
 {
-    enum Color
-    {
-        Black = 0,
-        DarkBlue = 1,
-        DarkGreen = 2,
-        DarkCyan = 3,
-        DarkRed = 4,
-        DarkMagenta = 5,
-        DarkYellow = 6,
-        Gray = 7,
-        DarkGray = 8,
-        Blue = 9,
-        Green = 10,
-        Cyan = 11,
-        Red = 12,
-        Magenta = 13,
-        Yellow = 14,
-        White = 15
-    };
-
-
-
     struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
     {
     private:
-        int _m_width;
-        int _m_height;
+        uint32_t _m_width;
+        uint32_t _m_height;
         bool _m_isVisible;
         bool _m_isTransparent;
-        CHAR_INFO* _m_pixels;
 
     public:
         int m_layer;
         Vector2 m_size;
+        ConsoleGraphX_Internal::ResourceIndex m_textureIndex;
+
 
     public:
         Sprite();
-        Sprite(TransformID transform);
-        Sprite(int width, int height, bool isTransparent = false, TransformID transform = -1);
+        // this should only be used by internal functions
+        Sprite(TransformID transform); 
+        Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, TransformID transform = -1);
+        Sprite(uint32_t width, uint32_t height, int color, TransformID transform = -1);
         Sprite(int width, int height, int color, TransformID transform = -1);
-        Sprite(int width, int height, int color, bool isTransparent = false, TransformID transform = -1);
-        Sprite(int width, int height, CHAR_INFO* pixels, TransformID transform = -1);
         
         Sprite(const Sprite& other);
-        ~Sprite() override;
 
         void Clone(Sprite* sprite) const;
 
@@ -69,7 +46,6 @@ namespace ConsoleGraphX
         int GetHeight() const;
 
         const Vector2& Size() const;
-        CHAR_INFO* GetPixels() const;
     };
 };
 

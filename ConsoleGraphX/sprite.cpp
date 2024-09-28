@@ -1,78 +1,67 @@
-﻿#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <wincontypes.h>
-#include <algorithm>
+﻿#include <cstdint>
 #include "sprite.h"
 #include "vector2.h"
 #include "position_component.h"
 #include "transform.h"
+#include "base_resource_pool.h"
+#include "texture.h"
+#include "resourcec_manager.h"
 
 namespace ConsoleGraphX
 {
 	Sprite::Sprite()
 		: PositionComponentBase(), _m_width(1), _m_height(1),
-		_m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
-	{
-	}
+	{}
 
-	Sprite::Sprite(TransformID transformID)
+	// used when creating a sprite from a already made texture
+	Sprite::Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, TransformID transformID)
 		: PositionComponentBase(transformID), _m_width(1), _m_height(1),
-		_m_pixels(new CHAR_INFO[1]), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(textureIndex), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
 	{
+		ConsoleGraphX_Internal::Texture* t = ConsoleGraphX_Internal::ResourceManager::Instance().GetResource<ConsoleGraphX_Internal::Texture>(textureIndex);
+		_m_width = t->GetWidth();
+		_m_height = t->GetHeight();
+
+		m_size = Vector2(_m_width, _m_height);
 	}
 
-	Sprite::Sprite(int width, int height, bool isTransparent, TransformID transformID)
-		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
-		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(isTransparent),
-		m_layer(0), m_size(width, height) 
-	{
-		CHAR_INFO c = { L'█', Color::Magenta };
-		std::fill(_m_pixels, _m_pixels + (width * height), c);
-	}
-
-	Sprite::Sprite(int width, int height, int color, bool isTransparent, TransformID transformID)
-		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
-		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(isTransparent),
-		m_layer(0), m_size(width, height) 
-	{
-		CHAR_INFO c = { L'█', static_cast<WORD>(color) };
-		std::fill(_m_pixels, _m_pixels + (width * height), c);
-	}
-
-	Sprite::Sprite(int width, int height, int color, TransformID transformID)
-		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
-		_m_pixels(new CHAR_INFO[width * height]), _m_isVisible(true), _m_isTransparent(false),
+	// used when creating a sprite with no texture
+	Sprite::Sprite(uint32_t width, uint32_t height, int color, TransformID transformD)
+		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
+		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		CHAR_INFO c = { L'█', static_cast<WORD>(color) };
-		std::fill(_m_pixels, _m_pixels + (width * height), c);
+		m_textureIndex = ConsoleGraphX_Internal::ResourceManager::Instance().CreateTextureResource(width, height, color).second;
 	}
 
-	Sprite::Sprite(int width, int height, CHAR_INFO* pixels, TransformID transformID)
-		: PositionComponentBase(transformID), _m_width(width), _m_height(height),
-		_m_pixels(pixels), _m_isVisible(true), _m_isTransparent(false),
-		m_layer(0), m_size(width, height) 
+	// used when creating a sprite with no texture
+	Sprite::Sprite(int width, int height, int color, TransformID transformD)
+		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
+		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_layer(0), m_size(width, height)
+	{
+		m_textureIndex = ConsoleGraphX_Internal::ResourceManager::Instance().CreateTextureResource(width, height, color).second;
+	}
+
+	// used when cloning sprites
+	Sprite::Sprite(TransformID transformID)
+		: PositionComponentBase(transformID), _m_width(1), _m_height(1),
+		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_layer(0), m_size(0, 0)
 	{}
 
 	Sprite::Sprite(const Sprite& other)
 		: PositionComponentBase(other.m_transformID), _m_width(other._m_width), _m_height(other._m_height),
 		_m_isVisible(other._m_isVisible), _m_isTransparent(other._m_isTransparent),
-		m_layer(other.m_layer), m_size(other.m_size) 
-	{
-		_m_pixels = new CHAR_INFO[_m_width * _m_height];
-		std::copy(other._m_pixels, other._m_pixels + (_m_width * _m_height), _m_pixels);
-	}
-
-	Sprite::~Sprite()
-	{
-		delete[] _m_pixels;
-	}
+		m_layer(other.m_layer), m_size(other.m_size), m_textureIndex(other.m_textureIndex)
+	{}
 
 	void Sprite::Clone(Sprite* sprite) const
 	{
-		*sprite = Sprite(*this);
+		*sprite = *this;
 	}
 
 	Sprite& Sprite::operator=(const Sprite& other) 
@@ -82,18 +71,14 @@ namespace ConsoleGraphX
 			return *this;
 		}
 
-		delete[] _m_pixels;
-
 		_m_width = other._m_width;
 		_m_height = other._m_height;
 		_m_isVisible = other._m_isVisible;
 		_m_isTransparent = other._m_isTransparent;
+		m_textureIndex = other.m_textureIndex;
 
 		m_layer = other.m_layer;
 		m_size = other.m_size;
-
-		_m_pixels = new CHAR_INFO[_m_width * _m_height];
-		std::copy(other._m_pixels, other._m_pixels + (_m_width * _m_height), _m_pixels);
 
 		return *this;
 	}
@@ -113,5 +98,4 @@ namespace ConsoleGraphX
 	int Sprite::GetWidth() const { return _m_width; }
 
 
-	CHAR_INFO* Sprite::GetPixels() const { return _m_pixels; }
 };
