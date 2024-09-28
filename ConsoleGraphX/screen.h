@@ -39,13 +39,11 @@ namespace ConsoleGraphX_Internal
 
 		void SetPixel(int x, int y, CHAR_INFO s_pixel);
 		void SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest);
-		void SetText(int x, int y, const std::string& text);
 
 		void SetCursorPosition(short x, short y);
 		void SetConsoleName(const std::string& name);
 		void SetConsoleWindowSize(short width, short height);
 		void FillScreen(const CHAR_INFO& color);
-		void RandomFillScreen();
 
 		int GetPixelWidth() const;
 		int GetPixelHeight() const;
@@ -55,16 +53,15 @@ namespace ConsoleGraphX_Internal
 		static int GetWidth_A();
 		static int GetHeight_A();
 		
-		static void SetPalletColors(const std::array<RGB_CGX, 16>& colors);
+		static void SetPalletColors_A(const std::array<RGB_CGX, 16>& colors);
+		static void SetPalletColor_A(const RGB_CGX& color, int index);
 		static void SetPixel_A(int x, int y, CHAR_INFO s_pixel);
 		static void SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest);
-		static void SetText_A(int x, int y, const std::string& text);
 		static void SetActiveScreen_A(Screen* screen);
 
 		static Screen* GetActiveScreen_A();
 		static CHAR_INFO* GetActiveScreenBuffer_A();
 
-		static WORD RandomColor();
 
 	};
 };
