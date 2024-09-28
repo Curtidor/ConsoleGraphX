@@ -8,7 +8,6 @@
 #include <handleapi.h>
 #include <processenv.h>
 #include <algorithm>
-#include <cstdlib>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -60,18 +59,6 @@ namespace ConsoleGraphX_Internal
 		std::fill(_m_screenBuffer->m_buffer, _m_screenBuffer->m_buffer + (_m_width * _m_height), color);
 	}
 
-	void Screen::RandomFillScreen()
-	{
-		for (int i = 0; i < Screen::GetHeight(); i++) {
-
-			for (int j = 0; j < Screen::GetWidth(); j++) {
-
-				SetPixel(j, i, { s_pixel , Screen::RandomColor() });
-
-			}
-		}
-	}
-
 	/// <summary>
 	/// Set the pixel at the specified coordinates in the screen buffer
 	/// </summary>
@@ -98,7 +85,7 @@ namespace ConsoleGraphX_Internal
 
 	void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	{
-		// pointer to the end of the screen buffer, calculated based on screen dimensions (width * height, (size)).
+		// pointer to the end of the screen buffer, calculated based on screen dimensions (width * height) aka "size".
 		const CHAR_INFO* bufferEnd = _m_screenBuffer->m_buffer + _m_screenBuffer->m_size;
 
 		// calculate the remaining space in the screen buffer starting from the destination pointer.
@@ -112,20 +99,20 @@ namespace ConsoleGraphX_Internal
 		const std::size_t elementsToCopy = std::min<std::size_t>(remainingBufferSpace, sourceElementCount);
 
 		// store the transparent character value used for comparison.
-		const wchar_t transparentChar = Screen::s_transparentPixel;
+		const wchar_t& transparentChar = Screen::s_transparentPixel;
 
 		// initialize a pointer to track the previous position in the destination buffer.
 		CHAR_INFO* previousDestPosition = dest - 1;
 
-		// use std::transform to copy and potentially modify the elements from the source range to the destination buffer.
 		std::transform(srcStart, srcStart + elementsToCopy, dest,
 			[&transparentChar, &previousDestPosition](const CHAR_INFO& currentElement)
 			{
-				// move the pointer to the current position in the destination buffer.
 				previousDestPosition++;
 
 				// if the current element's Unicode character is not the transparent character,
 				// copy it to the destination buffer. Otherwise, use the value from the previous position in the buffer.
+				// (if the char is a transparent char all that happens is we use the pixel at the postion thats already in the 
+				// buffer instead of replacing it with a new one, this allows for non irregularly shaped sprites )
 				return (currentElement.Char.UnicodeChar != transparentChar) ? currentElement : *previousDestPosition;
 			}
 		);
@@ -136,29 +123,6 @@ namespace ConsoleGraphX_Internal
 		Screen::_s_activeScreen->SetPixels(srcStart, srcEnd, dest);
 	}
 
-	void Screen::SetText(int x, int y, const std::string& text)
-	{
-		const int white_text_color = 0xf;
-		int screenWidth = _m_screenBuffer->m_bufferSize.X;
-
-		int index = y * screenWidth + x;
-
-		if (index < 0 || index >= _m_screenBuffer->m_bufferSize.X * _m_screenBuffer->m_bufferSize.Y)
-			return;
-
-		for (int i = 0; i < text.size(); i++)
-		{
-			wchar_t c = text[i];
-			_m_screenBuffer->m_buffer[index + i] = { c, white_text_color };
-		}
-	}
-
-	void Screen::SetText_A(int x, int y, const std::string& text)
-	{
-		Screen::GetActiveScreen_A()->SetText(x, y, text);
-	}
-
-	/// <summary>
 	/// sets the font(pixel) size of the console
 	/// </summary>
 	/// <param name="width"></param>
@@ -212,30 +176,52 @@ namespace ConsoleGraphX_Internal
 	}
 
 	/// <summary>
-	/// Get the width of the screen
-	/// </summary>
-	/// <returns></returns>
-	int Screen::GetWidth() const { return _m_width; }
-
-	/// <summary>
-	/// Get the height of the screen
-	/// </summary>
-	/// <returns></returns>
-	int Screen::GetHeight() const { return _m_height; }
-
-	/// <summary>
 	/// Get the width of a pixel
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetPixelWidth() const { return _m_pixelWidth; }
+	int Screen::GetPixelWidth() const
+	{ 
+		return _m_pixelWidth; 
+	}
 
 	/// <summary>
 	/// Get the height of a pixel
 	/// </summary>
 	/// <returns></returns>
-	int Screen::GetPixelHeight() const { return _m_pixelHeight; }
+	int Screen::GetPixelHeight() const 
+	{ 
+		return _m_pixelHeight; 
+	}
 
-	void Screen::SetPalletColors(const std::array<RGB_CGX, 16>& colors) 
+	/// <summary>
+	/// Get the width of the screen
+	/// </summary>
+	/// <returns></returns>
+	int Screen::GetWidth() const 
+	{ 
+		return _m_width; 
+	}
+
+	/// <summary>
+	/// Get the height of the screen
+	/// </summary>
+	/// <returns></returns>
+	int Screen::GetHeight() const 
+	{ 
+		return _m_height; 
+	}
+
+	int Screen::GetWidth_A() 
+	{
+		return Screen::_s_activeScreen->_m_width; 
+	}
+
+	int Screen::GetHeight_A()
+	{ 
+		return Screen::_s_activeScreen->_m_height; 
+	}
+
+	void Screen::SetPalletColors_A(const std::array<RGB_CGX, 16>& colors) 
 	{
 		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
 		consoleInfo.cbSize = sizeof(consoleInfo);
@@ -250,16 +236,35 @@ namespace ConsoleGraphX_Internal
 		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
 	}
 
-
-	int Screen::GetWidth_A() { return Screen::_s_activeScreen->_m_width; }
-	int Screen::GetHeight_A() { return Screen::_s_activeScreen->_m_height; }
-
-	WORD Screen::RandomColor()
+	void Screen::SetPalletColor_A(const RGB_CGX& color, int index)
 	{
-		return rand() % 16;
+		if (index < 0 || index > 15)
+		{
+			throw std::runtime_error("Index must be, between 0-15");
+		}
+
+		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
+		consoleInfo.cbSize = sizeof(consoleInfo);
+
+		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+
+		consoleInfo.ColorTable[index] = RGB(color.r, color.g, color.b);
+
+		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
 	}
 
-	Screen* Screen::GetActiveScreen_A() { return Screen::_s_activeScreen; }
-	void Screen::SetActiveScreen_A(Screen* screen) { Screen::_s_activeScreen = screen; }
-	CHAR_INFO* Screen::GetActiveScreenBuffer_A() { return Screen::_s_activeScreen->_m_screenBuffer->m_buffer; }
+	void Screen::SetActiveScreen_A(Screen* screen) 
+	{
+		Screen::_s_activeScreen = screen; 
+	}
+
+	Screen* Screen::GetActiveScreen_A() 
+	{
+		return Screen::_s_activeScreen; 
+	}
+
+	CHAR_INFO* Screen::GetActiveScreenBuffer_A() 
+	{ 
+		return Screen::_s_activeScreen->_m_screenBuffer->m_buffer; 
+	}
 };
