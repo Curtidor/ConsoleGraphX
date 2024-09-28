@@ -10,7 +10,8 @@
 #include "resourcec_manager.h"
 #include "script.h"
 #include "base_resource_pool.h"
-#include "component_pool.h"
+#include "component_sprite_pool.h"
+#include "component_script_pool.h"
 
 namespace ConsoleGraphX_Internal
 {
