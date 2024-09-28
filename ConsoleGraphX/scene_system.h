@@ -20,7 +20,7 @@ namespace ConsoleGraphX
         static bool IsSceneRegistered(const std::string& name);
 
         static Scene* GetActiveScene();
-        static const std::unordered_map<std::string, Scene*>& GetScenes(); // Updated return type
+        static const std::unordered_map<std::string, Scene*>& GetScenes();
     };
 
 };
