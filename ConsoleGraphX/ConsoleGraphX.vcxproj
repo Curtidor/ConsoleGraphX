@@ -146,11 +146,12 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="component.h" />
+    <ClInclude Include="component_sprite_pool.h" />
     <ClInclude Include="resource_id.h" />
     <ClInclude Include="console_handler.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="resourcec_manager.h" />
-    <ClInclude Include="component_pool.h" />
+    <ClInclude Include="component_script_pool.h" />
     <ClInclude Include="debugger_manager.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="dispatcher.h" />

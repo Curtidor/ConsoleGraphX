@@ -138,7 +138,7 @@
     <ClInclude Include="frame_rate_controller.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="component_pool.h">
+    <ClInclude Include="component_script_pool.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="meta_utils.h">
@@ -214,6 +214,9 @@
       <Filter>Header Files\Engine\Core\debugger</Filter>
     </ClInclude>
     <ClInclude Include="console_handler.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="component_sprite_pool.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
