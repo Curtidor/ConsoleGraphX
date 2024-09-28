@@ -13,6 +13,7 @@ private:
 public:
 	Player();
 	Player(Entity* owner);
+	~Player();
 
 	void Awake() override;
 	void Update(float deltaTime) override;
