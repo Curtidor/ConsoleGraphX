@@ -1,5 +1,7 @@
 #pragma once
-#include "debugger.h"
+#include <atomic>
+#include "logger.h"
+#include "screen.h"
 #include "system_manager.h"
 
 namespace ConsoleGraphX
@@ -7,17 +9,21 @@ namespace ConsoleGraphX
     class Engine
     {
     private:
-        static inline ConsoleGraphX_Internal::SystemManager* _systemManager = nullptr;
-        static inline ConsoleGraphX_Internal::Debugger* _debugger = nullptr;
-        static inline bool _m_isRunning = false;
+
+        std::atomic<bool> _m_isRunning = false;
+        ConsoleGraphX_Internal::Screen _m_screen;
+        ConsoleGraphX_Internal::Logger _m_logger;
+        ConsoleGraphX_Internal::SystemManager _m_systemManager;
 
     private:
-        static BOOL WINAPI _CleanUp(DWORD ctrlType);
-        static void _Update(float deltaTime);
+        void _Update(float deltaTime);
 
     public:
-        static void Initialize(short screen_width, short screen_height, short pixel_width, short pixel_height, ConsoleGraphX_Internal::Debugger& debugger);
-        static void Run();
-        static void Shutdown();
+        Engine(short screen_width, short screen_height, short pixel_width, short pixel_height);
+
+        void Shutdown();
+        void OnConsoleClose();
+        void Run();
+
     };
 };
