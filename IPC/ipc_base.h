@@ -5,7 +5,8 @@
 #include "shared_memory.h"
 
 template <typename T>
-class IPCBase {
+class IPCBase 
+{
 protected:
     HANDLE _m_hMutex;
     HANDLE _m_hMapFile;
@@ -28,9 +29,9 @@ public:
     ~IPCBase()
     {
         // custom deleter in unique_ptr will handle UnmapViewOfFile
-        CloseHandle(this->_m_hMapFile);
-        CloseHandle(this->_m_hEventSend);
-        CloseHandle(this->_m_hEventRead);
-        CloseHandle(this->_m_hMutex);
+        CloseHandle(_m_hMapFile);
+        CloseHandle(_m_hEventSend);
+        CloseHandle(_m_hEventRead);
+        CloseHandle(_m_hMutex);
     }
 };

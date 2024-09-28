@@ -71,13 +71,13 @@ public:
             DWORD dwWaitResult = WaitForSingleObject(this->_m_hEventSend, INFINITE);
             if (dwWaitResult == WAIT_OBJECT_0) {
                 WaitForSingleObject(this->_m_hMutex, INFINITE);
-                
+
                 T data = this->_m_pSharedMemory->data;
 
                 ReleaseMutex(this->_m_hMutex);
 
                 _m_onReceive(data);
-                
+
                 if (!SetEvent(this->_m_hEventRead)) {
                     std::cerr << "Failed to set read event (" << GetLastError() << ")." << std::endl;
                 }
@@ -93,4 +93,3 @@ public:
         _m_isRunning = false;
     }
 };
-
