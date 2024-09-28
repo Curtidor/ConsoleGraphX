@@ -1,5 +1,4 @@
 #include "snow.h"
-#include "debugger.h"
 #include "entity.h"
 #include "random_numbers.h"
 #include "script.h"
@@ -34,17 +33,10 @@ void Snow::Awake()
 
 void Snow::Update(float deltaTime)
 {
-	_m_transform->m_position += Vector3(0, 0.25f, 0);
-	ConsoleGraphX_Internal::Debugger::S_LogMessage("SNOW");
-
+	_m_transform->m_position += Vector3(0, 9.3f, 0) * deltaTime;
 
 	if (_m_transform->m_position.y >= 109)
 	{
-		if (_m_owner->m_id == 0)
-		{
-			ConsoleGraphX_Internal::Debugger::S_LogMessage("prefab died");
-		}
-
 		Vector3 minSpread = Vector3(0, 0, 0);
 		Vector3 maxSpread = Vector3(300, 80, 0);
 
