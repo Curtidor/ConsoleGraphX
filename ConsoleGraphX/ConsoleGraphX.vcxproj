@@ -141,20 +141,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="base_component_pool.h" />
-    <ClInclude Include="base_component_pool_impl.h" />
+    <ClInclude Include="base_resource_pool.h" />
     <ClInclude Include="base_system.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="color.h" />
     <ClInclude Include="component.h" />
-    <ClInclude Include="component_id.h" />
-    <ClInclude Include="component_manager.h" />
+    <ClInclude Include="resource_id.h" />
+    <ClInclude Include="console_handler.h" />
+    <ClInclude Include="logger.h" />
+    <ClInclude Include="resourcec_manager.h" />
     <ClInclude Include="component_pool.h" />
-    <ClInclude Include="debugger.h" />
+    <ClInclude Include="debugger_manager.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="dispatcher.h" />
+    <ClInclude Include="file_utils.h" />
     <ClInclude Include="input_system.h" />
-    <ClInclude Include="meta_utilities.h" />
+    <ClInclude Include="meta_utils.h" />
     <ClInclude Include="position_component.h" />
+    <ClInclude Include="resource_pool.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="texture_loader.h" />
     <ClInclude Include="verify_macro.h" />
     <ClInclude Include="main_scene.h" />
     <ClInclude Include="player.h" />
@@ -178,12 +184,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="componenent_manager.cpp" />
+    <ClCompile Include="console_handler.cpp" />
+    <ClCompile Include="logger.cpp" />
+    <ClCompile Include="resource_manager.cpp" />
     <ClCompile Include="component.cpp" />
-    <ClCompile Include="debugger.cpp" />
+    <ClCompile Include="debugger_manager.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="entity.h" />
+    <ClCompile Include="file_utils.cpp" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="main_scene.cpp" />
@@ -201,11 +210,16 @@
     <ClCompile Include="script_system.cpp" />
     <ClCompile Include="snow.cpp" />
     <ClCompile Include="sprite.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="texture_loader.cpp" />
     <ClCompile Include="system_manager.cpp" />
     <ClCompile Include="frame_rate_controller.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="vector3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Python\SpriteMaker\sprtie.cxsp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -25,9 +25,6 @@
     <Filter Include="Header Files\Engine\Graphics">
       <UniqueIdentifier>{9465da6b-4e59-4e14-80a0-c16db140702f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Graphics\Screen">
-      <UniqueIdentifier>{363a1b59-47a6-488c-a28d-804b14521207}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Math">
       <UniqueIdentifier>{51ccf120-4294-41f7-a8be-872f1231b1fb}</UniqueIdentifier>
     </Filter>
@@ -45,9 +42,6 @@
     </Filter>
     <Filter Include="Source Files\Engine\Graphics">
       <UniqueIdentifier>{70e0add5-ebaf-453e-b8cc-601e0e6d26da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Graphics\Screen">
-      <UniqueIdentifier>{513a6e6e-672b-49b4-96c1-bee44ed5fc9f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Engine\Math">
       <UniqueIdentifier>{f3cd728d-8019-4d50-aff6-2647ac812827}</UniqueIdentifier>
@@ -76,12 +70,6 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Systems\SystemManagend">
-      <UniqueIdentifier>{971e86fb-df72-48a1-a9ad-b88804b118e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Systems\SystemManaged">
-      <UniqueIdentifier>{394aba2f-52f1-407f-96de-203311f3642b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Utils">
       <UniqueIdentifier>{d415835d-5381-4c52-8b77-da41cfd602c9}</UniqueIdentifier>
     </Filter>
@@ -91,14 +79,23 @@
     <Filter Include="Header Files\Engine\Components\PositionComponents">
       <UniqueIdentifier>{5cbef222-1440-4735-8977-477da25a5bd5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Scene">
+      <UniqueIdentifier>{71c89564-e3f1-4012-8436-1ab066d43570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Scene">
+      <UniqueIdentifier>{ac04f004-a464-4c63-b7d5-cc2d5686bef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Resources">
+      <UniqueIdentifier>{dbc62e24-c7a6-4baa-8aec-f18a92aa1d3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Resources">
+      <UniqueIdentifier>{f0336b6d-87ec-4bef-a2a5-26f3bfad4906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Core\debugger">
+      <UniqueIdentifier>{a4c2076e-bbee-4f52-b90c-eb06a7fdf453}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="screen.h">
-      <Filter>Header Files\Engine\Graphics\Screen</Filter>
-    </ClInclude>
-    <ClInclude Include="screen_buffer.h">
-      <Filter>Header Files\Engine\Graphics\Screen</Filter>
-    </ClInclude>
     <ClInclude Include="vector2.h">
       <Filter>Header Files\Engine\Math</Filter>
     </ClInclude>
@@ -117,16 +114,10 @@
     <ClInclude Include="scene_system.h">
       <Filter>Header Files\Engine\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="debugger.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="dispatcher.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="engine.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="scene.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="main_scene.h">
@@ -144,37 +135,16 @@
     <ClInclude Include="camera.h">
       <Filter>Header Files\Engine\Components</Filter>
     </ClInclude>
-    <ClInclude Include="verify_macro.h">
-      <Filter>Header Files\Engine\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="frame_rate_controller.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="player_controller_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
-    <ClInclude Include="script_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
-    <ClInclude Include="system_manager.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
-    <ClInclude Include="base_system.h">
-      <Filter>Header Files\Engine\Systems\SystemManagend</Filter>
-    </ClInclude>
-    <ClInclude Include="component_manager.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="component_pool.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="meta_utilities.h">
+    <ClInclude Include="meta_utils.h">
       <Filter>Header Files\Engine\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="base_component_pool.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="component_id.h">
+    <ClInclude Include="resource_id.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="sprite.h">
@@ -192,19 +162,64 @@
     <ClInclude Include="position_component.h">
       <Filter>Header Files\Engine\Components\PositionComponents</Filter>
     </ClInclude>
-    <ClInclude Include="base_component_pool_impl.h">
+    <ClInclude Include="screen.h">
+      <Filter>Header Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="screen_buffer.h">
+      <Filter>Header Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="verify_macro.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="system_manager.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="base_system.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="player_controller_system.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="script_system.h">
+      <Filter>Header Files\Engine\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files\Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>Header Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_loader.h">
+      <Filter>Header Files\Engine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Header Files\Engine\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="file_utils.h">
+      <Filter>Header Files\Engine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_pool.h">
+      <Filter>Header Files\Engine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="base_resource_pool.h">
+      <Filter>Header Files\Engine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="resourcec_manager.h">
+      <Filter>Header Files\Engine\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="debugger_manager.h">
+      <Filter>Header Files\Engine\Core\debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>Header Files\Engine\Core\debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="console_handler.h">
       <Filter>Header Files\Engine\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="screen.cpp">
-      <Filter>Source Files\Engine\Graphics\Screen</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="screen_buffer.cpp">
-      <Filter>Source Files\Engine\Graphics\Screen</Filter>
     </ClCompile>
     <ClCompile Include="vector2.cpp">
       <Filter>Source Files\Engine\Math</Filter>
@@ -227,12 +242,6 @@
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Source Files\Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="entity.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
@@ -245,28 +254,13 @@
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Game\Scripts</Filter>
     </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="frame_rate_controller.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="system_manager.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
-    <ClCompile Include="player_controller_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
-    <ClCompile Include="script_system.cpp">
-      <Filter>Source Files\Engine\Systems\SystemManaged</Filter>
-    </ClCompile>
-    <ClCompile Include="debugger.cpp">
-      <Filter>Source Files\Engine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="componenent_manager.cpp">
+    <ClCompile Include="debugger_manager.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
     <ClCompile Include="player_controller.cpp">
@@ -284,5 +278,52 @@
     <ClCompile Include="position_component.cpp">
       <Filter>Source Files\Engine\Components\PositionComponents</Filter>
     </ClCompile>
+    <ClCompile Include="screen.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="screen_buffer.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="player_controller_system.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="script_system.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="system_manager.cpp">
+      <Filter>Source Files\Engine\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp">
+      <Filter>Source Files\Engine\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="entity.h">
+      <Filter>Header Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_loader.cpp">
+      <Filter>Source Files\Engine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="file_utils.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_manager.cpp">
+      <Filter>Source Files\Engine\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="console_handler.cpp">
+      <Filter>Source Files\Engine\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Python\SpriteMaker\sprtie.cxsp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
