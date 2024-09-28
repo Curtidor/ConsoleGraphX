@@ -3,12 +3,12 @@
 #include <type_traits>
 #include <array>
 #include <utility>
-#include "component.h"
 #include <string>
 #include <cstdint>
 #include <stdexcept>
 #include "resource_id.h"
-#include "component_pool.h"
+#include "component_sprite_pool.h"
+#include "component_script_pool.h"
 #include "resource_pool.h"
 #include "base_resource_pool.h"
 #include "meta_utils.h"
