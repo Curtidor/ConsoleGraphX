@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include "transform.h"
 #include "vector3.h"
-#include "component_id.h"
+#include "resource_id.h"
 #include "resourcec_manager.h"
 #include "base_resource_pool.h"
 #include "position_component.h"

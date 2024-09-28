@@ -6,7 +6,7 @@
 #include "random_numbers.h"
 #include "transform.h"
 #include "vector3.h"
-#include "component_id.h"
+#include "resource_id.h"
 #include "resourcec_manager.h"
 #include "script.h"
 #include "base_resource_pool.h"

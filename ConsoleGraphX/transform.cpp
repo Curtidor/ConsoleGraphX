@@ -2,7 +2,7 @@
 #include "transform.h"
 #include "vector3.h"
 #include "component_pool.h"
-#include "component_manager.h"
+#include "resourcec_manager.h"
 
 namespace ConsoleGraphX
 {
@@ -35,7 +35,7 @@ namespace ConsoleGraphX
     {
         if (m_parent != (std::numeric_limits<TransformID>::max)())
         {
-            return ConsoleGraphX_Internal::ComponentManager::Instance().GetComponent<ConsoleGraphX::Transform>(m_parent);
+            return ConsoleGraphX_Internal::ResourceManager::Instance().GetResource<ConsoleGraphX::Transform>(m_parent);
         }
 
         return nullptr;
