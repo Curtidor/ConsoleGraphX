@@ -3,6 +3,7 @@
 #include <limits>
 #include <tuple>
 #include <utility>
+#include <functional>
 
 // NOTE INDEX SUPPORTS ELEMENTS UP TO (size_t / 2)
 template <typename T, typename Tuple>
@@ -28,3 +29,29 @@ struct IsTypeInTuple;
 template <typename T, typename... Ts>
 struct IsTypeInTuple<T, std::tuple<Ts...>>
     : std::disjunction<std::is_same<T, Ts>...> {};
+
+template <std::size_t N, typename... Ts>
+decltype(auto) GetTupleElement(std::tuple<Ts...>& tpl) 
+{
+    return std::get<N>(tpl); 
+}
+
+// helper to detect if a type is std::function
+template <typename T>
+struct is_std_function : std::false_type {};
+
+template <typename Ret, typename... Args>
+struct is_std_function<std::function<Ret(Args...)>> : std::true_type {};
+
+// helper to detect if a type is a callable raw function pointer
+template <typename T>
+struct is_function_pointer : std::false_type {};
+
+template <typename Ret, typename... Args>
+struct is_function_pointer<Ret(*)(Args...)> : std::true_type {};
+
+// helper to check if the type is either a raw pointer or std::function
+template <typename T>
+struct is_valid_event_type : std::integral_constant<bool,
+    is_function_pointer<T>::value || is_std_function<T>::value> {};
+

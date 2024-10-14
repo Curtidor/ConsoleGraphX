@@ -1,32 +1,29 @@
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include <stdexcept>
+#include "screen_buffer.h" // has windows header
 #include <wincontypes.h>
-#include "screen_buffer.h"
-#include "vector2.h"
+#include <winnt.h>
+#include "screen_buffer_base.h"
+
 
 namespace ConsoleGraphX_Internal
 {
-    ScreenBuffer::ScreenBuffer(HANDLE handle, const ConsoleGraphX::Vector2& size)
-        : m_hConsole(handle),
-        m_size(static_cast<size_t>(size.x* size.y)),
-        m_buffer(new CHAR_INFO[size.x * size.y]),
-        m_bufferCoord{ 0, 0 },
-        m_bufferSize{ static_cast<short>(size.x), static_cast<short>(size.y) },
-        m_writePosition{ 0, 0, static_cast<short>(size.x - 1), static_cast<short>(size.y - 1) }
-    {}
-
-    ScreenBuffer::ScreenBuffer(HANDLE handle, short width, short height)
-        : m_hConsole(handle),
-        m_size(width* height),
-        m_buffer(new CHAR_INFO[width * height]),
-        m_bufferCoord{ 0, 0 },
-        m_bufferSize{ width, height },
-        m_writePosition{ 0, 0, static_cast<short>(width - 1), static_cast<short>(height - 1) }
-    {}
+    ScreenBuffer::ScreenBuffer(HANDLE console, short width, short height)
+        : ScreenBufferBase(console, width, height),
+        _m_buffer(new CHAR_INFO[width * height])
+    {
+        if (!_m_buffer)
+        {
+            throw std::runtime_error("Failed to allocate buffer");
+        }
+    }
 
     ScreenBuffer::~ScreenBuffer()
     {
-        delete[] m_buffer;
+        delete[] _m_buffer;  // Clean up dynamically allocated memory
+    }
+
+    CHAR_INFO* ScreenBuffer::GetBuffer() const
+    {
+        return _m_buffer;
     }
 }
-

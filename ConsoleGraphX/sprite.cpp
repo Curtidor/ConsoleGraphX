@@ -5,7 +5,8 @@
 #include "transform.h"
 #include "base_resource_pool.h"
 #include "texture.h"
-#include "resourcec_manager.h"
+#include "resource_manager.h"
+#include "scene_system.h"
 
 namespace ConsoleGraphX
 {
@@ -21,7 +22,7 @@ namespace ConsoleGraphX
 		m_textureIndex(textureIndex), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
 	{
-		ConsoleGraphX_Internal::Texture* t = ConsoleGraphX_Internal::ResourceManager::Instance().GetResource<ConsoleGraphX_Internal::Texture>(textureIndex);
+		ConsoleGraphX_Internal::Texture* t = ConsoleGraphX::SceneSystem::GetActiveResourceManager().GetResource<ConsoleGraphX_Internal::Texture>(textureIndex);
 		_m_width = t->GetWidth();
 		_m_height = t->GetHeight();
 
@@ -34,7 +35,7 @@ namespace ConsoleGraphX
 		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		m_textureIndex = ConsoleGraphX_Internal::ResourceManager::Instance().CreateTextureResource(width, height, color).second;
+		m_textureIndex = ConsoleGraphX::SceneSystem::GetActiveResourceManager().CreateTextureResource(width, height, color).second;
 	}
 
 	// used when creating a sprite with no texture
@@ -43,7 +44,7 @@ namespace ConsoleGraphX
 		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		m_textureIndex = ConsoleGraphX_Internal::ResourceManager::Instance().CreateTextureResource(width, height, color).second;
+		m_textureIndex = ConsoleGraphX::SceneSystem::GetActiveResourceManager().CreateTextureResource(width, height, color).second;
 	}
 
 	// used when cloning sprites

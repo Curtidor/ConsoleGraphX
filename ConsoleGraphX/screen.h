@@ -3,18 +3,14 @@
 #include <windows.h>
 #include <wincontypes.h>
 #include <string>
-#include "screen_buffer.h"
 #include <array>
+#include "screen_buffer_base.h"
+#include "color.h"
+#include "palette.h"
+#include "screen_buffer_shared.h"
 
 namespace ConsoleGraphX_Internal
 {
-	struct RGB_CGX
-	{
-		unsigned short r;
-		unsigned short g;
-		unsigned short b;
-	};
-
 	class Screen
 	{
 	private:
@@ -22,7 +18,7 @@ namespace ConsoleGraphX_Internal
 		const short _m_height;
 		const short _m_pixelWidth;
 		const short _m_pixelHeight;
-		ScreenBuffer* _m_screenBuffer;
+		ScreenBufferBase* _m_screenBuffer;
 
 		static Screen* _s_activeScreen;
 
@@ -31,7 +27,11 @@ namespace ConsoleGraphX_Internal
 		static const wchar_t s_pixel = L'\x2588';
 		static const wchar_t s_transparentPixel = L'‎';
 
+		// Shared memory constructor
+		Screen(short width, short height, short fontWidth, short fontHeight, ScreenBufferShared* screenBuffer);
+		// Normal constructor
 		Screen(short width, short height, short fontWidth, short fontHeight);
+
 		~Screen();
 
 		bool DrawScreen();
@@ -53,8 +53,9 @@ namespace ConsoleGraphX_Internal
 		static int GetWidth_A();
 		static int GetHeight_A();
 		
-		static void SetPalletColors_A(const std::array<RGB_CGX, 16>& colors);
-		static void SetPalletColor_A(const RGB_CGX& color, int index);
+		static void SetPalletColors_A(std::array<ConsoleGraphX::Color_CGX, 16>& paletteColors);
+		static void SetPalletColors_A(ConsoleGraphX::Palette& paletteColors);
+		static void SetPalletColor_A(const ConsoleGraphX::Color_CGX& color, int index);
 		static void SetPixel_A(int x, int y, CHAR_INFO s_pixel);
 		static void SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest);
 		static void SetActiveScreen_A(Screen* screen);

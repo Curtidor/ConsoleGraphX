@@ -35,15 +35,14 @@ void Snow::Update(float deltaTime)
 {
 	_m_transform->m_position += Vector3(0, 9.3f, 0) * deltaTime;
 
-	if (_m_transform->m_position.y >= 109)
+	if (_m_transform->m_position.y >= 188)
 	{
 		Vector3 minSpread = Vector3(0, 0, 0);
-		Vector3 maxSpread = Vector3(300, 80, 0);
+		Vector3 maxSpread = Vector3(600, 65, 0);
 
 		float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
 		float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
-		float z = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.z, maxSpread.z);
 
-		_m_transform->SetPosition(x,y,z);
+		_m_transform->SetPosition(x,y);
 	}
 }

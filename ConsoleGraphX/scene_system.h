@@ -1,26 +1,35 @@
 #pragma once
 #include <unordered_map>
-#include "scene.h"
 #include <string>
+#include "resource_manager.h"
+#include "scene.h"
 
 namespace ConsoleGraphX
 {
     class SceneSystem
     {
     private:
-        static Scene* _s_activeScene;
-        static std::unordered_map<std::string, Scene*> _s_scenes;
+        static inline Scene* _s_activeScene = nullptr;
+        static inline SceneSystem* _s_instance = nullptr;
+
+        std::unordered_map<std::string, Scene*> _m_scenes;
 
     public:
-        static void RegisterScene(Scene* scene);
-        static void DeregisterScene(const std::string& name);
-        static void LoadScene(const std::string& name);
-        static void DeleteScene(const std::string& name);
+        void Initialize();
+        void ShutDown();
 
-        static bool IsSceneRegistered(const std::string& name);
+        void RegisterScene(Scene* scene);
+        void DeregisterScene(const std::string& name);
+        void LoadScene(const std::string& name);
+        void DeleteScene(const std::string& name);
+
+        bool IsSceneRegistered(const std::string& name);
+
+        const std::unordered_map<std::string, Scene*>& GetScenes();
 
         static Scene* GetActiveScene();
-        static const std::unordered_map<std::string, Scene*>& GetScenes();
+        static SceneSystem& Instance();
+        static ConsoleGraphX_Internal::ResourceManager& GetActiveResourceManager();
     };
 
 };

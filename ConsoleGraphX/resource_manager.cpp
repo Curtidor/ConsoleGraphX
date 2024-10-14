@@ -1,58 +1,32 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <utility>
-#include <cassert>
 #include "base_resource_pool.h"
 #include "resource_id.h"
-#include "resourcec_manager.h"
+#include "resource_manager.h"
 #include "script.h"
+#include "verify_macro.h"
+#include "meta_utils.h"
 
 namespace ConsoleGraphX_Internal
 {
-    ResourceManager::ResourceManager()
+    BaseResourcePool& ResourceManager::GetResourcePoolFromId(ResourceID id)
     {
-        _BuildResourcePoolArray();
+        return _GetResourcePoolByIndex(_m_resourcePoolsT, id);
     }
 
-    void ResourceManager::_BuildResourcePoolArray()
+    void ResourceManager::SetActiveManager(ResourceManager* manager)
     {
-        using TupleT = BuiltInResoruceTypes::type;
-        _LoopOverTuple<TupleT>(std::make_index_sequence<std::tuple_size_v<TupleT>>{});
+        CGX_VERIFY(manager, "Manager is nullprt");
+
+        _s_activeResourceManager = manager;
     }
 
-    void ResourceManager::Initialize()
+    ResourceManager& ResourceManager::GetActiveResourceManager()
     {
-        assert(!_s_instance);
+        CGX_VERIFY(_s_activeResourceManager, "No active manager set");
 
-        _s_instance = new ResourceManager();
-    }
-
-    ResourceManager& ResourceManager::Instance()
-    {
-        assert(_s_instance);
-
-        return *_s_instance;
-    }
-
-    void ResourceManager::ShutDown()
-    {
-        for (auto* pool : _s_resourcePools)
-        {
-            delete pool;
-        }
-
-        delete _s_instance;
-        _s_instance = nullptr;
-    }
-
-    BaseResourcePool* ResourceManager::GetResourcePoolFromId(ResourceID id)
-    {
-        #ifdef _DEBUG
-        if (id < 0 || id >= BuiltInResoruceTypes::count)
-            throw std::runtime_error("Invalid Index!");
-        #endif
-
-        return _s_resourcePools[id];
+        return *_s_activeResourceManager;
     }
 
     void ResourceManager::DestroyEntityResources(const std::unordered_map<ResourceID, ResourceIndex>& componentIdToIndexMap)
@@ -62,7 +36,7 @@ namespace ConsoleGraphX_Internal
             // if component is a Script or a user-defined component (custom script)
             ResourceID compID = IsScriptFromID(pair.first) ? GenResourceID::Get<ConsoleGraphX::Script>() : pair.first;
             
-            _s_resourcePools[compID]->RemoveResourceFromPool(pair.second);
+            //_m_resourcePools[compID]->RemoveResourceFromPool(pair.second);
         }
     }
 };

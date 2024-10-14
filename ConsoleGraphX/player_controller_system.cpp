@@ -4,7 +4,7 @@
 #include "input_system.h"
 #include "transform.h"
 #include "vector3.h"
-#include "resourcec_manager.h"
+#include "resource_manager.h"
 #include "resource_pool.h"
 
 namespace ConsoleGraphX
@@ -17,11 +17,8 @@ namespace ConsoleGraphX
 
     void PlayerControllerSystem::Update(float deltaTime)
     {
-        ConsoleGraphX_Internal::ResourcePool<PlayerController>* controllerPool = ConsoleGraphX_Internal::ResourceManager::Instance().GetResourcePool<PlayerController>();
-        std::vector<PlayerController>* controllers = controllerPool->GetPoolItems();
-
-        ConsoleGraphX_Internal::ResourcePool<Transform>* tPool = ConsoleGraphX_Internal::ResourceManager::Instance().GetResourcePool<Transform>();
-
+        ConsoleGraphX_Internal::ResourcePool<PlayerController>& controllerPool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<PlayerController>();
+        std::vector<PlayerController>* controllers = controllerPool.GetPoolItems();
 
         for (PlayerController& controller : *controllers)
         {

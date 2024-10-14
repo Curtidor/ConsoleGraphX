@@ -1,26 +1,24 @@
 #pragma once
-
+#include <cstdint>
 
 namespace ConsoleGraphX
 {
-    enum Color
-    {
-        Black = 0,
-        DarkBlue = 1,
-        DarkGreen = 2,
-        DarkCyan = 3,
-        DarkRed = 4,
-        DarkMagenta = 5,
-        DarkYellow = 6,
-        Gray = 7,
-        DarkGray = 8,
-        Blue = 9,
-        Green = 10,
-        Cyan = 11,
-        Red = 12,
-        Magenta = 13,
-        Yellow = 14,
-        White = 15
-    };
+	struct Color_CGX
+	{
+		uint8_t r, g, b;
 
-};
+		Color_CGX() : r(0), g(0), b(0) {}
+
+		Color_CGX(uint8_t red, uint8_t green, uint8_t blue) : r(red), g(green), b(blue) {}
+
+		Color_CGX(int red, int green, int blue)
+			: r(static_cast<uint8_t>(red)),
+			g(static_cast<uint8_t>(green)),
+			b(static_cast<uint8_t>(blue)) {}
+
+		Color_CGX(int grayscale)
+			: r(static_cast<uint8_t>(grayscale)),
+			g(static_cast<uint8_t>(grayscale)),
+			b(static_cast<uint8_t>(grayscale)) {}
+	};
+}

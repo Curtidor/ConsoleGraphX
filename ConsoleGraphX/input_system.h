@@ -95,7 +95,10 @@ namespace ConsoleGraphX
         static bool KeyPressed();
         static bool IsKeyPressed(Key key);
         static const Vector2 GetMousePosition();
+
         static void HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent);
+        static void HandleKeyEvent(const KEY_EVENT_RECORD& keyEvent);
+
         static void ProcessInput();
     };
 

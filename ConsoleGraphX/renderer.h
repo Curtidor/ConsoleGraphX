@@ -7,7 +7,7 @@
 
 namespace ConsoleGraphX_Internal 
 {
-	class RenderSystem
+	class Renderer
 	{
 	private:
 		struct OverlapPoints
@@ -58,13 +58,13 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite to be drawn.
 		 * @param overlapPoints The overlap points of the sprite with the camera's view.
 		 */
-		static void _DrawSprite_SS(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
+		static void _DrawSprite(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
 
 	public:
 		/**
 		 * @brief Draws sprites of entities within the camera's view.
 		 * @param entities Vector of pointers to entities to be drawn.
 		 */
-		static void DrawSprites();
+		static void DrawSprites(float aplha);
 	};
 };

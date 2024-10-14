@@ -9,8 +9,6 @@
 #include "snow.h"
 #include "vector3.h"
 #include "camera.h"
-#include "color.h"
-#include "resourcec_manager.h"
 #include "base_resource_pool.h"
 
 using namespace ConsoleGraphX;
@@ -18,8 +16,8 @@ using namespace ConsoleGraphX_Internal;
 
 MainScene::MainScene(std::string name) : Scene(name)
 {
-	SceneSystem::RegisterScene(this);
-	SceneSystem::LoadScene(GetSceneName());
+	SceneSystem::Instance().RegisterScene(this);
+	SceneSystem::Instance().LoadScene(GetSceneName());
 }
 
 void MainScene::Initialize()
@@ -32,32 +30,18 @@ void MainScene::Initialize()
 
 	Entity* snow = RegisterEntityN();
 	snow->AddComponent<Snow>();
-	snow->AddComponent<Sprite>(1,1, Color::Magenta);
+	snow->AddComponent<Sprite>(1,1, 13);
 
-	std::vector<Entity*> entities;
-	for (int i = 0; i < 400; i++)
+	for (int i = 0; i < 700; i++)
 	{
 		Entity* clonedSnow = RegisterEntityN();
 
 		snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
-		entities.push_back(clonedSnow);
 	}
 
-	for (int i = 0; i < entities.size(); i++)
-	{
-		//entities[i]->DestroyEntity();
-	}
-
-	ConsoleGraphX_Internal::ResourceManager rManager = ConsoleGraphX_Internal::ResourceManager::Instance();
-	auto* sprites = rManager.GetResourcePoolFromId(4);
-	auto* scripts = rManager.GetResourcePoolFromId(0);
-
-	ResourcePool<Transform>* tPool = static_cast<ResourcePool<Transform>*>(rManager.GetResourcePoolFromId(1));
-
-	ResourceIndex wallTIndex = rManager.CreateTextureResource("../wall_sprite.cxsp").second;
-	ResourceIndex grassTIndex = rManager.CreateTextureResource("../grass_sprite.cxsp").second;
-
-	//tPool->Compress();
+	ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("../wall_sprite.cxsp").second;
+	ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("../grass_sprite.cxsp").second;
+	ResourceIndex TestTIndex = _m_resourceManager.CreateTextureResource("../shoot_game.cxsp").second;
 
 	Entity* wallL = RegisterEntityN();
 	wallL->AddComponent<Sprite>(wallTIndex);
@@ -71,6 +55,7 @@ void MainScene::Initialize()
 	grass->AddComponent<Sprite>(grassTIndex);
 	grass->GetTransform()->SetPosition(0, Screen::GetHeight_A() - 12);
 
-
+	Entity* cool = RegisterEntityN();
+ 	//cool->AddComponent<Sprite>(TestTIndex);
 
 }

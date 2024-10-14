@@ -42,6 +42,13 @@ namespace ConsoleGraphX
         z /= magnitude;
     }
 
+    void Vector3::RoundD()
+    {
+        x = std::roundf(x);
+        y = std::roundf(y);
+        z = std::roundf(z);
+    }
+
     void Vector3::AbsVector()
     {
         x = std::abs(x);

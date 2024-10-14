@@ -1,20 +1,17 @@
 #pragma once
-#pragma once
 #include <Windows.h>
+#include "application.h"
 
-namespace ConsoleGraphX
-{
-    class Engine;
-
-}
 
 class ConsoleHandler 
 {
 public:
     static void SetHandler();
-    static void RegisterEngine(ConsoleGraphX::Engine* engine);
+    static void RegisterApplication(ConsoleGraphX::Application* engine);
 
 private:
-    static ConsoleGraphX::Engine* _instance;
+    static inline ConsoleGraphX::Application* _s_instance = nullptr;
+
+private:
     static BOOL WINAPI ConsoleHandlerRoutine(DWORD ctrlType);
 };

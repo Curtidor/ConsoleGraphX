@@ -1,8 +1,5 @@
 ﻿#define WIN32_LEAN_AND_MEAN
-#include "windows.h"
-#include "wincontypes.h"
-#include "screen.h"
-#include "screen_buffer.h"
+#include <windows.h>
 #include <consoleapi2.h>
 #include <consoleapi3.h>
 #include <handleapi.h>
@@ -12,11 +9,31 @@
 #include <string>
 #include <utility>
 #include <array>
+#include <wincontypes.h>
+#include "screen.h"
+#include "screen_buffer.h"
+#include "color.h"
+#include "palette.h"
+#include "screen_buffer_shared.h"
 
 
 namespace ConsoleGraphX_Internal
 {
 	Screen* Screen::_s_activeScreen = nullptr;
+
+	Screen::Screen(short width, short height, short fontWidth, short fontHeight, ScreenBufferShared* screenBuffer)
+		: _m_width(width), _m_height(height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight), _m_screenBuffer(screenBuffer)
+	{
+		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
+
+		SetConsoleFontSize(fontWidth, fontHeight);
+		SetConsoleWindowSize(_m_width, _m_height);
+
+		FillScreen({ s_pixel , 0 });
+
+		Screen::_s_activeScreen = this;
+	}
+
 
 	Screen::Screen(short width, short height, short fontWidth, short fontHeight)
 		: _m_width(width), _m_height(height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
@@ -25,10 +42,10 @@ namespace ConsoleGraphX_Internal
 
 		_m_screenBuffer = new ScreenBuffer(hConsole, width, _m_height);
 
-		if (_m_screenBuffer->m_hConsole == INVALID_HANDLE_VALUE)
+		if (_m_screenBuffer->GetConsoleHandle() == INVALID_HANDLE_VALUE)
 			throw std::runtime_error("Failed to get the console handle");
 
-		SetConsoleScreenBufferSize(_m_screenBuffer->m_hConsole, _m_screenBuffer->m_bufferSize);
+		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
 
 		SetConsoleFontSize(fontWidth, fontHeight);
 		SetConsoleWindowSize(_m_width, _m_height);
@@ -46,8 +63,8 @@ namespace ConsoleGraphX_Internal
 	bool Screen::DrawScreen()
 	{
 		// Write the screen buffer to the console
-		if (!WriteConsoleOutput(_m_screenBuffer->m_hConsole, _m_screenBuffer->m_buffer,
-			_m_screenBuffer->m_bufferSize, _m_screenBuffer->m_bufferCoord, &_m_screenBuffer->m_writePosition))
+		if (!WriteConsoleOutput(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBuffer(),
+			_m_screenBuffer->GetBufferSize(), _m_screenBuffer->m_bufferCoord, &_m_screenBuffer->m_writePosition))
 		{
 			return false;
 		}
@@ -56,7 +73,7 @@ namespace ConsoleGraphX_Internal
 
 	void Screen::FillScreen(const CHAR_INFO& color)
 	{
-		std::fill(_m_screenBuffer->m_buffer, _m_screenBuffer->m_buffer + (_m_width * _m_height), color);
+		std::fill(_m_screenBuffer->GetBuffer(), _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size, color);
 	}
 
 	/// <summary>
@@ -72,7 +89,7 @@ namespace ConsoleGraphX_Internal
 		if (index < 0 || index >= _m_screenBuffer->m_bufferSize.X * _m_screenBuffer->m_bufferSize.Y)
 			return;
 
-		_m_screenBuffer->m_buffer[index] = s_pixel;
+		_m_screenBuffer->GetBuffer()[index] = s_pixel;
 	}
 
 	void Screen::SetPixel_A(int x, int y, CHAR_INFO s_pixel)
@@ -86,7 +103,7 @@ namespace ConsoleGraphX_Internal
 	void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	{
 		// pointer to the end of the screen buffer, calculated based on screen dimensions (width * height) aka "size".
-		const CHAR_INFO* bufferEnd = _m_screenBuffer->m_buffer + _m_screenBuffer->m_size;
+		const CHAR_INFO* bufferEnd = _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size;
 
 		// calculate the remaining space in the screen buffer starting from the destination pointer.
 		const std::size_t remainingBufferSpace = bufferEnd - dest;
@@ -132,11 +149,11 @@ namespace ConsoleGraphX_Internal
 	{
 		// Set the console font size
 		CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
-		GetCurrentConsoleFontEx(_m_screenBuffer->m_hConsole, FALSE, &font);
+		GetCurrentConsoleFontEx(_m_screenBuffer->GetConsoleHandle(), FALSE, &font);
 
 		font.dwFontSize.X = width;
 		font.dwFontSize.Y = height;
-		if (!SetCurrentConsoleFontEx(_m_screenBuffer->m_hConsole, FALSE, &font)) {
+		if (!SetCurrentConsoleFontEx(_m_screenBuffer->GetConsoleHandle(), FALSE, &font)) {
 			return false;
 		}
 
@@ -152,7 +169,7 @@ namespace ConsoleGraphX_Internal
 	{
 		// Set the console window size
 		SMALL_RECT rect = { 0, 0, width - 1, height - 1 };
-		SetConsoleWindowInfo(_m_screenBuffer->m_hConsole, TRUE, &rect);
+		SetConsoleWindowInfo(_m_screenBuffer->GetConsoleHandle(), TRUE, &rect);
 	}
 
 
@@ -164,7 +181,7 @@ namespace ConsoleGraphX_Internal
 	void Screen::SetCursorPosition(short x, short y)
 	{
 		// Set the cursor position in the console
-		SetConsoleCursorPosition(_m_screenBuffer->m_hConsole, COORD{ x, y });
+		SetConsoleCursorPosition(_m_screenBuffer->GetConsoleHandle(), COORD{x, y});
 	}
 
 	void Screen::SetConsoleName(const std::string& name)
@@ -221,22 +238,38 @@ namespace ConsoleGraphX_Internal
 		return Screen::_s_activeScreen->_m_height; 
 	}
 
-	void Screen::SetPalletColors_A(const std::array<RGB_CGX, 16>& colors) 
+	void Screen::SetPalletColors_A(std::array<ConsoleGraphX::Color_CGX, 16>& paletteColors) 
 	{
 		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
 		consoleInfo.cbSize = sizeof(consoleInfo);
 
-		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 
-		for (size_t i = 0; i < colors.size(); i++) 
+		for (size_t i = 0; i < paletteColors.size(); i++) 
+		{
+			consoleInfo.ColorTable[i] = RGB(paletteColors[i].r, paletteColors[i].g, paletteColors[i].b);
+		}
+
+		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
+	}
+
+	void Screen::SetPalletColors_A(ConsoleGraphX::Palette& paletteColors)
+	{
+		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
+		consoleInfo.cbSize = sizeof(consoleInfo);
+
+		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
+
+		const std::array<ConsoleGraphX::Color_CGX, 16>& colors = paletteColors.GetColors();
+		for (size_t i = 0; i < colors.size(); i++)
 		{
 			consoleInfo.ColorTable[i] = RGB(colors[i].r, colors[i].g, colors[i].b);
 		}
 
-		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
-	void Screen::SetPalletColor_A(const RGB_CGX& color, int index)
+	void Screen::SetPalletColor_A(const ConsoleGraphX::Color_CGX& color, int index)
 	{
 		if (index < 0 || index > 15)
 		{
@@ -246,11 +279,11 @@ namespace ConsoleGraphX_Internal
 		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
 		consoleInfo.cbSize = sizeof(consoleInfo);
 
-		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+		GetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 
 		consoleInfo.ColorTable[index] = RGB(color.r, color.g, color.b);
 
-		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->m_hConsole, &consoleInfo);
+		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
 	void Screen::SetActiveScreen_A(Screen* screen) 
@@ -265,6 +298,6 @@ namespace ConsoleGraphX_Internal
 
 	CHAR_INFO* Screen::GetActiveScreenBuffer_A() 
 	{ 
-		return Screen::_s_activeScreen->_m_screenBuffer->m_buffer; 
+		return Screen::_s_activeScreen->_m_screenBuffer->GetBuffer(); 
 	}
 };

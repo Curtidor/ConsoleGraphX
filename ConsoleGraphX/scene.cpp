@@ -3,11 +3,12 @@
 #include <stdexcept>
 #include "scene.h"
 #include "entity.h"
+#include "resource_manager.h"
 
 namespace ConsoleGraphX
 {
     Scene::Scene(std::string name)
-        : _m_scene_name(name)
+        : _m_scene_name(name), _m_resourceManager(ConsoleGraphX_Internal::ResourceManager())
     {}
 
     Scene::~Scene()
@@ -18,7 +19,7 @@ namespace ConsoleGraphX
     Entity* Scene::RegisterEntityN(std::string name)
     {
 
-        auto result = _m_entities.insert(Entity());
+        auto result = _m_entities.insert(Entity(_m_resourceManager));
 
         // check if the insertion was successful
         if (!result.second)
@@ -93,6 +94,11 @@ namespace ConsoleGraphX
     const std::unordered_set<Entity, Entity::Hash, Entity::Equal>& Scene::GetEntities()
     {
         return _m_entities;
+    }
+
+    ConsoleGraphX_Internal::ResourceManager& Scene::GetResourceManager()
+    {
+        return _m_resourceManager;
     }
 
     const std::string& Scene::GetSceneName()

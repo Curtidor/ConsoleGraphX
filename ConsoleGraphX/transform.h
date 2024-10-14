@@ -11,11 +11,12 @@ namespace ConsoleGraphX
     public:
         TransformID m_parent;
         Vector3 m_position;
+        Vector3 m_previousPosition;  // New member for storing the previous position
         Vector3 m_scale;
         float m_rotation;
 
         Transform();
-        Transform(const Transform& tansform);
+        Transform(const Transform& transform);
         Transform(float x, float y, float scaleX, float scaleY);
         Transform(float x, float y, float z, float scaleX, float scaleY, float scaleZ);
 
@@ -34,8 +35,7 @@ namespace ConsoleGraphX
         void Translate(const Vector3& translation);
 
         const Vector3& GetLocalPosition() const;
+        const Vector3& GetPreviousPosition() const;  
         const Vector3 GetWorldPosition() const;
     };
-};
-
-
+}

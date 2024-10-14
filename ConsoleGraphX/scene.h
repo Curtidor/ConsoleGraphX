@@ -3,9 +3,12 @@
 #include <unordered_map>
 #include <string>
 #include "entity.h"
+#include "resource_manager.h"
 
 namespace ConsoleGraphX
 {
+    class SceneSystem;
+
     class Scene
     {
     private:
@@ -13,6 +16,9 @@ namespace ConsoleGraphX
 
         std::unordered_set<Entity, Entity::Hash, Entity::Equal> _m_entities;
         std::unordered_map<std::string, int> _m_tagIDMap;
+    
+    protected:
+        ConsoleGraphX_Internal::ResourceManager  _m_resourceManager;
 
     public:
         Scene(std::string name);
@@ -28,6 +34,8 @@ namespace ConsoleGraphX
 
         const std::unordered_set<Entity, Entity::Hash, Entity::Equal>& GetEntities();
         const std::string& GetSceneName();
+
+        ConsoleGraphX_Internal::ResourceManager& GetResourceManager();
     };
 
 };

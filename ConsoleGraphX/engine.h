@@ -15,15 +15,15 @@ namespace ConsoleGraphX
         ConsoleGraphX_Internal::Logger _m_logger;
         ConsoleGraphX_Internal::SystemManager _m_systemManager;
 
-    private:
-        void _Update(float deltaTime);
-
     public:
         Engine(short screen_width, short screen_height, short pixel_width, short pixel_height);
-
+        void Start();
         void Shutdown();
-        void OnConsoleClose();
-        void Run();
+        bool IsRunning() const;
+
+        void UpdateSystems(float deltaTime);
+        void Render(float alpha);
+        void UpdateFPS(int fps);
 
     };
 };

@@ -1,24 +1,24 @@
 #include "console_handler.h"
-#include "engine.h"
-
-
-ConsoleGraphX::Engine* ConsoleHandler::_instance = nullptr;
+#include "application.h"
+#include "verify_macro.h"
 
 void ConsoleHandler::SetHandler() 
 {
     SetConsoleCtrlHandler(ConsoleHandlerRoutine, TRUE);
 }
 
-void ConsoleHandler::RegisterEngine(ConsoleGraphX::Engine* engine) 
+void ConsoleHandler::RegisterApplication(ConsoleGraphX::Application* app)
 {
-    _instance = engine;
+    CGX_VERIFY(app, "null application");
+
+    _s_instance = app;
 }
 
 BOOL WINAPI ConsoleHandler::ConsoleHandlerRoutine(DWORD ctrlType) 
 {
-    if (_instance && (ctrlType == CTRL_CLOSE_EVENT || ctrlType == CTRL_LOGOFF_EVENT || ctrlType == CTRL_SHUTDOWN_EVENT)) 
+    if (_s_instance && (ctrlType == CTRL_CLOSE_EVENT || ctrlType == CTRL_LOGOFF_EVENT || ctrlType == CTRL_SHUTDOWN_EVENT)) 
     {
-        _instance->OnConsoleClose();
+        _s_instance->OnConsoleClose();
         return TRUE;
     }
     return FALSE;

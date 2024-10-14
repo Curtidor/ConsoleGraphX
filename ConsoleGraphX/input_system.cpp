@@ -1,13 +1,14 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <consoleapi2.h>
 #include <wincontypes.h>
 #include <processenv.h>
+#include <algorithm> // false postive algo is used
 #include <cctype>
 #include <conio.h>
-#include <algorithm> // false postive algo is used
 #include <consoleapi.h>
-#include "input_system.h"
 #include "vector2.h"
+#include "input_system.h"
 
 namespace ConsoleGraphX
 {
@@ -115,38 +116,48 @@ namespace ConsoleGraphX
         }
     }
 
+    void InputSystem::HandleKeyEvent(const KEY_EVENT_RECORD& keyEvent)
+    {
+        if (keyEvent.bKeyDown)
+        {
+            InputSystem::keys[keyEvent.wVirtualKeyCode] = true;
+        }
+        else
+        {
+            InputSystem::keys[keyEvent.wVirtualKeyCode] = false;
+        }
+    }
+
+
     void InputSystem::ProcessInput()
     {
         HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-        DWORD cNumRead = 0;
-        DWORD i = 0;
         INPUT_RECORD irInBuf[128];
+        DWORD cNumRead = 0;
 
-        DWORD x = 0;
+        if (!PeekConsoleInput(hStdin, irInBuf, 128, &cNumRead) || cNumRead == 0)
+        {
+            return; // no input events to process
+        }
 
-        // Read input events
-        GetNumberOfConsoleInputEvents(hStdin, &x);
-        if (x)
-            ReadConsoleInput(hStdin, irInBuf, 128, &cNumRead);
-
-
-        // Dispatch the events to the appropriate handler
-        for (i = 0; i < cNumRead; i++)
+        // dispatch the events to the appropriate handler
+        for (DWORD i = 0; i < cNumRead; i++)
         {
             switch (irInBuf[i].EventType)
             {
-            case KEY_EVENT: // keyboard input
-                // Handle keyboard events if necessary
+            case KEY_EVENT:
+                HandleKeyEvent(irInBuf[i].Event.KeyEvent);
                 break;
-
-            case MOUSE_EVENT: // mouse input
+            case MOUSE_EVENT:
                 HandleMouseEvent(irInBuf[i].Event.MouseEvent);
                 break;
-
             default:
                 break;
             }
         }
+
+        FlushConsoleInputBuffer(hStdin);
     }
+
 
 };
