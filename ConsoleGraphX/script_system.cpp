@@ -1,4 +1,4 @@
-#include <vector>
+#include "CGXPCH.h"
 #include "script.h"
 #include "script_system.h"
 #include "resource_manager.h"

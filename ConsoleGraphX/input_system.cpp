@@ -1,14 +1,7 @@
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <consoleapi2.h>
-#include <wincontypes.h>
-#include <processenv.h>
-#include <algorithm> // false postive algo is used
-#include <cctype>
+#include "CGXPCH.h"
 #include <conio.h>
-#include <consoleapi.h>
-#include "vector2.h"
 #include "input_system.h"
+
 
 namespace ConsoleGraphX
 {
@@ -84,7 +77,6 @@ namespace ConsoleGraphX
     {
         return InputSystem::mousePos;
     }
-    #pragma warning (disable: VCIC001)
     void InputSystem::HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent)
     {
         switch (mouseEvent.dwEventFlags)

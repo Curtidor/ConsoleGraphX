@@ -1,9 +1,8 @@
-#include <vector>
+#include "CGXPCH.h"
 #include "player_controller_system.h"
 #include "player_controller.h"
 #include "input_system.h"
 #include "transform.h"
-#include "vector3.h"
 #include "resource_manager.h"
 #include "resource_pool.h"
 

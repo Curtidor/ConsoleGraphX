@@ -1,11 +1,8 @@
-#include <stdexcept>
-#include <unordered_map>
-#include <utility>
+#include "CGXPCH.h"
 #include "base_resource_pool.h"
 #include "resource_id.h"
 #include "resource_manager.h"
 #include "script.h"
-#include "verify_macro.h"
 #include "meta_utils.h"
 
 namespace ConsoleGraphX_Internal

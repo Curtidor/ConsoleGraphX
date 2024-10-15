@@ -1,6 +1,6 @@
-﻿#include <cstdint>
+﻿#include "CGXPCH.h"
+#include <cstdint>
 #include "sprite.h"
-#include "vector2.h"
 #include "position_component.h"
 #include "transform.h"
 #include "base_resource_pool.h"

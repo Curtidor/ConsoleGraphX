@@ -1,10 +1,7 @@
-#include <unordered_map>
-#include <string>
-#include <stdexcept>
-#include <type_traits>
+#include "CGXPCH.h"
 #include "random_numbers.h"
 #include "transform.h"
-#include "vector3.h"
+#include "CGXPCH.h"
 #include "resource_id.h"
 #include "resource_manager.h"
 #include "script.h"
@@ -192,12 +189,12 @@ namespace ConsoleGraphX
 
     size_t Entity::Hash::operator()(const Entity& entity) const
     {
-        return std::hash<int>()(entity.m_id);
+        return std::hash<size_t>()(entity.m_id);
     }
 
-    size_t Entity::Hash::operator()(int id) const
+    size_t Entity::Hash::operator()(size_t id) const
     {
-        return std::hash<int>()(id);
+        return std::hash<size_t>()(id);
     }
 
     bool Entity::Equal::operator()(const Entity& lhs, const Entity& rhs) const
@@ -210,7 +207,7 @@ namespace ConsoleGraphX
         return entity.m_id == id;
     }
 
-    bool Entity::Equal::operator()(int id, const Entity& entity) const
+    bool Entity::Equal::operator()(size_t id, const Entity& entity) const
     {
         return id == entity.m_id;
     }

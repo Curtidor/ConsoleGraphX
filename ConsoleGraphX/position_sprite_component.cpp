@@ -1,6 +1,6 @@
+#include "CGXPCH.h"
 #include "position_sprite_component.h"
 #include "transform.h"
-#include "vector3.h"
 #include "position_component.h"
 
 namespace ConsoleGraphX_Internal

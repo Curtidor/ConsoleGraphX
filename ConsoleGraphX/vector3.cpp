@@ -1,7 +1,6 @@
-#include "vector3.h"
+#include "CGXPCH.h"
 #include <cmath>
 #include <cstdlib>
-#include "vector2.h"
 
 namespace ConsoleGraphX
 {
@@ -15,27 +14,33 @@ namespace ConsoleGraphX
 
     Vector3::Vector3(float x, float y, float z) : x(x), y(y), z(z) {}
 
-    Vector3 Vector3::operator+(const Vector3& other) const {
+    Vector3 Vector3::operator+(const Vector3& other) const 
+    {
         return Vector3(x + other.x, y + other.y, z + other.z);
     }
 
-    Vector3 Vector3::operator-(const Vector3& other) const {
+    Vector3 Vector3::operator-(const Vector3& other) const 
+    {
         return Vector3(x - other.x, y - other.y, z - other.z);
     }
 
-    Vector3 Vector3::operator*(float scalar) const {
+    Vector3 Vector3::operator*(float scalar) const 
+    {
         return Vector3(x * scalar, y * scalar, z * scalar);
     }
 
-    Vector3 Vector3::operator/(float scalar) const {
+    Vector3 Vector3::operator/(float scalar) const 
+    {
         return Vector3(x / scalar, y / scalar, z / scalar);
     }
 
-    float Vector3::Magnitude() const {
+    float Vector3::Magnitude() const 
+    {
         return std::sqrt(x * x + y * y + z * z);
     }
 
-    void Vector3::Normalize() {
+    void Vector3::Normalize() 
+    {
         float magnitude = Magnitude();
         x /= magnitude;
         y /= magnitude;
@@ -56,40 +61,46 @@ namespace ConsoleGraphX
         z = std::abs(z);
     }
 
-    Vector3& Vector3::operator+=(const Vector3& other) {
+    Vector3& Vector3::operator+=(const Vector3& other) 
+    {
         x += other.x;
         y += other.y;
         z += other.z;
         return *this;
     }
 
-    Vector3& Vector3::operator-=(const Vector3& other) {
+    Vector3& Vector3::operator-=(const Vector3& other) 
+    {
         x -= other.x;
         y -= other.y;
         z -= other.z;
         return *this;
     }
 
-    Vector3& Vector3::operator+=(const Vector2& other) {
+    Vector3& Vector3::operator+=(const Vector2& other) 
+    {
         x += other.x;
         y += other.y;
         return *this;
     }
 
-    Vector3& Vector3::operator-=(const Vector2& other) {
+    Vector3& Vector3::operator-=(const Vector2& other)
+    {
         x -= other.x;
         y -= other.y;
         return *this;
     }
 
-    Vector3& Vector3::operator*=(float scalar) {
+    Vector3& Vector3::operator*=(float scalar) 
+    {
         x *= scalar;
         y *= scalar;
         z *= scalar;
         return *this;
     }
 
-    Vector3& Vector3::operator/=(float scalar) {
+    Vector3& Vector3::operator/=(float scalar) 
+    {
         x /= scalar;
         y /= scalar;
         z /= scalar;

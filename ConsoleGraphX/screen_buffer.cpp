@@ -1,7 +1,5 @@
-#include <stdexcept>
+#include "CGXPCH.h"
 #include "screen_buffer.h" // has windows header
-#include <wincontypes.h>
-#include <winnt.h>
 #include "screen_buffer_base.h"
 
 

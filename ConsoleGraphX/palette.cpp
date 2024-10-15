@@ -1,6 +1,4 @@
-#include <string>
-#include <array>
-#include <optional>
+#include "CGXPCH.h"
 #include "color.h"
 #include "palette.h"
 

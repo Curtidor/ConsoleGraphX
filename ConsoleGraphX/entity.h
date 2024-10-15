@@ -1,12 +1,6 @@
 #pragma once
-#include <queue>
-#include <unordered_set>
-#include <unordered_map>
-#include <string>
-#include <type_traits>
-#include <stdexcept>
+#include "CGXPCH.h"
 #include "transform.h"
-#include "vector3.h"
 #include "resource_id.h"
 #include "resource_manager.h"
 #include "base_resource_pool.h"
@@ -256,7 +250,7 @@ namespace ConsoleGraphX
             using is_transparent = void;
 
             size_t operator()(const Entity& entity) const;
-            size_t operator()(int id) const;
+            size_t operator()(size_t id) const;
         };
 
         struct Equal
@@ -265,7 +259,7 @@ namespace ConsoleGraphX
 
             bool operator()(const Entity& lhs, const Entity& rhs) const;
             bool operator()(const Entity& entity, int id) const;
-            bool operator()(int id, const Entity& entity) const;
+            bool operator()(size_t id, const Entity& entity) const;
         };
         /**
          * @brief Inequality operator for comparing entities.

@@ -1,8 +1,6 @@
-#include "scene_system.h"
-#include <stdexcept>
-#include <string>
-#include <unordered_map>
+#include "CGXPCH.h"
 #include <cassert>
+#include "scene_system.h"
 #include "entity.h"
 #include "scene.h"
 #include "resource_manager.h"

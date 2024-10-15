@@ -1,3 +1,4 @@
+#include "CGXPCH.h"
 #include "component.h"
 
 /**

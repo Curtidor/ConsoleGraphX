@@ -1,10 +1,8 @@
+#include "CGXPCH.h"
 #include <cmath>
-#include <vector>
 #include "renderer.h"
 #include "screen.h"
 #include "sprite.h"
-#include "vector2.h"
-#include "vector3.h"
 #include "resource_manager.h"
 #include "resource_pool.h"
 #include "camera.h"

@@ -1,7 +1,6 @@
-#include <stdexcept>
+#include "CGXPCH.h"
 #include "script.h"
 #include "entity.h"
-#include "verify_macro.h"
 
 namespace ConsoleGraphX
 {

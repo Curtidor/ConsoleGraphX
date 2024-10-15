@@ -1,4 +1,4 @@
-#include "vector2.h"
+#include "CGXPCH.h"
 #include <cmath>
 #include <cstdint>
 
@@ -15,42 +15,50 @@ namespace ConsoleGraphX
     Vector2::Vector2(uint32_t x, uint32_t y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
 
 
-    Vector2 Vector2::operator+(const Vector2& other) const {
+    Vector2 Vector2::operator+(const Vector2& other) const 
+    {
         return Vector2(x + other.x, y + other.y);
     }
 
-    Vector2 Vector2::operator-(const Vector2& other) const {
+    Vector2 Vector2::operator-(const Vector2& other) const 
+    {
         return Vector2(x - other.x, y - other.y);
     }
 
-    Vector2 Vector2::operator*(float scalar) const {
+    Vector2 Vector2::operator*(float scalar) const 
+    {
         return Vector2(x * scalar, y * scalar);
     }
 
-    Vector2 Vector2::operator/(float scalar) const {
+    Vector2 Vector2::operator/(float scalar) const 
+    {
         return Vector2(x / scalar, y / scalar);
     }
 
-    Vector2& Vector2::operator+=(const Vector2& other) {
+    Vector2& Vector2::operator+=(const Vector2& other) 
+    {
         x += other.x;
         y += other.y;
         return *this;
     }
 
 
-    Vector2& Vector2::operator-=(const Vector2& other) {
+    Vector2& Vector2::operator-=(const Vector2& other) 
+    {
         x -= other.x;
         y -= other.y;
         return *this;
     }
 
-    Vector2& Vector2::operator*=(float scalar) {
+    Vector2& Vector2::operator*=(float scalar) 
+    {
         x *= scalar;
         y *= scalar;
         return *this;
     }
 
-    Vector2& Vector2::operator/=(float scalar) {
+    Vector2& Vector2::operator/=(float scalar) 
+    {
         x /= scalar;
         y /= scalar;
         return *this;
@@ -62,11 +70,13 @@ namespace ConsoleGraphX
         oPerpendicularPoint.y = end.x - start.x;
     }
 
-    float Vector2::Magnitude() const {
+    float Vector2::Magnitude() const 
+    {
         return std::sqrt(x * x + y * y);
     }
 
-    void Vector2::Normalize() {
+    void Vector2::Normalize() 
+    {
         float magnitude = Magnitude();
         x /= magnitude;
         y /= magnitude;

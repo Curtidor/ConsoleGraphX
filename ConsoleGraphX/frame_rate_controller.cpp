@@ -1,6 +1,5 @@
-#include <chrono>
+#include "CGXPCH.h"
 #include "frame_rate_controller.h"
-#include <thread>
 
 namespace ConsoleGraphX
 {

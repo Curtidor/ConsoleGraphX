@@ -1,6 +1,4 @@
-#include <string>
-#include <unordered_set>
-#include <stdexcept>
+#include "CGXPCH.h"
 #include "scene.h"
 #include "entity.h"
 #include "resource_manager.h"

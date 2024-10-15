@@ -1,14 +1,10 @@
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "CGXPCH.h"
 #include <handleapi.h>
 #include <errhandlingapi.h>
 #include <processthreadsapi.h>
-#include <string>
-#include <memory>
 #include <thread>
 #include <mutex>
 #include <cassert>
-#include <type_traits>
 #include "debugger_manager.h"
 #include "../IPC/sender.h"
 
@@ -100,7 +96,6 @@ namespace ConsoleGraphX_Internal
         {
         case LogLevel::CGX_INFO:
             message.insert(0, "[INFO]");
-
             break;
         case LogLevel::CGX_WARNING:
             message.insert(0, "[WARNING]" );

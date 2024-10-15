@@ -1,8 +1,6 @@
+#include "CGXPCH.h"
 #include <filesystem>
-#include <stdexcept>
-#include <string>
-#include <fstream> // fsteam is needed 
-#include <ios>
+#include <fstream>
 #include "file_utils.h"
 
 void VerifyFileExtension(const std::string& filename, const std::string& expectedExtension)

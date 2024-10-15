@@ -1,3 +1,4 @@
+#include "CGXPCH.h"
 #include <limits>
 #include "position_component.h"
 #include "transform.h"

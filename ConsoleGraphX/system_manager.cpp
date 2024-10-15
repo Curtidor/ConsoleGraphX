@@ -1,3 +1,4 @@
+#include "CGXPCH.h"
 #include "system_manager.h"
 #include "base_system.h"
 

@@ -1,6 +1,6 @@
-#include "screen_buffer_base.h" // has windows header
-#include <wincontypes.h>
+#include "CGXPCH.h"
 #include <winnt.h>
+#include "screen_buffer_base.h" 
 
 
 

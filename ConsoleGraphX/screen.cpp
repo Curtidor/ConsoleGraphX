@@ -1,20 +1,10 @@
-﻿#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <consoleapi2.h>
-#include <consoleapi3.h>
+﻿#include "CGXPCH.h"
 #include <handleapi.h>
-#include <processenv.h>
-#include <algorithm>
-#include <stdexcept>
-#include <string>
-#include <utility>
-#include <array>
-#include <wincontypes.h>
 #include "screen.h"
 #include "screen_buffer.h"
+#include "screen_buffer_shared.h"
 #include "color.h"
 #include "palette.h"
-#include "screen_buffer_shared.h"
 
 
 namespace ConsoleGraphX_Internal

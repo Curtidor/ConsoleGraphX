@@ -1,6 +1,6 @@
+#include "CGXPCH.h"
 #include "console_handler.h"
 #include "application.h"
-#include "verify_macro.h"
 
 void ConsoleHandler::SetHandler() 
 {

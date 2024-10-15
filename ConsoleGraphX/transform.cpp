@@ -1,6 +1,6 @@
+#include "CGXPCH.h"
 #include <limits>
 #include "transform.h"
-#include "vector3.h"
 #include "resource_manager.h"
 
 namespace ConsoleGraphX

@@ -1,9 +1,7 @@
-#include "screen_buffer_base.h" // has windows header
-#include <wincontypes.h>
+#include "CGXPCH.h"
 #include <winnt.h>
-#include <stdexcept>
+#include "screen_buffer_base.h" 
 #include "screen_buffer_shared.h"
-
 
 namespace ConsoleGraphX_Internal
 {
