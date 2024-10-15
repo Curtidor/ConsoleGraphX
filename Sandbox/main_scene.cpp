@@ -12,6 +12,9 @@
 #include "../ConsoleGraphX/camera.h"
 #include "../ConsoleGraphX/base_resource_pool.h"
 #include "../ConsoleGraphX/screen.h"
+#include "../ConsoleGraphX/window.h"
+#include "../ConsoleGraphX/window_manager.h"
+#include "window_script.h"
 
 using namespace ConsoleGraphX;
 using namespace ConsoleGraphX_Internal;
@@ -58,6 +61,5 @@ void MainScene::Initialize()
 	grass->GetTransform()->SetPosition(0, static_cast<float>(Screen::GetHeight_A() - 12));
 
 	Entity* cool = RegisterEntityN();
-	//cool->AddComponent<Sprite>(TestTIndex);
-
+	cool->AddComponent<TestWindowScript>();
 }

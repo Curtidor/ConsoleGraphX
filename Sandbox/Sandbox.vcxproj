@@ -134,11 +134,13 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="sandbox.cpp" />
     <ClCompile Include="snow.cpp" />
+    <ClCompile Include="window_script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main_scene.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="snow.h" />
+    <ClInclude Include="window_script.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,8 @@
 #include "../ConsoleGraphX/application.h"
 #include "../ConsoleGraphX/palette.h"
 #include "../ConsoleGraphX/screen.h"
+#include "../ConsoleGraphX/window.h"
+#include "../ConsoleGraphX/window_manager.h"
 #include "main_scene.h"
 
 /*
@@ -29,11 +31,15 @@ int main()
 {
 	Application mainApplication = Application();
 
+	mainApplication.Initialize();
+
 	Palette& defaultPalette = Palette::DefaultPalette();
 	ConsoleGraphX_Internal::Screen::SetPalletColors_A(defaultPalette);
 
 	MainScene m("Main scene");
 
+	mainApplication.WarmUp();
+	
 	mainApplication.Run();
 
 	return 0;

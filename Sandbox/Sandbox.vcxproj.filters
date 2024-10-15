@@ -13,22 +13,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Game">
-      <UniqueIdentifier>{9128ecc8-2613-4b92-9075-bc930566cb6e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Scenes">
-      <UniqueIdentifier>{5835e273-a5cf-473b-a1b6-fe62f58c8698}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Scripts">
       <UniqueIdentifier>{07e6128e-ced4-494a-a4bb-9af7d32f5bbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CustomWindow">
+      <UniqueIdentifier>{2ccb0601-bea2-4941-8ddf-35d5be1b694f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CustomWindow">
+      <UniqueIdentifier>{ab61d452-8d36-4290-b606-31e45527b154}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sandbox.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main_scene.cpp">
-      <Filter>Source Files\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="player.cpp">
       <Filter>Source Files\Scripts</Filter>
@@ -36,16 +33,25 @@
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="main_scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="window_script.cpp">
+      <Filter>Source Files\CustomWindow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main_scene.h">
-      <Filter>Header Files\Game</Filter>
+    <ClInclude Include="window_script.h">
+      <Filter>Header Files\CustomWindow</Filter>
     </ClInclude>
-    <ClInclude Include="snow.h">
-      <Filter>Header Files\Game</Filter>
+    <ClInclude Include="main_scene.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player.h">
-      <Filter>Header Files\Game</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="snow.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
