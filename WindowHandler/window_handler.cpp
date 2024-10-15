@@ -8,7 +8,7 @@
 #include <wincontypes.h>
 #include <errhandlingapi.h>
 #include <memoryapi.h>
-#include "shared_memory.h"
+#include "../ConsoleGraphX/shared_window_memory.h"
 #include "../ConsoleGraphX/screen.h"
 #include "../ConsoleGraphX/screen_buffer_shared.h"
 
@@ -48,29 +48,38 @@ int main(int argc, char* argv[])
     if (argc < 5)
     {
         std::cerr << "Usage: <screenWidth> <screenHeight> <fontWidth> <fontHeight> <appName>" << std::endl;
-        return 1;
+        //return 1;
     }
 
-    short screenWidth = static_cast<short>(std::stoi(argv[1]));
-    short screenHeight = static_cast<short>(std::stoi(argv[2]));
-    short fontWidth = static_cast<short>(std::stoi(argv[3]));
-    short fontHeight = static_cast<short>(std::stoi(argv[4]));
-    const char* appName = argv[5];
+    short screenWidth = 300;     
+    short screenHeight = 170;    
+    short fontWidth = 3;         
+    short fontHeight = 3;        
+    const char* appName = "Test";  
+
+    if (argc > 1) screenWidth = static_cast<short>(std::stoi(argv[1]));
+    if (argc > 2) screenHeight = static_cast<short>(std::stoi(argv[2]));
+    if (argc > 3) fontWidth = static_cast<short>(std::stoi(argv[3]));
+    if (argc > 4) fontHeight = static_cast<short>(std::stoi(argv[4]));
+    if (argc > 5) appName = argv[5];
+
 
     // calculate the total size required for the shared memory
     size_t charInfoSize = sizeof(CHAR_INFO) * screenWidth * screenHeight;
-    size_t sharedMemorySize = sizeof(SharedMemory) + charInfoSize;
+    size_t sharedMemorySize = sizeof(SharedWindowMemory) + charInfoSize;
 
-    const char* sharedMemoryName = "SharedMemoryInput";
 
-    HANDLE hMapFile = CreateSharedMemory(sharedMemorySize, sharedMemoryName);
+    HANDLE hMapFile = CreateSharedMemory(sharedMemorySize, "TEST");
     if (!hMapFile)
     {
         std::cerr << "Failed to create or open shared memory." << std::endl;
         return 1;
     }
 
-    SharedMemory* sharedMem = static_cast<SharedMemory*>(MapSharedMemory(hMapFile, sharedMemorySize));
+    std::cout << "Good File Map." << std::endl;
+
+
+    SharedWindowMemory* sharedMem = static_cast<SharedWindowMemory*>(MapSharedMemory(hMapFile, sharedMemorySize));
     if (!sharedMem)
     {
         std::cerr << "Failed to map shared memory." << std::endl;
@@ -78,8 +87,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    std::cout << "Good Shared Mem." << std::endl;
+
     // initialize the shared memory structure
-    new (sharedMem) SharedMemory(screenWidth * screenHeight);
+    new (sharedMem) SharedWindowMemory(screenWidth * screenHeight);
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hConsole == INVALID_HANDLE_VALUE)
@@ -92,12 +103,15 @@ int main(int argc, char* argv[])
 
     // the buffer should be right after the SharedMemory structure
     CHAR_INFO* sharedBuffer = reinterpret_cast<CHAR_INFO*>(sharedMem + 1);
+    std::memset(sharedMem->m_buffer, 0, sharedMem->m_bufferSize * sizeof(CHAR_INFO));
 
     ConsoleGraphX_Internal::ScreenBufferShared sharedScreenBuffer(hConsole, sharedBuffer, screenWidth, screenHeight);
 
     ConsoleGraphX_Internal::Screen screen(screenWidth, screenHeight, fontWidth, fontHeight, &sharedScreenBuffer);
 
     SetConsoleTitleA(appName);
+
+    std::cout << "Ready To Go." << std::endl;
 
     while (true)
     {

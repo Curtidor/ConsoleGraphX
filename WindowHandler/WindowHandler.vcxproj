@@ -133,9 +133,6 @@
   <ItemGroup>
     <ClCompile Include="window_handler.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="shared_memory.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
