@@ -106,6 +106,15 @@
     <Filter Include="Source Files\Engine\Graphics\ScreenGraphics">
       <UniqueIdentifier>{df74beca-af1a-40b5-9412-7f25b305611a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Core\PCH">
+      <UniqueIdentifier>{5099a81e-c733-4fb7-8d7d-401b4e7ab7dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core\PCH">
+      <UniqueIdentifier>{df01e23b-06df-4227-b0fb-0ac4c5eb0e90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core\Window">
+      <UniqueIdentifier>{3040e328-8529-4958-ab1e-45470573a393}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector2.h">
@@ -249,6 +258,15 @@
     <ClInclude Include="screen_buffer_shared.h">
       <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
     </ClInclude>
+    <ClInclude Include="window_manager.h">
+      <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="CGXPCH.h">
+      <Filter>Header Files\Engine\Core\PCH</Filter>
+    </ClInclude>
+    <ClInclude Include="window_factory.h">
+      <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vector2.cpp">
@@ -358,6 +376,18 @@
     </ClCompile>
     <ClCompile Include="screen_buffer_shared.cpp">
       <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CGXPCH.cpp">
+      <Filter>Source Files\Engine\Core\PCH</Filter>
+    </ClCompile>
+    <ClCompile Include="window_manager.cpp">
+      <Filter>Source Files\Engine\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="window_factory.cpp">
+      <Filter>Source Files\Engine\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="shared_window_memory.h">
+      <Filter>Header Files\Engine\Core\Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
