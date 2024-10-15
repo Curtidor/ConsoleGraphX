@@ -53,6 +53,14 @@ namespace ConsoleGraphX
             }
         }
 
+        void InvokeNFC(const Args&... args)
+        {
+            for (auto& handle : this->_m_callbacks)
+            {
+                handle.m_callback(static_cast<const Args&>(args)...);
+            }
+        }
+
         /**
         * @brief Add a listener by moving the callback to avoid copying.
         *
