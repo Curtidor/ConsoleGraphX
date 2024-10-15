@@ -13,31 +13,36 @@
 #include "shared_memory.h"
 
 template <typename T>
-class Sender : public IPCBase<T> {
+class Sender : public IPCBase<T> 
+{
 public:
     Sender(const std::wstring& identifier)
         : IPCBase<T>(identifier)
     {
         this->_m_hMutex = CreateMutex(NULL, FALSE, this->_m_identifierMutex.c_str());
-        if (this->_m_hMutex == NULL) {
+        if (this->_m_hMutex == NULL) 
+        {
             throw std::runtime_error("CreateMutex error: " + std::to_string(GetLastError()));
         }
 
         this->_m_hEventSend = CreateEvent(NULL, FALSE, FALSE, (this->_m_identifierEvent + L"Send").c_str());
-        if (this->_m_hEventSend == NULL) {
+        if (this->_m_hEventSend == NULL) 
+        {
             CloseHandle(this->_m_hMutex);
             throw std::runtime_error("CreateEvent error: " + std::to_string(GetLastError()));
         }
 
         this->_m_hEventRead = CreateEvent(NULL, FALSE, FALSE, (this->_m_identifierEvent + L"Read").c_str());
-        if (this->_m_hEventRead == NULL) {
+        if (this->_m_hEventRead == NULL) 
+        {
             CloseHandle(this->_m_hEventSend);
             CloseHandle(this->_m_hMutex);
             throw std::runtime_error("CreateEvent error: " + std::to_string(GetLastError()));
         }
 
         this->_m_hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(SharedMemory<T>), this->_m_identifierMapFile.c_str());
-        if (this->_m_hMapFile == NULL) {
+        if (this->_m_hMapFile == NULL) 
+        {
             CloseHandle(this->_m_hEventRead);
             CloseHandle(this->_m_hEventSend);
             CloseHandle(this->_m_hMutex);
@@ -45,7 +50,8 @@ public:
         }
 
         auto ptr = static_cast<SharedMemory<T>*>(MapViewOfFile(this->_m_hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedMemory<T>)));
-        if (ptr == nullptr) {
+        if (ptr == nullptr) 
+        {
             CloseHandle(this->_m_hMapFile);
             CloseHandle(this->_m_hEventRead);
             CloseHandle(this->_m_hEventSend);
@@ -55,7 +61,8 @@ public:
         this->_m_pSharedMemory.reset(ptr);
     }
 
-    void SendMessageIPC(const T& data) {
+    void SendMessageIPC(const T& data) 
+    {
         DWORD dwWaitResult = WaitForSingleObject(this->_m_hMutex, INFINITE);
         if (dwWaitResult == WAIT_OBJECT_0) {
 
