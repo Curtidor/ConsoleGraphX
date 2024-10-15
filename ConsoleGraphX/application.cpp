@@ -1,4 +1,4 @@
-#include <chrono>
+#include "CGXPCH.h"
 #include "application.h"
 #include "console_handler.h"
 
@@ -7,14 +7,25 @@ namespace ConsoleGraphX
 {
     Application::Application(): _m_engine(235,158, 3, 3)
     {
-        _m_sceneSystem.Initialize();
-
         ConsoleHandler::RegisterApplication(this);
         ConsoleHandler::SetHandler();
     }
 
+    void Application::Initialize()
+    {
+        _m_sceneSystem.Initialize();
+        _m_engine.Initialize();
+    }
+
+    void Application::WarmUp()
+    {
+        _m_engine.WarmUp();
+    }
+
     void Application::Run()
     {
+        _m_engine.Start();
+
         const float targetUpdateRate = 1.0f / 60.0f; // Fixed timestep of 60 updates per second
         float accumulator = 0.0f;
         int framesPerSecond = 0;
@@ -23,7 +34,6 @@ namespace ConsoleGraphX
 
         auto previousTime = std::chrono::high_resolution_clock::now();
 
-        _m_engine.Start();
         while (_m_engine.IsRunning())
         {
             // Get the current time and calculate delta time

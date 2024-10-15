@@ -17,6 +17,9 @@ namespace ConsoleGraphX
 
     public:
         Engine(short screen_width, short screen_height, short pixel_width, short pixel_height);
+       
+        void Initialize();
+        void WarmUp();
         void Start();
         void Shutdown();
         bool IsRunning() const;

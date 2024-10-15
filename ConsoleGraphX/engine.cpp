@@ -1,4 +1,4 @@
-#include <string>
+#include "CGXPCH.h"
 #include "engine.h"
 #include "logger.h"
 #include "system_manager.h"
@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "debugger_manager.h"
 #include "script_system.h"
+#include "window_manager.h"
 
 namespace ConsoleGraphX
 {
@@ -22,19 +23,29 @@ namespace ConsoleGraphX
         _m_systemManager.RegisterSystem<ScriptSystem>();
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
 
+    }
+
+    void Engine::Initialize()
+    {
         ConsoleGraphX_Internal::DebuggerManager::Initialize();
+        WindowManager::Initialize();
+    }
+
+    void Engine::WarmUp()
+    {
+        ScriptSystem::ScriptWarmUp();
     }
 
     void Engine::Start()
     {
         _m_isRunning = true;
-        ScriptSystem::ScriptWarmUp();
     }
 
     void Engine::Shutdown()
     {
         _m_isRunning = false;
-        ConsoleGraphX_Internal::DebuggerManager::ShutDown();
+        WindowManager::ShutDown();
+        ConsoleGraphX_Internal::DebuggerManager::ShutDown(); // should be the last thing to close
     }
 
     bool Engine::IsRunning() const
