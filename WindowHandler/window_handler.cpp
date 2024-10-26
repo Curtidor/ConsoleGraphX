@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Windows.h>
+#include <chrono>
 #include <string>
 #include <synchapi.h>
 #include <consoleapi2.h>
@@ -8,12 +9,13 @@
 #include <wincontypes.h>
 #include <errhandlingapi.h>
 #include <memoryapi.h>
+#include "../WinCore/WinCore.h"
 #include "../ConsoleGraphX/shared_window_memory.h"
 #include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/screen_buffer_shared.h"
+#include "../ConsoleGraphX/pixel_buffer_shared.h"
 
 
-static HANDLE CreateSharedMemory(size_t totalSize, const char* name)
+static HANDLE CreateSharedMemory(DWORD totalSize, LPCSTR name)
 {
 	HANDLE hMapFile = CreateFileMappingA(
 		INVALID_HANDLE_VALUE,    // Use the paging file
@@ -43,41 +45,30 @@ static void* MapSharedMemory(HANDLE hMapFile, size_t size)
 	return pBuf;
 }
 
+
 int main(int argc, char* argv[])
 {
     if (argc < 5)
     {
         std::cerr << "Usage: <screenWidth> <screenHeight> <fontWidth> <fontHeight> <appName>" << std::endl;
-        //return 1;
+        return 1;
     }
 
-    short screenWidth = 300;     
-    short screenHeight = 170;    
-    short fontWidth = 3;         
-    short fontHeight = 3;        
-    const char* appName = "Test";  
+    unsigned short screenWidth = static_cast<short>(std::stoi(argv[1]));
+    unsigned short screenHeight = static_cast<short>(std::stoi(argv[2]));
+    unsigned short fontWidth = static_cast<short>(std::stoi(argv[3]));
+    unsigned short fontHeight = static_cast<short>(std::stoi(argv[4]));
+    const char* appName = argv[5];
 
-    if (argc > 1) screenWidth = static_cast<short>(std::stoi(argv[1]));
-    if (argc > 2) screenHeight = static_cast<short>(std::stoi(argv[2]));
-    if (argc > 3) fontWidth = static_cast<short>(std::stoi(argv[3]));
-    if (argc > 4) fontHeight = static_cast<short>(std::stoi(argv[4]));
-    if (argc > 5) appName = argv[5];
+    DWORD charInfoSize = sizeof(CHAR_INFO) * screenWidth * screenHeight;
+    DWORD sharedMemorySize = sizeof(SharedWindowMemory) + charInfoSize;
 
-
-    // calculate the total size required for the shared memory
-    size_t charInfoSize = sizeof(CHAR_INFO) * screenWidth * screenHeight;
-    size_t sharedMemorySize = sizeof(SharedWindowMemory) + charInfoSize;
-
-
-    HANDLE hMapFile = CreateSharedMemory(sharedMemorySize, "TEST");
+    HANDLE hMapFile = CreateSharedMemory(sharedMemorySize, appName);
     if (!hMapFile)
     {
         std::cerr << "Failed to create or open shared memory." << std::endl;
         return 1;
     }
-
-    std::cout << "Good File Map." << std::endl;
-
 
     SharedWindowMemory* sharedMem = static_cast<SharedWindowMemory*>(MapSharedMemory(hMapFile, sharedMemorySize));
     if (!sharedMem)
@@ -87,41 +78,61 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::cout << "Good Shared Mem." << std::endl;
-
-    // initialize the shared memory structure
     new (sharedMem) SharedWindowMemory(screenWidth * screenHeight);
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hConsole == INVALID_HANDLE_VALUE)
     {
-        std::cerr << "Failed to get handle to the console output." << std::endl;
         UnmapViewOfFile(sharedMem);
         CloseHandle(hMapFile);
         return 1;
     }
 
-    // the buffer should be right after the SharedMemory structure
     CHAR_INFO* sharedBuffer = reinterpret_cast<CHAR_INFO*>(sharedMem + 1);
     std::memset(sharedMem->m_buffer, 0, sharedMem->m_bufferSize * sizeof(CHAR_INFO));
 
-    ConsoleGraphX_Internal::ScreenBufferShared sharedScreenBuffer(hConsole, sharedBuffer, screenWidth, screenHeight);
+    std::unique_ptr<ConsoleGraphX_Internal::PixelBufferShared> sharedScreenBuffer =  std::make_unique< ConsoleGraphX_Internal::PixelBufferShared>(ConsoleGraphX_Internal::PixelBufferShared(hConsole, sharedBuffer, screenWidth, screenHeight));
+    
+    ConsoleGraphX_Internal::Screen screen(235, 158, 3, 3, std::move(sharedScreenBuffer));
+   
+    SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth),  static_cast<short>(screenHeight)});
 
-    ConsoleGraphX_Internal::Screen screen(screenWidth, screenHeight, fontWidth, fontHeight, &sharedScreenBuffer);
+    SetConsoleFontSizeWC(hConsole, fontWidth, fontHeight);
+    SetConsoleWindowSizeWC(hConsole, screenWidth, screenHeight);
+
 
     SetConsoleTitleA(appName);
 
-    std::cout << "Ready To Go." << std::endl;
+
+    // FPS counter variables
+    int frameCount = 0;
+    float fpsTimeCounter = 0.0f;
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     while (true)
     {
+        frameCount++;
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> deltaTime = currentTime - startTime;
+        fpsTimeCounter += deltaTime.count();
+        startTime = currentTime;
+
+        // Every second, update the console title with the FPS
+        if (fpsTimeCounter >= 1.0f)
+        {
+            std::string newTitle = std::string(appName) + " - FPS: " + std::to_string(frameCount);
+            SetConsoleTitleA(newTitle.c_str());
+
+            frameCount = 0;
+            fpsTimeCounter = 0.0f;
+        }
+
         if (!screen.DrawScreen())
         {
             std::cerr << "Failed to write to console: " << GetLastError() << std::endl;
             break;
         }
 
-        Sleep(1);
 
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
         {
@@ -130,7 +141,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    // cleanup
+    // Cleanup
     UnmapViewOfFile(sharedMem);
     CloseHandle(hMapFile);
 
