@@ -1,85 +1,35 @@
-﻿#include "CGXPCH.h"
+﻿#include "PCH_CGX.h"
 #include <handleapi.h>
 #include "screen.h"
-#include "screen_buffer.h"
-#include "screen_buffer_shared.h"
+#include "WinCore.h"
+#include "pixel_buffer.h"
 #include "color.h"
 #include "palette.h"
 
 
 namespace ConsoleGraphX_Internal
 {
-	Screen* Screen::_s_activeScreen = nullptr;
+	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer)
+		: PixelCanvas(width, height, std::move(sBuffer)),
+		_m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
+	{}
 
-	Screen::Screen(short width, short height, short fontWidth, short fontHeight, ScreenBufferShared* screenBuffer)
-		: _m_width(width), _m_height(height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight), _m_screenBuffer(screenBuffer)
+
+	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight)
+		: PixelCanvas(width, height),
+		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
-		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
-
-		SetConsoleFontSize(fontWidth, fontHeight);
-		SetConsoleWindowSize(_m_width, _m_height);
-
-		FillScreen({ s_pixel , 0 });
-
-		Screen::_s_activeScreen = this;
-	}
-
-
-	Screen::Screen(short width, short height, short fontWidth, short fontHeight)
-		: _m_width(width), _m_height(height), _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
-	{
-		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-		_m_screenBuffer = new ScreenBuffer(hConsole, width, _m_height);
-
-		if (_m_screenBuffer->GetConsoleHandle() == INVALID_HANDLE_VALUE)
-			throw std::runtime_error("Failed to get the console handle");
-
-		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
-
-		SetConsoleFontSize(fontWidth, fontHeight);
-		SetConsoleWindowSize(_m_width, _m_height);
-
-		FillScreen({ s_pixel , 0 });
-
-		Screen::_s_activeScreen = this;
-	}
-
-	Screen::~Screen()
-	{
-		delete _m_screenBuffer;
+		Initialize();
 	}
 
 	bool Screen::DrawScreen()
 	{
-		// Write the screen buffer to the console
 		if (!WriteConsoleOutput(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBuffer(),
 			_m_screenBuffer->GetBufferSize(), _m_screenBuffer->m_bufferCoord, &_m_screenBuffer->m_writePosition))
 		{
 			return false;
 		}
 		return true;
-	}
-
-	void Screen::FillScreen(const CHAR_INFO& color)
-	{
-		std::fill(_m_screenBuffer->GetBuffer(), _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size, color);
-	}
-
-	/// <summary>
-	/// Set the pixel at the specified coordinates in the screen buffer
-	/// </summary>
-	/// <param name="x"></param>
-	/// <param name="y"></param>
-	/// <param name="pixel"></param>
-	void Screen::SetPixel(int x, int y, CHAR_INFO s_pixel)
-	{
-		// if the index is it side the screen buffer return
-		int index = y * _m_screenBuffer->m_bufferSize.X + x;
-		if (index < 0 || index >= _m_screenBuffer->m_bufferSize.X * _m_screenBuffer->m_bufferSize.Y)
-			return;
-
-		_m_screenBuffer->GetBuffer()[index] = s_pixel;
 	}
 
 	void Screen::SetPixel_A(int x, int y, CHAR_INFO s_pixel)
@@ -90,96 +40,66 @@ namespace ConsoleGraphX_Internal
 		Screen::_s_activeScreen->SetPixel(x, y, s_pixel);
 	}
 
-	void Screen::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
-	{
-		// pointer to the end of the screen buffer, calculated based on screen dimensions (width * height) aka "size".
-		const CHAR_INFO* bufferEnd = _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size;
-
-		// calculate the remaining space in the screen buffer starting from the destination pointer.
-		const std::size_t remainingBufferSpace = bufferEnd - dest;
-
-		// calculate the number of elements in the source range.
-		const std::size_t sourceElementCount = srcEnd - srcStart;
-
-		// determine the maximum number of elements that can be safely copied to the screen buffer.
-		// this is the lesser of the remaining buffer space or the source element count.
-		const std::size_t elementsToCopy = std::min<std::size_t>(remainingBufferSpace, sourceElementCount);
-
-		// store the transparent character value used for comparison.
-		const wchar_t& transparentChar = Screen::s_transparentPixel;
-
-		// initialize a pointer to track the previous position in the destination buffer.
-		CHAR_INFO* previousDestPosition = dest - 1;
-
-		std::transform(srcStart, srcStart + elementsToCopy, dest,
-			[&transparentChar, &previousDestPosition](const CHAR_INFO& currentElement)
-			{
-				previousDestPosition++;
-
-				// if the current element's Unicode character is not the transparent character,
-				// copy it to the destination buffer. Otherwise, use the value from the previous position in the buffer.
-				// (if the char is a transparent char all that happens is we use the pixel at the postion thats already in the 
-				// buffer instead of replacing it with a new one, this allows for non irregularly shaped sprites )
-				return (currentElement.Char.UnicodeChar != transparentChar) ? currentElement : *previousDestPosition;
-			}
-		);
-	}
 
 	void Screen::SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	{
 		Screen::_s_activeScreen->SetPixels(srcStart, srcEnd, dest);
 	}
 
-	/// sets the font(pixel) size of the console
-	/// </summary>
-	/// <param name="width"></param>
-	/// <param name="height"></param>
-	/// <returns></returns>
-	bool Screen::SetConsoleFontSize(short width, short height)
+	void Screen::Initialize()
 	{
-		// Set the console font size
-		CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
-		GetCurrentConsoleFontEx(_m_screenBuffer->GetConsoleHandle(), FALSE, &font);
+		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
 
-		font.dwFontSize.X = width;
-		font.dwFontSize.Y = height;
-		if (!SetCurrentConsoleFontEx(_m_screenBuffer->GetConsoleHandle(), FALSE, &font)) {
-			return false;
+		SetConsoleFontSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_pixelWidth, _m_pixelHeight);
+		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_width, _m_height);
+
+		FillCanvas({ s_pixel , 0 });
+
+		//Screen::_s_activeScreen = this;
+	}
+
+	bool Screen::WriteText(const std::string& text, short x, short y)
+	{
+		PixelBuffer* buffer = _m_screenBuffer.get();
+		int screenWidth = buffer->m_bufferSize.X;
+		int screenHeight = buffer->m_bufferSize.Y;
+
+		bool hadOverlap = false;
+		for (int i = 0; i < text.size(); i++)
+		{
+			// check if the character would go beyond the right edge of the screen
+			if (x + i >= screenWidth)
+			{
+				x = 0; 
+				y += 1;
+
+				return true;
+			}
+
+			// check if we reached the end of the screen buffer vertically
+			if (y >= screenHeight)
+			{
+				y = 0; // start back at the top if it overflows
+				return true;
+			}
+
+			int index = y * screenWidth + x + i;
+			buffer->GetBuffer()[index].Char.UnicodeChar = text[i];
+			buffer->GetBuffer()[index].Attributes = 3;
 		}
 
-		return true;
-	}
-
-	/// <summary>
-	/// Set the size of the window
-	/// </summary>
-	/// <param name="width"></param>
-	/// <param name="height"></param>
-	void Screen::SetConsoleWindowSize(short width, short height)
-	{
-		// Set the console window size
-		SMALL_RECT rect = { 0, 0, width - 1, height - 1 };
-		SetConsoleWindowInfo(_m_screenBuffer->GetConsoleHandle(), TRUE, &rect);
+		return hadOverlap;
 	}
 
 
-	/// <summary>
-	/// Set the position of the console cursor
-	/// </summary>
-	/// <param name="x"></param>
-	/// <param name="y"></param>
-	void Screen::SetCursorPosition(short x, short y)
-	{
-		// Set the cursor position in the console
-		SetConsoleCursorPosition(_m_screenBuffer->GetConsoleHandle(), COORD{x, y});
-	}
 
-	void Screen::SetConsoleName(const std::string& name)
+	void Screen::WriteTextColor(CHAR_INFO* text, short x, short y)
 	{
-		if (_m_screenBuffer == nullptr)
-			throw std::runtime_error("Screen has not been initialized.");
+		ConsoleGraphX_Internal::PixelBuffer* pBuffer = _m_screenBuffer.get();
 
-		SetConsoleTitleA(name.c_str());
+		SMALL_RECT writeRegion = { x, y, pBuffer->m_writePosition.Right, pBuffer->m_writePosition.Top };
+
+		WriteConsoleOutputA(pBuffer->GetConsoleHandle(), text, pBuffer->m_bufferSize, pBuffer->m_bufferCoord, &writeRegion);
 	}
 
 	/// <summary>
@@ -200,22 +120,9 @@ namespace ConsoleGraphX_Internal
 		return _m_pixelHeight; 
 	}
 
-	/// <summary>
-	/// Get the width of the screen
-	/// </summary>
-	/// <returns></returns>
-	int Screen::GetWidth() const 
-	{ 
-		return _m_width; 
-	}
-
-	/// <summary>
-	/// Get the height of the screen
-	/// </summary>
-	/// <returns></returns>
-	int Screen::GetHeight() const 
-	{ 
-		return _m_height; 
+	CHAR_INFO* Screen::GetScreenBuffer()
+	{
+		return _m_screenBuffer.get()->GetBuffer();
 	}
 
 	int Screen::GetWidth_A() 

@@ -4,51 +4,50 @@
 #include <wincontypes.h>
 #include <string>
 #include <array>
-#include "screen_buffer_base.h"
 #include "color.h"
 #include "palette.h"
-#include "screen_buffer_shared.h"
+#include "pixel_canvas.h"
 
 namespace ConsoleGraphX_Internal
 {
-	class Screen
+	class Screen : public PixelCanvas
 	{
-	private:
-		const short _m_width;
-		const short _m_height;
-		const short _m_pixelWidth;
-		const short _m_pixelHeight;
-		ScreenBufferBase* _m_screenBuffer;
+	protected:
+		static inline Screen* _s_activeScreen = nullptr;
 
-		static Screen* _s_activeScreen;
-
+	protected:
+		const unsigned short _m_pixelWidth;
+		const unsigned short _m_pixelHeight;
 
 	public:									   
 		static const wchar_t s_pixel = L'\x2588';
 		static const wchar_t s_transparentPixel = L'‎';
 
-		// Shared memory constructor
-		Screen(short width, short height, short fontWidth, short fontHeight, ScreenBufferShared* screenBuffer);
+		/// <summary>
+		/// Shared memory constructor
+		/// Note: you must call the initialize function manually when using this constructor
+		/// </summary>
+		/// <param name="width"></param>
+		/// <param name="height"></param>
+		/// <param name="fontWidth"></param>
+		/// <param name="fontHeight"></param>
+		/// <param name="sBuffer"></param>
+		Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer);
 		// Normal constructor
-		Screen(short width, short height, short fontWidth, short fontHeight);
+		Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight);
 
-		~Screen();
 
 		bool DrawScreen();
-		bool SetConsoleFontSize(short width, short height);
+		bool WriteText(const std::string& text, short x, short y);
 
-		void SetPixel(int x, int y, CHAR_INFO s_pixel);
-		void SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest);
 
-		void SetCursorPosition(short x, short y);
-		void SetConsoleName(const std::string& name);
-		void SetConsoleWindowSize(short width, short height);
-		void FillScreen(const CHAR_INFO& color);
+		void Initialize();
+		void WriteTextColor(CHAR_INFO* text, short x, short y);
 
 		int GetPixelWidth() const;
 		int GetPixelHeight() const;
-		int GetWidth() const;
-		int GetHeight() const;
+
+		CHAR_INFO* GetScreenBuffer();
 
 		static int GetWidth_A();
 		static int GetHeight_A();
