@@ -73,9 +73,6 @@
     <Filter Include="Header Files\Engine\Core\Application">
       <UniqueIdentifier>{e8f7b5db-1a1c-4cb2-ac24-772e77bc2f9b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Core\Debugger">
-      <UniqueIdentifier>{a4c2076e-bbee-4f52-b90c-eb06a7fdf453}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Core\Console">
       <UniqueIdentifier>{42bc20b3-2c43-4b00-9ebb-5e20231314e6}</UniqueIdentifier>
     </Filter>
@@ -84,9 +81,6 @@
     </Filter>
     <Filter Include="Header Files\Engine\Resources\Pools">
       <UniqueIdentifier>{8abd294c-557c-4d71-9df6-479068baa609}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Core\Debugger">
-      <UniqueIdentifier>{a66b28f2-e9cf-4f78-9a73-5a4993446d63}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Engine\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
@@ -114,6 +108,18 @@
     </Filter>
     <Filter Include="Source Files\Engine\Core\Window">
       <UniqueIdentifier>{3040e328-8529-4958-ab1e-45470573a393}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Graphics\ScreenGraphics\Buffers">
+      <UniqueIdentifier>{66cb20c0-8b64-4e70-abb0-7d750d5d2635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics\ScreenGraphics\Buffer">
+      <UniqueIdentifier>{95ceafd6-06ad-45ad-9e48-984e7f320d76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Core\Logger">
+      <UniqueIdentifier>{a4c2076e-bbee-4f52-b90c-eb06a7fdf453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Core\Logger">
+      <UniqueIdentifier>{a66b28f2-e9cf-4f78-9a73-5a4993446d63}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -171,8 +177,8 @@
     <ClInclude Include="resource_manager.h">
       <Filter>Header Files\Engine\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="debugger_manager.h">
-      <Filter>Header Files\Engine\Core\Debugger</Filter>
+    <ClInclude Include="logger_manager.h">
+      <Filter>Header Files\Engine\Core\Logger</Filter>
     </ClInclude>
     <ClInclude Include="engine.h">
       <Filter>Header Files\Engine\Core\Application</Filter>
@@ -216,9 +222,6 @@
     <ClInclude Include="random_numbers.h">
       <Filter>Header Files\Engine\Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="logger.h">
-      <Filter>Header Files\Engine\Core\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="application.h">
       <Filter>Header Files\Engine\Core\Application</Filter>
     </ClInclude>
@@ -240,12 +243,6 @@
     <ClInclude Include="screen.h">
       <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
     </ClInclude>
-    <ClInclude Include="screen_buffer.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClInclude>
-    <ClInclude Include="screen_buffer_base.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClInclude>
     <ClInclude Include="palette.h">
       <Filter>Header Files\Engine\Graphics</Filter>
     </ClInclude>
@@ -255,17 +252,29 @@
     <ClInclude Include="color.h">
       <Filter>Header Files\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="screen_buffer_shared.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClInclude>
     <ClInclude Include="window_manager.h">
       <Filter>Header Files\Engine\Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="CGXPCH.h">
+    <ClInclude Include="PCH_CGX.h">
       <Filter>Header Files\Engine\Core\PCH</Filter>
     </ClInclude>
     <ClInclude Include="window_factory.h">
       <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="engine_window.h">
+      <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="pixel_canvas.h">
+      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="pixel_buffer.h">
+      <Filter>Header Files\Engine\Graphics\ScreenGraphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="pixel_buffer_shared.h">
+      <Filter>Header Files\Engine\Graphics\ScreenGraphics\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="logger.h">
+      <Filter>Header Files\Engine\Core\Logger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -344,17 +353,14 @@
     <ClCompile Include="position_sprite_component.cpp">
       <Filter>Source Files\Engine\Components\PositionComponents</Filter>
     </ClCompile>
-    <ClCompile Include="debugger_manager.cpp">
-      <Filter>Source Files\Engine\Core\Debugger</Filter>
+    <ClCompile Include="logger_manager.cpp">
+      <Filter>Source Files\Engine\Core\Logger</Filter>
     </ClCompile>
     <ClCompile Include="engine.cpp">
       <Filter>Source Files\Engine\Core\Application</Filter>
     </ClCompile>
     <ClCompile Include="frame_rate_controller.cpp">
       <Filter>Source Files\Engine\Core\Application</Filter>
-    </ClCompile>
-    <ClCompile Include="logger.cpp">
-      <Filter>Source Files\Engine\Utils</Filter>
     </ClCompile>
     <ClCompile Include="console_handler.cpp">
       <Filter>Source Files\Engine\Console</Filter>
@@ -368,16 +374,7 @@
     <ClCompile Include="screen.cpp">
       <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="screen_buffer.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClCompile>
-    <ClCompile Include="screen_buffer_base.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClCompile>
-    <ClCompile Include="screen_buffer_shared.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
-    </ClCompile>
-    <ClCompile Include="CGXPCH.cpp">
+    <ClCompile Include="PCH_CGX.cpp">
       <Filter>Source Files\Engine\Core\PCH</Filter>
     </ClCompile>
     <ClCompile Include="window_manager.cpp">
@@ -388,6 +385,18 @@
     </ClCompile>
     <ClCompile Include="shared_window_memory.h">
       <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="pixel_canvas.cpp">
+      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="pixel_buffer.cpp">
+      <Filter>Source Files\Engine\Graphics\ScreenGraphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="pixel_buffer_shared.cpp">
+      <Filter>Source Files\Engine\Graphics\ScreenGraphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.cpp">
+      <Filter>Source Files\Engine\Core\Logger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
