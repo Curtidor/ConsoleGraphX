@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "debugger_manager.h"
+#include "logger_manager.h"
 
 
 
@@ -13,7 +13,7 @@ namespace ConsoleGraphX_Internal
 
 	public:
 		Logger(const std::string& name);
-		void LogMessage(const std::string& message, DebuggerManager::LogLevel level = DebuggerManager::LogLevel::CGX_INFO) const;
+		void LogMessage(const std::string& message, LoggerManager::LogLevel level = LoggerManager::LogLevel::CGX_INFO) const;
 
 	};
 }
