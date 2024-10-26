@@ -1,11 +1,13 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "application.h"
 #include "console_handler.h"
+#include "window_manager.h"
+
 
 
 namespace ConsoleGraphX
 {
-    Application::Application(): _m_engine(235,158, 3, 3)
+    Application::Application(): _m_engine(250,170, 3, 3)
     {
         ConsoleHandler::RegisterApplication(this);
         ConsoleHandler::SetHandler();
@@ -13,6 +15,7 @@ namespace ConsoleGraphX
 
     void Application::Initialize()
     {
+        WindowManager::Initialize();
         _m_sceneSystem.Initialize();
         _m_engine.Initialize();
     }
@@ -69,15 +72,13 @@ namespace ConsoleGraphX
                 _m_engine.UpdateFPS(framesPerSecond); // A method in the engine to set the FPS display
             }
         }
-
-        Shutdown();
     }
 
     void Application::Shutdown()
     {
-
         _m_sceneSystem.ShutDown();
         _m_engine.Shutdown();
+        WindowManager::ShutDown();
 
     }
 
