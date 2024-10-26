@@ -1,4 +1,4 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "scene.h"
 #include "entity.h"
 #include "resource_manager.h"

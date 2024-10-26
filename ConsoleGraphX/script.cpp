@@ -1,4 +1,4 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "script.h"
 #include "entity.h"
 

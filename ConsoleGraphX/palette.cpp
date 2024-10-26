@@ -1,4 +1,4 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "color.h"
 #include "palette.h"
 

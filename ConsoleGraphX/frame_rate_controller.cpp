@@ -1,4 +1,4 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "frame_rate_controller.h"
 
 namespace ConsoleGraphX

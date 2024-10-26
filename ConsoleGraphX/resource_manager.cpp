@@ -1,4 +1,4 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "base_resource_pool.h"
 #include "resource_id.h"
 #include "resource_manager.h"

@@ -1,5 +1,6 @@
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "window_factory.h"
+#include "engine_window.h"
 
 std::unique_ptr<ConsoleGraphX::Window> ConsoleGraphX_Internal::CreateUserWindow(short width, short height, const std::string& windowName, short fontWidth, short fontHeight)
 {
