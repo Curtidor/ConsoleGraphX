@@ -1,5 +1,5 @@
 #pragma once
-#include "CGXPCH.h"
+#include "PCH_CGX.h"
 #include "transform.h"
 #include "resource_id.h"
 #include "resource_manager.h"
