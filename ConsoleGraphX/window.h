@@ -6,10 +6,12 @@
 #include <processthreadsapi.h>
 #include <filesystem>
 #include <handleapi.h>
-#include "events.h"
 #include <vector>
+#include "../WinCore/WinCore.h"
+#include "events.h"
 #include "shared_window_memory.h"
-#include "logger.h"
+#include "pixel_buffer_shared.h"
+#include "screen.h"
 
 
 namespace ConsoleGraphX
@@ -20,14 +22,14 @@ namespace ConsoleGraphX
         EngineCreated
     };
 
-    class Window
+    class Window : public ConsoleGraphX_Internal::Screen
     {
     public:
-        CGXEventArgs<short, short> OnWindowCreated;
-        CGXEventArgs<short, short> OnWindowResized;
+        CGXEventArgs<unsigned short, unsigned short> OnWindowCreated;
+        CGXEventArgs<unsigned short, unsigned short> OnWindowResized;
 
-        CGXEventArgs<int> OnKeyPressed;
-        CGXEventArgs<int> OnKeyReleased;
+        CGXEventArgs<unsigned int> OnKeyPressed;
+        CGXEventArgs<unsigned int> OnKeyReleased;
 
         CGXEvent OnWindowFocusGained;
         CGXEvent OnWindowFocusLost;
@@ -35,13 +37,24 @@ namespace ConsoleGraphX
         CGXEvent OnRenderFrame;
         CGXEvent OnWindowDestroyed;
 
-    public:
+    private:
+        HANDLE _m_hMapFile;
+        HANDLE _m_processHandle;
+        std::string _m_windowName;
+        SharedWindowMemory* _m_sharedMem = nullptr;
 
-        Window(short width, short height, const std::string& windowName, short fontWidth = 3, short fontHeight = 3)
-            : _m_width(width), _m_height(height), _m_windowName(windowName), _m_logger("WindowLogger")
+
+    public:
+        Window(unsigned short width, unsigned short height, const std::string& windowName, unsigned short fontWidth = 3, unsigned short fontHeight = 3)
+            : Screen(width, height, fontWidth, fontHeight, nullptr), //null ptr the buffer as we want to do the allocation
+            _m_windowName(windowName)
         {
-            //_CreateWindowImpl(width, height, fontWidth, fontHeight, windowName);
+            _CreateWindowImpl(width, height, fontWidth, fontHeight, windowName);
             _AccessSharedMemory();
+
+            _m_screenBuffer = std::make_unique<ConsoleGraphX_Internal::PixelBuffer>(width, height, _m_sharedMem->m_buffer);
+            // Now that the buffer is set call initialize on the screen
+            Initialize();
         }
 
         ~Window()
@@ -75,7 +88,7 @@ namespace ConsoleGraphX
             return _m_windowName;
         }
 
-        void ResizeWindow(short newWidth, short newHeight)
+        void ResizeWindow(unsigned short newWidth, unsigned short newHeight)
         {
             OnWindowResized.InvokeNF(newWidth, newHeight); 
         }
@@ -85,96 +98,29 @@ namespace ConsoleGraphX
             OnRenderFrame.Invoke(); 
         }
 
-        void Test(unsigned short color)
-        {
-            std::fill(_m_sharedMem->m_buffer, _m_sharedMem->m_buffer + _m_sharedMem->m_bufferSize, CHAR_INFO{ '#', color });
-        }
-
     private:
         void _CreateWindowImpl(short width, short height, short fontWidth, short fontHeight, const std::string& windowName)
         {
-            std::filesystem::path exePath;
+            std::string exePath =  GetBuildSpecificFilePath("WindowHandler.exe").u8string();
 
-        #ifdef _DEBUG
-            exePath = std::filesystem::path("../x64/Debug/WindowHandler.exe");
-        #else
-            exePath = std::filesystem::path("../x64/Release/WindowHandler.exe");
-        #endif
+            std::vector args = {
+               std::to_string(width),
+               std::to_string(height),
+               std::to_string(fontWidth),
+               std::to_string(fontHeight),
+               windowName
+            };
 
-            std::string commandLine = exePath.string() + " " +
-                std::to_string(width) + " " +
-                std::to_string(height) + " " +
-                std::to_string(fontWidth) + " " +
-                std::to_string(fontHeight) + " \"" +
-                windowName.c_str();
-
-            // create a writable buffer for CreateProcessA
-            std::vector<char> commandLineBuffer(commandLine.begin(), commandLine.end());
-            commandLineBuffer.push_back('\0'); 
-
-            STARTUPINFOA si = { sizeof(STARTUPINFOA) };
-            PROCESS_INFORMATION pi = {};
-
-            if (!CreateProcessA(NULL, commandLineBuffer.data(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi))
-            {
-                std::cerr << "Failed to create WindowHandler process. Error: " << GetLastError() << std::endl;
-                return;
-            }
-
-            _m_processHandle = pi.hProcess;
-            CloseHandle(pi.hThread);
+            _m_processHandle = CreateProcessWC(exePath, args);
         }
 
         void _AccessSharedMemory()
         {
-            _m_hMapFile = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, "TEST");
-            if (_m_hMapFile == NULL)
-            {
-                int error = GetLastError();
-                _m_logger.LogMessage("Failed to open shared memory object: " + std::to_string(error));
-                return;
-            }
-
             size_t sharedMemorySize = sizeof(SharedWindowMemory) + sizeof(CHAR_INFO) * _m_width * _m_height;
-            _m_logger.LogMessage("MEM SIZE" + std::to_string(sharedMemorySize));
+
+            _m_hMapFile = AccessSharedMemoryWC(_m_windowName, sharedMemorySize);
+
             _m_sharedMem = static_cast<SharedWindowMemory*>(MapViewOfFile(_m_hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sharedMemorySize));
-            if (_m_sharedMem == NULL)
-            {
-                int error = GetLastError();
-                _m_logger.LogMessage("Failed to map shared memory: " + std::to_string(error));
-
-                CloseHandle(_m_hMapFile);
-                _m_hMapFile = NULL;
-                return;
-            }
-
-            _m_logger.LogMessage("Successfully mapped shared memory.");
         }
-
-
-    private:
-        short _m_width;
-        short _m_height;
-        std::string _m_windowName;
-        ConsoleGraphX_Internal::Logger _m_logger;
-        HANDLE _m_processHandle;
-        HANDLE _m_hMapFile = NULL;  
-        SharedWindowMemory* _m_sharedMem = nullptr; 
     };
-
-    class EngineWindow : public Window
-    {
-    public:
-        EngineWindow(short width, short height, const std::string& windowName, short fontWidth = 3, short fontHeight = 3)
-            : Window(width, height, windowName, fontWidth, fontHeight)
-        {}
-
-        WindowType GetType() const override
-        {
-            return WindowType::EngineCreated;
-        }
-        
-    };
-
-
 };
