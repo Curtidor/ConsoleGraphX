@@ -44,21 +44,20 @@ void MainScene::Initialize()
 		snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
 	}
 
-	ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("../wall_sprite.cxsp").second;
-	ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("../grass_sprite.cxsp").second;
-	ResourceIndex TestTIndex = _m_resourceManager.CreateTextureResource("../shoot_game.cxsp").second;
+	ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("../Sprites/wall_sprite.cxsp").second;
+	ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("../Sprites/grass_sprite.cxsp").second;
 
 	Entity* wallL = RegisterEntityN();
 	wallL->AddComponent<Sprite>(wallTIndex);
-	wallL->GetTransform()->SetPosition(15, static_cast<float>(Screen::GetHeight_A() - 40 - 12));
+	wallL->GetTransform()->SetPosition(15.0f, static_cast<float>(Screen::GetHeight_A() - 40 - 12));
 
 	Entity* wallR = RegisterEntityN();
 	wallR->AddComponent<Sprite>(wallTIndex);
-	wallR->GetTransform()->SetPosition(270, static_cast<float>(Screen::GetHeight_A() - 40 - 12));
+	wallR->GetTransform()->SetPosition(270.0f, static_cast<float>(Screen::GetHeight_A() - 40 - 12));
 
 	Entity* grass = RegisterEntityN();
 	grass->AddComponent<Sprite>(grassTIndex);
-	grass->GetTransform()->SetPosition(0, static_cast<float>(Screen::GetHeight_A() - 12));
+	grass->GetTransform()->SetPosition(0.0f, static_cast<float>(Screen::GetHeight_A() - 12));
 
 	Entity* cool = RegisterEntityN();
 	cool->AddComponent<TestWindowScript>();

@@ -2,25 +2,23 @@
 #include "../ConsoleGraphX/window_manager.h"
 
 
-TestWindowScript::TestWindowScript()
-{
-}
+TestWindowScript::TestWindowScript() : _m_window(nullptr)
+{}
 
-TestWindowScript::TestWindowScript(Entity* entity) : Script(entity)
-{
-}
+TestWindowScript::TestWindowScript(Entity* entity) :  Script(entity), _m_window(nullptr)
+{}
 
 void TestWindowScript::Awake()
 {
-	_m_window = WindowManager::Instance().CreateCGXWindow(300, 170, 3, 3, "TEST WINDOW SCRIPT");
+	_m_window = WindowManager::Instance().CreateCGXWindow(300, 200, 1, 1, "TEST");
 }
 
 void TestWindowScript::Update(float deltaTime)
 {
 	static unsigned short color = 0;
-	_m_window->Test(color);
+	//_m_window->FillCanvas(CHAR_INFO{ ' ', color });
 
-	color++;
+	//color++;
 
 	if (color > 16)
 		color = 0;
