@@ -121,6 +121,12 @@
     <Filter Include="Source Files\Engine\Core\Logger">
       <UniqueIdentifier>{a66b28f2-e9cf-4f78-9a73-5a4993446d63}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Layout">
+      <UniqueIdentifier>{fb724397-eb8e-40cf-b0e5-8b29a04136d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Layout">
+      <UniqueIdentifier>{0f089672-ffed-44b9-aea9-93d9f345d3d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector2.h">
@@ -276,6 +282,9 @@
     <ClInclude Include="logger.h">
       <Filter>Header Files\Engine\Core\Logger</Filter>
     </ClInclude>
+    <ClInclude Include="window_layout.h">
+      <Filter>Header Files\Engine\Layout</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vector2.cpp">
@@ -397,6 +406,9 @@
     </ClCompile>
     <ClCompile Include="logger.cpp">
       <Filter>Source Files\Engine\Core\Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="window_layout.cpp">
+      <Filter>Source Files\Engine\Layout</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

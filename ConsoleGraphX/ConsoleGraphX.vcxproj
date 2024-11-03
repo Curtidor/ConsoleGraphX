@@ -210,6 +210,7 @@
     <ClInclude Include="vector2.h" />
     <ClInclude Include="vector3.h" />
     <ClInclude Include="window.h" />
+    <ClInclude Include="window_layout.h" />
     <ClInclude Include="window_factory.h" />
     <ClInclude Include="window_manager.h" />
   </ItemGroup>
@@ -261,6 +262,7 @@
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="vector2.cpp" />
     <ClCompile Include="vector3.cpp" />
+    <ClCompile Include="window_layout.cpp" />
     <ClCompile Include="window_factory.cpp" />
     <ClCompile Include="window_manager.cpp" />
   </ItemGroup>
