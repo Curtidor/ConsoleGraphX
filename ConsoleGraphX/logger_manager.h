@@ -24,7 +24,7 @@ namespace ConsoleGraphX_Internal
         std::queue<std::string> _m_messageQueue; 
         HANDLE _m_receiverProcessHandle = nullptr;
 
-        ConsoleGraphX::EngineWindow _m_engineWindow;
+        ConsoleGraphX::Window* _m_engineWindow;
 
 
 
@@ -41,7 +41,7 @@ namespace ConsoleGraphX_Internal
         static LoggerManager& Instance();
 
         // Constructor: Initializes the debugger with a name and starts the receiver
-        LoggerManager(const std::string& debuggerName);
+        LoggerManager(const char* loggerName);
 
         // Destructor: Cleans up resources and terminates the queue processing thread
         ~LoggerManager();
