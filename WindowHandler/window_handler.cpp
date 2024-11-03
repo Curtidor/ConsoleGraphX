@@ -58,7 +58,8 @@ int main(int argc, char* argv[])
     unsigned short screenHeight = static_cast<short>(std::stoi(argv[2]));
     unsigned short fontWidth = static_cast<short>(std::stoi(argv[3]));
     unsigned short fontHeight = static_cast<short>(std::stoi(argv[4]));
-    const char* appName = argv[5];
+    const bool isEngineWindow = static_cast<short>(std::stoi(argv[5]));
+    const char* appName = argv[6];
 
     DWORD charInfoSize = sizeof(CHAR_INFO) * screenWidth * screenHeight;
     DWORD sharedMemorySize = sizeof(SharedWindowMemory) + charInfoSize;
@@ -93,15 +94,22 @@ int main(int argc, char* argv[])
 
     std::unique_ptr<ConsoleGraphX_Internal::PixelBufferShared> sharedScreenBuffer =  std::make_unique< ConsoleGraphX_Internal::PixelBufferShared>(ConsoleGraphX_Internal::PixelBufferShared(hConsole, sharedBuffer, screenWidth, screenHeight));
     
-    ConsoleGraphX_Internal::Screen screen(235, 158, 3, 3, std::move(sharedScreenBuffer));
+    ConsoleGraphX_Internal::Screen screen(screenWidth, screenHeight, fontWidth, fontHeight, std::move(sharedScreenBuffer));
    
+    SetConsoleFontSizeWC(hConsole, fontWidth, fontHeight);
+
+    SetConsoleWindowSizeWC(hConsole, 2, 2);
     SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth),  static_cast<short>(screenHeight)});
 
-    SetConsoleFontSizeWC(hConsole, fontWidth, fontHeight);
-    SetConsoleWindowSizeWC(hConsole, screenWidth, screenHeight);
+    CONSOLE_SCREEN_BUFFER_INFO cInfo{};
+    GetConsoleScreenBufferInfo(hConsole, &cInfo);
+    SetConsoleWindowSizeWC(hConsole, cInfo.dwSize.X-1, cInfo.dwSize.Y-1);
 
 
     SetConsoleTitleA(appName);
+    DisableConsoleResize();
+    if (isEngineWindow)
+        RemoveConsoleTitleBar();
 
 
     // FPS counter variables
@@ -120,8 +128,8 @@ int main(int argc, char* argv[])
         // Every second, update the console title with the FPS
         if (fpsTimeCounter >= 1.0f)
         {
-            std::string newTitle = std::string(appName) + " - FPS: " + std::to_string(frameCount);
-            SetConsoleTitleA(newTitle.c_str());
+            //std::string newTitle = std::string(appName) + " - FPS: " + std::to_string(frameCount);
+            //SetConsoleTitleA(newTitle.c_str());
 
             frameCount = 0;
             fpsTimeCounter = 0.0f;
