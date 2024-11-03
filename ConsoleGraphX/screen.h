@@ -40,8 +40,6 @@ namespace ConsoleGraphX_Internal
 		bool DrawScreen();
 		bool WriteText(const std::string& text, short x, short y);
 
-
-		void Initialize();
 		void WriteTextColor(CHAR_INFO* text, short x, short y);
 
 		int GetPixelWidth() const;

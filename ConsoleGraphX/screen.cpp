@@ -1,5 +1,7 @@
 ﻿#include "PCH_CGX.h"
+#include <Windows.h>
 #include <handleapi.h>
+#include <commctrl.h>
 #include "screen.h"
 #include "WinCore.h"
 #include "pixel_buffer.h"
@@ -9,6 +11,7 @@
 
 namespace ConsoleGraphX_Internal
 {
+	// Needs to be initalized manually, due to unknown handle state, this typically means that this screen belongs to a window
 	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer)
 		: PixelCanvas(width, height, std::move(sBuffer)),
 		_m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
@@ -19,7 +22,30 @@ namespace ConsoleGraphX_Internal
 		: PixelCanvas(width, height),
 		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
-		Initialize();
+		DisableConsoleResize();
+
+		SetConsoleFontSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_pixelWidth, _m_pixelHeight);
+		// We set the console window size to 1x1 because if we try to set the console buffer size to dimensions smaller than 
+		// the current window size, the operation will fail. This is due to a restriction in the Windows Console API, which requires
+		// that the buffer size must always be at least as large as the window size.
+		// By temporarily shrinking the window to its smallest possible size, we can freely adjust the buffer dimensions to our desired
+		// size without encountering this limitation. Once the buffer is set, we can then resize the window back to the desired dimensions.
+		// More details: https://learn.microsoft.com/en-us/windows/console/window-and-screen-buffer-size
+		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), 2, 2); // sets to 1, 1 (does width-1, height-1)
+
+		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->m_bufferSize);
+
+		CONSOLE_SCREEN_BUFFER_INFO cInfo{};
+		GetConsoleScreenBufferInfo(_m_screenBuffer->GetConsoleHandle(), &cInfo);
+		
+		SMALL_RECT windowRect = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
+		if (!SetConsoleWindowInfo(_m_screenBuffer->GetConsoleHandle(), TRUE, &windowRect)) 
+		{
+			int x = GetLastError();
+			std::cerr << "Failed to set console window size. Error: " << x << std::endl;
+		}
+
+		FillCanvas({ s_pixel , 0 });
 	}
 
 	bool Screen::DrawScreen()
@@ -44,18 +70,6 @@ namespace ConsoleGraphX_Internal
 	void Screen::SetPixels_A(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
 	{
 		Screen::_s_activeScreen->SetPixels(srcStart, srcEnd, dest);
-	}
-
-	void Screen::Initialize()
-	{
-		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBufferSize());
-
-		SetConsoleFontSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_pixelWidth, _m_pixelHeight);
-		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_width, _m_height);
-
-		FillCanvas({ s_pixel , 0 });
-
-		//Screen::_s_activeScreen = this;
 	}
 
 	bool Screen::WriteText(const std::string& text, short x, short y)
