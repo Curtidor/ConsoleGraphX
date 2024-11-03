@@ -44,8 +44,8 @@ void MainScene::Initialize()
 		snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
 	}
 
-	ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("../Sprites/wall_sprite.cxsp").second;
-	ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("../Sprites/grass_sprite.cxsp").second;
+	ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("Sprites/wall_sprite.cxsp").second;
+	ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("Sprites/grass_sprite.cxsp").second;
 
 	Entity* wallL = RegisterEntityN();
 	wallL->AddComponent<Sprite>(wallTIndex);

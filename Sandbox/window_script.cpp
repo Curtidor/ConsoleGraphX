@@ -6,11 +6,12 @@ TestWindowScript::TestWindowScript() : _m_window(nullptr)
 {}
 
 TestWindowScript::TestWindowScript(Entity* entity) :  Script(entity), _m_window(nullptr)
-{}
+{
+}
 
 void TestWindowScript::Awake()
 {
-	_m_window = WindowManager::Instance().CreateCGXWindow(300, 200, 1, 1, "TEST");
+	_m_window = WindowManager::Instance().CreateCGXWindow(200, 75, 3, 3, "TEST");
 }
 
 void TestWindowScript::Update(float deltaTime)
