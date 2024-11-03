@@ -8,12 +8,14 @@
 #include "logger_manager.h"
 #include "screen.h"
 #include "window.h"
+#include "window_manager.h"
 
 
 namespace ConsoleGraphX_Internal
 {
-     LoggerManager::LoggerManager(const std::string& debuggerName) :
-         _m_terminate(false), _m_engineWindow(ConsoleGraphX::EngineWindow(80, 40, debuggerName, 20, 12))
+     LoggerManager::LoggerManager(const char* loggerName) :
+         _m_terminate(false), 
+         _m_engineWindow(ConsoleGraphX::WindowManager::Instance().CreateCGXWindow(100, 10, 16, 16, loggerName, ConsoleGraphX::WindowType::EngineCreated))
      {
         _m_thread = std::thread(&LoggerManager::_ProcessQueue, this);
      }
@@ -88,7 +90,7 @@ namespace ConsoleGraphX_Internal
                 _m_messageQueue.pop();
             }
             
-            y = _m_engineWindow.WriteText(message, 2, y++) ? 0 : y++;
+            y = _m_engineWindow->WriteText(message, 2, y++) ? 0 : y++;
         }
     }
 

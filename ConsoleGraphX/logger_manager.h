@@ -40,10 +40,8 @@ namespace ConsoleGraphX_Internal
         static void ShutDown();
         static LoggerManager& Instance();
 
-        // Constructor: Initializes the debugger with a name and starts the receiver
         LoggerManager(const char* loggerName);
 
-        // Destructor: Cleans up resources and terminates the queue processing thread
         ~LoggerManager();
 
         // Log a message with the specified log level (default: INFO)
