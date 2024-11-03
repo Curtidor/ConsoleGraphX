@@ -37,12 +37,3 @@
 
 #pragma warning(pop) 
 
-inline std::filesystem::path GetBuildSpecificFilePath(const char* fileName)
-{
-#ifdef _DEBUG
-    return std::filesystem::path("../x64/Debug/") / fileName;
-#else
-    return std::filesystem::path("../x64/Release/") / fileName;
-#endif
-}
-
