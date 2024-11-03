@@ -98,6 +98,23 @@ namespace ConsoleGraphX
             return _m_callbacks.back();
         }
 
+        template <typename T>
+        [[nodiscard]] EventCallBackHandle<CallableType, Args...> AddListener(T* listener, void(T::* callbackFunction)(Args...)) 
+        {
+            size_t handle = _m_nextHandle.fetch_add(1, std::memory_order_relaxed);
+
+            CallableType callback = [listener, callbackFunction](Args&&... args) 
+                {
+                if (listener) {  // Check if listener still exists
+                    (listener->*callbackFunction)(std::forward<Args>(args)...);
+                }
+                };
+
+            _m_callbacks.emplace_back(std::move(callback), handle);
+            return _m_callbacks.back();
+        }
+
+
         /**
          * @brief Remove listener by comparing function pointers.
          *
