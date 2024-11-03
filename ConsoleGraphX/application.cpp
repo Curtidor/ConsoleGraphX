@@ -2,12 +2,14 @@
 #include "application.h"
 #include "console_handler.h"
 #include "window_manager.h"
+#include "window_layout.h"
 
 
 
 namespace ConsoleGraphX
 {
-    Application::Application(): _m_engine(250,170, 3, 3)
+    Application::Application()
+    : _m_engine(Engine(300, 120, 3, 3))
     {
         ConsoleHandler::RegisterApplication(this);
         ConsoleHandler::SetHandler();
@@ -23,6 +25,17 @@ namespace ConsoleGraphX
     void Application::WarmUp()
     {
         _m_engine.WarmUp();
+
+        Window* logger = WindowManager::Instance().GetWindow("Logger");
+        Window* test = WindowManager::Instance().GetWindow("TEST");
+
+        Window* main = WindowManager::Instance().GetWindow("Main");
+
+        WindowPositioningRule wpLogger = { main, Anchor::None, Alignment::Below, { 7,-6 } };
+        WindowPositioningRule wpTest = { main, Anchor::None, Alignment::LeftOf, { 0,0 } };
+
+        _m_layout.AddWindow(logger, wpLogger);
+        _m_layout.AddWindow(test, wpTest);
     }
 
     void Application::Run()
@@ -69,8 +82,10 @@ namespace ConsoleGraphX
                 frameCounter = 0;
                 fpsTimeCounter = 0.0f;
 
-                _m_engine.UpdateFPS(framesPerSecond); // A method in the engine to set the FPS display
+                //_m_engine->UpdateFPS(framesPerSecond); // A method in the engine to set the FPS display
             }
+
+            _m_layout.ApplyLayout();
         }
     }
 

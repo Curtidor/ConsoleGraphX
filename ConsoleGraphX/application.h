@@ -1,6 +1,7 @@
 #pragma once
 #include "engine.h"
 #include "scene_system.h"
+#include "window_layout.h"
 
 namespace ConsoleGraphX
 {
@@ -17,6 +18,7 @@ namespace ConsoleGraphX
     private:
         Engine _m_engine;    
         SceneSystem _m_sceneSystem;
+        WindowLayout _m_layout;
     };
 
 };
