@@ -1,6 +1,7 @@
 #include "PCH_WCore.h"
 #include "WinCore.h"
 
+
 // SCREEN/CONSOLE HElPERS
 
 bool SetConsoleFontSizeWC(HANDLE handle, short width, short height)
@@ -32,9 +33,39 @@ void SetConsoleNameWC(const std::string& name)
 
 void SetConsoleWindowSizeWC(HANDLE handle, short width, short height)
 {
-	SMALL_RECT rect = { 0, 0, width - 1, height - 1 };
-	SetConsoleWindowInfo(handle, TRUE, &rect);
+	SMALL_RECT rect = { 0, 0, width - 1, height-1 };
+	bool x = SetConsoleWindowInfo(handle, TRUE, &rect);
+    int error = GetLastError();
 }
+
+// Disables resizing of the console in calling process
+void DisableConsoleResize()
+{
+    HWND consoleWindow = GetConsoleWindow();
+
+    // Remove the resize border and maximize button from the console window
+    LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+    style &= ~(WS_SIZEBOX | WS_MAXIMIZEBOX);
+    SetWindowLong(consoleWindow, GWL_STYLE, style);
+}
+
+// Removes the console title bar in calling process
+void RemoveConsoleTitleBar()
+{
+    HWND consoleWindow = GetConsoleWindow();
+    if (consoleWindow)
+    {
+        LONG style = GetWindowLong(consoleWindow, GWL_STYLE);
+        style &= ~(WS_CAPTION | WS_THICKFRAME); // Removes title bar and resizable border
+        style &= ~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU); // Removes minimize/maximize/close buttons
+        SetWindowLong(consoleWindow, GWL_STYLE, style);
+
+        // Apply the new style
+        SetWindowPos(consoleWindow, NULL, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+}
+
 
 
 // IPC HELPERS
@@ -57,7 +88,7 @@ HANDLE CreateProcessWC(const std::string& exePath, const std::vector<std::string
 
     if (!CreateProcessA(NULL, commandLineBuffer.data(), NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi))
     {
-        std::cerr << "Failed to create process: " << GetLastError() << std::endl;
+        std::cerr << "Failed to create process: " << GetLastError() << exePath  << std::endl;
         return NULL;
     }
 
@@ -101,4 +132,46 @@ void* MapSharedMemoryWC(HANDLE hMapFile, size_t size)
     }
 
     return pSharedMem;
+}
+
+// OTHER
+
+HANDLE DuplicateHandleToProcess(HANDLE sourceProcessHandle, HANDLE handleToDuplicate, HANDLE targetProcessHandle) {
+    HANDLE duplicatedHandle = NULL;
+
+    if (DuplicateHandle(
+        sourceProcessHandle,        // Handle to source process
+        handleToDuplicate,          // Handle to duplicate
+        targetProcessHandle,        // Handle to target process
+        &duplicatedHandle,          // Out parameter for duplicated handle
+        0,                          // Access (0 = same as original)
+        FALSE,                      // Do not inherit handle
+        DUPLICATE_SAME_ACCESS       // Duplicate with the same access rights
+    )) {
+        return duplicatedHandle;
+    }
+    else 
+    {
+        std::cerr << "Failed to duplicate handle: " << GetLastError() << std::endl;
+        return NULL;
+    }
+}
+
+std::string GetExecutableDir()
+{
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    std::filesystem::path exePath(buffer);
+    return exePath.parent_path().string();
+}
+
+
+int GetRectWidth(const RECT& rect) 
+{
+    return rect.right - rect.left;
+}
+
+int GetRectHeight(const RECT& rect) 
+{
+    return rect.bottom - rect.top;
 }
