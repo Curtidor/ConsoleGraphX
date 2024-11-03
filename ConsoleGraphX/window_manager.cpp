@@ -1,9 +1,14 @@
 #include "PCH_CGX.h"
+#include <thread>
 #include "window_manager.h"
 #include "window_factory.h"
 
 namespace ConsoleGraphX
 {
+    WindowManager::WindowManager()
+    {
+    }
+
     void WindowManager::Initialize()
     {
         assert(!_s_instance);
@@ -20,24 +25,29 @@ namespace ConsoleGraphX
    
     void WindowManager::ShutDown()
     {
+        _s_instance->DestroyAllWindows();
+
         delete _s_instance;
     }
-    
+
     void WindowManager::RegisterWindow(std::unique_ptr<ConsoleGraphX::Window> window)
     {
+        // this is called before the window is actually up so we have to wait a bit
+        // this is a temp solution and should be fixed soon
+        // TODO
+        Sleep(50);
+
         OnWindowRegister.InvokeNFC(window.get());
 
-        if (window.get()->GetType() == ConsoleGraphX::WindowType::UserCreated)
+        if (window->GetType() == ConsoleGraphX::WindowType::UserCreated)
         {
-            _m_windowsUser.insert({ window.get()->GetWindowNameR(), std::move(window) });
+            _m_windowsUser.insert({ window->GetWindowNameR(), std::move(window) });
         }
         else
         {
-            _m_windowsUser.insert({ window.get()->GetWindowNameR(), std::move(window) });
+            _m_windowsUser.insert({ window->GetWindowNameR(), std::move(window) });
         }
-
     }
-
 
     void WindowManager::DeregisterWindow(ConsoleGraphX::Window* window)
     {
@@ -63,26 +73,53 @@ namespace ConsoleGraphX
 
     ConsoleGraphX::Window* WindowManager::CreateCGXWindow(short width, short height, short fontWidth, short fontHeight, const char* name, ConsoleGraphX::WindowType windowType)
     {
-        ConsoleGraphX::Window* newWindow;
+        std::unique_ptr<Window> newWindow;
 
         if (windowType == ConsoleGraphX::WindowType::UserCreated)
         {
-            auto window = ConsoleGraphX_Internal::CreateUserWindow(width, height, name, fontWidth, fontHeight);
-            _m_windowsUser.insert({ window.get()->GetWindowNameR(), std::move(window) });
-
-            newWindow = _m_windowsUser[name].get();
+            newWindow = ConsoleGraphX_Internal::CreateUserWindow(width, height, name, fontWidth, fontHeight);
         }
         else
         {
-            auto window = ConsoleGraphX_Internal::CreateEngineWindow(width, height, name, fontWidth, fontHeight);
-            _m_windowsEngine.insert({ window.get()->GetWindowNameR(), std::move(window) });
-
-            newWindow = _m_windowsEngine[name].get();
+            newWindow = ConsoleGraphX_Internal::CreateEngineWindow(width, height, name, fontWidth, fontHeight);
         }
 
-        OnWindowCreate.InvokeNF(newWindow);
+        newWindow->CreateConsoleWindow();
 
-        return newWindow;
+        OnWindowCreate.InvokeNFC(newWindow.get());
+
+        RegisterWindow(std::move(newWindow));
+
+        return GetWindow(name);
     }
+
+    Window* WindowManager::GetWindow(const std::string& windowName)
+    {
+        auto itUser = _m_windowsUser.find(windowName);
+        if (itUser != _m_windowsUser.end())
+            return itUser->second.get();
+
+        auto itEngine = _m_windowsEngine.find(windowName);
+        if (itEngine != _m_windowsEngine.end())
+            return itEngine->second.get();
+
+        return nullptr;
+    }
+
+    void WindowManager::DestroyAllWindows()
+    {
+        for (auto& [name, window] : _m_windowsUser)
+        {
+            window->Destroy();
+        }
+        _m_windowsUser.clear();
+
+        for (auto& [name, window] : _m_windowsEngine)
+        {
+            window->Destroy();
+        }
+        _m_windowsEngine.clear();
+    }
+
 
 };
