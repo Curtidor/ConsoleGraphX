@@ -9,7 +9,7 @@ namespace ConsoleGraphX_Internal
 	class Logger
 	{
 	private:
-		const std::string _m_name;
+		std::string _m_name;
 
 	public:
 		Logger(const std::string& name);
