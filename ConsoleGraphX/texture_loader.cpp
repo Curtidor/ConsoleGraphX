@@ -5,6 +5,7 @@
 #include "texture.h"
 #include "file_utils.h"
 #include "texture_loader.h"
+#include "WinCore.h"
 
 namespace ConsoleGraphX_Internal
 {
