@@ -14,12 +14,14 @@ Welcome to ConsoleGraph-X, a minimalistic game engine designed to create retro-s
 
 * **Scene System:** The scene system facilitates the organization and management of different game scenes, allowing for seamless transitions between levels, menus, and other sections of the game (WIP).
 
+## Exapmles
 (Running in the Editor)
 ![image](https://github.com/user-attachments/assets/01f53447-b9ed-4e5d-a674-e3dc7ea8ec36)
 
 (Running in the RunTime)
 ![Screenshot 2024-09-22 185543](https://github.com/user-attachments/assets/65ae0ffe-dae5-46aa-9496-19f61166fb24)
 
+Above is a simple example, of a game I made in a matter of minutes, here's an example of something you can do with a bit more time.
 ![demo](https://github.com/user-attachments/assets/5d177cd7-bfae-4d33-b1f8-2558b5271510)
 
 ### Credits
