@@ -14,9 +14,9 @@
 namespace ConsoleGraphX_Internal
 {
      LoggerManager::LoggerManager(const char* loggerName) :
-         _m_terminate(false), 
-         _m_engineWindow(ConsoleGraphX::WindowManager::Instance().CreateCGXWindow(100, 10, 16, 16, loggerName, ConsoleGraphX::WindowType::EngineCreated))
+         _m_terminate(false) 
      {
+         _m_loggerWindow = nullptr;
         _m_thread = std::thread(&LoggerManager::_ProcessQueue, this);
      }
 
@@ -73,6 +73,21 @@ namespace ConsoleGraphX_Internal
         _m_cv.notify_one();
     }
 
+    void LoggerManager::AttachWindow(ConsoleGraphX::CrossProcessWindow* window)
+    {
+        CGX_VERIFY(window, "null Window!");
+
+        _m_loggerWindow = window;
+
+        // we store the value so we don't get a warning from [[discard]]
+        ConsoleGraphX::EventCallBackHandle handle = window->OnWindowDestroyed.AddListener(this, &LoggerManager::DetachWindow);
+    }
+
+    void LoggerManager::DetachWindow(ConsoleGraphX::AbstractWindow* window)
+    {
+        _m_loggerWindow = nullptr;
+    }
+
     void LoggerManager::_ProcessQueue()
     {
         static int y = 0;
@@ -90,7 +105,9 @@ namespace ConsoleGraphX_Internal
                 _m_messageQueue.pop();
             }
             
-            y = _m_engineWindow->WriteText(message, 2, y++) ? 0 : y++;
+            // need an else statment for file logger
+            if (_m_loggerWindow != nullptr)
+                y = _m_loggerWindow->WriteText(message, 2, y++) ? 0 : y++;
         }
     }
 

@@ -6,8 +6,8 @@
 #include <mutex>
 #include <thread>
 #include <memory>
-#include "engine_window.h"
 #include "screen.h"
+#include "window.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -24,7 +24,7 @@ namespace ConsoleGraphX_Internal
         std::queue<std::string> _m_messageQueue; 
         HANDLE _m_receiverProcessHandle = nullptr;
 
-        ConsoleGraphX::Window* _m_engineWindow;
+        ConsoleGraphX::CrossProcessWindow* _m_loggerWindow;
 
 
 
@@ -46,6 +46,8 @@ namespace ConsoleGraphX_Internal
 
         // Log a message with the specified log level (default: INFO)
         void LogMessage(const std::string& loggerName, const std::string& message, LogLevel level = LogLevel::CGX_INFO);
+        void AttachWindow(ConsoleGraphX::CrossProcessWindow* window);
+        void DetachWindow(ConsoleGraphX::AbstractWindow* window);
 
     private:
         // Process the message queue in a separate thread
