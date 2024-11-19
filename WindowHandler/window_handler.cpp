@@ -12,7 +12,7 @@
 #include "../WinCore/WinCore.h"
 #include "../ConsoleGraphX/shared_window_memory.h"
 #include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/pixel_buffer_shared.h"
+#include "../ConsoleGraphX/pixel_buffer.h"
 
 
 static HANDLE CreateSharedMemory(DWORD totalSize, LPCSTR name)
@@ -58,8 +58,7 @@ int main(int argc, char* argv[])
     unsigned short screenHeight = static_cast<short>(std::stoi(argv[2]));
     unsigned short fontWidth = static_cast<short>(std::stoi(argv[3]));
     unsigned short fontHeight = static_cast<short>(std::stoi(argv[4]));
-    const bool isEngineWindow = static_cast<short>(std::stoi(argv[5]));
-    const char* appName = argv[6];
+    const char* appName = argv[5];
 
     DWORD charInfoSize = sizeof(CHAR_INFO) * screenWidth * screenHeight;
     DWORD sharedMemorySize = sizeof(SharedWindowMemory) + charInfoSize;
@@ -92,24 +91,25 @@ int main(int argc, char* argv[])
     CHAR_INFO* sharedBuffer = reinterpret_cast<CHAR_INFO*>(sharedMem + 1);
     std::memset(sharedMem->m_buffer, 0, sharedMem->m_bufferSize * sizeof(CHAR_INFO));
 
-    std::unique_ptr<ConsoleGraphX_Internal::PixelBufferShared> sharedScreenBuffer =  std::make_unique< ConsoleGraphX_Internal::PixelBufferShared>(ConsoleGraphX_Internal::PixelBufferShared(hConsole, sharedBuffer, screenWidth, screenHeight));
+    std::unique_ptr<ConsoleGraphX_Internal::PixelBufferHandle> sharedScreenBuffer =  std::make_unique< ConsoleGraphX_Internal::PixelBufferHandle>(ConsoleGraphX_Internal::PixelBufferHandle(hConsole, screenWidth, screenHeight, sharedBuffer));
     
     ConsoleGraphX_Internal::Screen screen(screenWidth, screenHeight, fontWidth, fontHeight, std::move(sharedScreenBuffer));
    
-    SetConsoleFontSizeWC(hConsole, fontWidth, fontHeight);
-
-    SetConsoleWindowSizeWC(hConsole, 2, 2);
+    SetConsoleWindowSizeWC(hConsole, 1, 1);
     SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth),  static_cast<short>(screenHeight)});
 
+    // get max screen size
     CONSOLE_SCREEN_BUFFER_INFO cInfo{};
     GetConsoleScreenBufferInfo(hConsole, &cInfo);
+
     SetConsoleWindowSizeWC(hConsole, cInfo.dwSize.X-1, cInfo.dwSize.Y-1);
+
+    SetConsoleFontSizeWC(hConsole, fontWidth, fontHeight);
 
 
     SetConsoleTitleA(appName);
     DisableConsoleResize();
-    if (isEngineWindow)
-        RemoveConsoleTitleBar();
+    //RemoveConsoleTitleBar();
 
 
     // FPS counter variables
