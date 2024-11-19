@@ -31,3 +31,26 @@ std::string GetExecutableDir();
 
 int GetRectWidth(const RECT& rect);
 int GetRectHeight(const RECT& rect);
+
+template <typename T>
+std::pair<T*, HMODULE> LoadModule(const std::string& dllPath, const std::string& createFuncName)
+{
+    HMODULE moduleHandle = LoadLibraryA(dllPath.c_str());
+    if (!moduleHandle)
+    {
+        std::cerr << "Failed to load DLL: " << dllPath << std::endl;
+        return {};
+    }
+
+    using CreateFuncType = T * (*)();
+    auto createFunc = reinterpret_cast<CreateFuncType>(GetProcAddress(moduleHandle, createFuncName.c_str()));
+    if (!createFunc)
+    {
+        std::cerr << "Failed to find factory function: " << createFuncName << " in DLL." << std::endl;
+        FreeLibrary(moduleHandle);
+        return {};
+    }
+
+    return { createFunc(), moduleHandle };
+}
+

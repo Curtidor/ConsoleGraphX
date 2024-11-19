@@ -6,18 +6,13 @@
 
 bool SetConsoleFontSizeWC(HANDLE handle, short width, short height)
 {
-	// Set the console font size
 	CONSOLE_FONT_INFOEX font = { sizeof(CONSOLE_FONT_INFOEX) };
 	GetCurrentConsoleFontEx(handle, FALSE, &font);
 
 	font.dwFontSize.X = width;
 	font.dwFontSize.Y = height;
-	if (!SetCurrentConsoleFontEx(handle, FALSE, &font)) 
-	{
-		return false;
-	}
 
-	return true;
+	return SetCurrentConsoleFontEx(handle, FALSE, &font);
 }
 
 void SetCursorPositionWC(HANDLE handle, short x, short y)
@@ -33,7 +28,7 @@ void SetConsoleNameWC(const std::string& name)
 
 void SetConsoleWindowSizeWC(HANDLE handle, short width, short height)
 {
-	SMALL_RECT rect = { 0, 0, width - 1, height-1 };
+	SMALL_RECT rect = { 0, 0, width, height};
 	bool x = SetConsoleWindowInfo(handle, TRUE, &rect);
     int error = GetLastError();
 }
