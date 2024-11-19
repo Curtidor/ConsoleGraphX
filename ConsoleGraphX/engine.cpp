@@ -4,6 +4,7 @@
 // managers
 #include "system_manager.h"
 #include "logger_manager.h"
+#include "resource_manager.h"
 // systems
 #include "input_system.h"
 #include "player_controller_system.h"
@@ -14,19 +15,20 @@
 #include "screen.h"
 //others
 #include "logger.h"
+#include "profiler.h"
 
 
 namespace ConsoleGraphX
 {
     Engine::Engine(short screenWidth, short screenHeight, short pixelWidth, short pixelHeight)
-        : _m_logger(ConsoleGraphX_Internal::Logger("Engine")), _m_systemManager(ConsoleGraphX_Internal::SystemManager())
+        : _m_logger(ConsoleGraphX_Internal::Logger("Engine")), _m_systemManager(ConsoleGraphX_Internal::SystemManager()), _m_isRunning(false)
     {
         _m_systemManager.RegisterSystem<ScriptSystem>();
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
 
         // my bad
-        _m_window = new EmbeddedWindow(
-            screenWidth, screenHeight, "Main", pixelWidth, pixelHeight
+        _m_window = new Window(
+            screenWidth, screenHeight, pixelWidth, pixelHeight, "Main"
         );
 
         ConsoleGraphX_Internal::Screen::SetActiveScreen_A(_m_window);
@@ -39,20 +41,27 @@ namespace ConsoleGraphX
         std::string& windowName = _m_window->GetWindowNameR();
         
         // i'd like to apologize for what's below
-        std::unique_ptr<EmbeddedWindow> uniqueEWindow = std::unique_ptr<EmbeddedWindow>(_m_window);
-        WindowManager::Instance().RegisterWindow(std::move(uniqueEWindow));
+        std::unique_ptr<Window> uniqueWindow = std::unique_ptr<Window>(_m_window); 
+        // what's above looks a bit suspicious, but remember wrapping a raw ptr in a smart ptr does not invalidate the raw ptr
+        // so the screen will still have a valid pointer
 
-        _m_window = static_cast<EmbeddedWindow*>(WindowManager::Instance().GetWindow(windowName));
+        WindowManager::Instance().RegisterWindow(std::move(uniqueWindow));
+
+        _m_window = static_cast<Window*>(WindowManager::Instance().GetWindow(windowName));
+
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Engine Initialized.");
     }
 
     void Engine::WarmUp()
     {
         ScriptSystem::ScriptWarmUp();
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Engine Warmed Up..");
     }
 
     void Engine::Start()
     {
         _m_isRunning = true;
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Starting Engine...");
     }
 
     void Engine::Shutdown()
@@ -72,12 +81,13 @@ namespace ConsoleGraphX
         _m_systemManager.Update(deltaTime);
     }
 
-    void Engine::Render(float alpha)
+    void Engine::Render(SceneSystem& sceneSystem, float alpha)
     {
-        _m_window->FillCanvas(CHAR_INFO{ _m_window->s_pixel, 0 });
-        ConsoleGraphX_Internal::Renderer::DrawSprites(alpha);
+        _m_window->FillCanvas(CHAR_INFO{ _m_window->s_pixel, 6 });
+        ConsoleGraphX_Internal::Renderer::DrawSprites(sceneSystem, alpha);
         _m_window->DrawScreen();
 
+        ConsoleGraphX_Internal::CGXProfiler::Instance().DisplayMetrics();
     }
 
 };
