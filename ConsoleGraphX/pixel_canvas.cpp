@@ -1,6 +1,5 @@
 ﻿#include "PCH_CGX.h"
 #include "pixel_canvas.h"
-#include "pixel_buffer_shared.h"
 #include "pixel_buffer.h"
 
 namespace ConsoleGraphX_Internal
