@@ -13,5 +13,5 @@ public:
 	void Update(float deltaTime) override;
 
 private:
-	Window* _m_window;
+	CrossProcessWindow* _m_window;
 };

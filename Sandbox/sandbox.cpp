@@ -1,8 +1,4 @@
-#include "../ConsoleGraphX/application.h"
-#include "../ConsoleGraphX/palette.h"
-#include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/window.h"
-#include "../ConsoleGraphX/window_manager.h"
+#include "../ConsoleGraphX/IGameModule.h"
 #include "main_scene.h"
 
 /*
@@ -27,20 +23,31 @@ RGB(22, 20, 35)
 
 using namespace ConsoleGraphX;
 
-int main()
+class SandboxGameModule : public IGameModule
 {
-	Application mainApplication = Application();
+    MainScene _mainScene;
 
-	mainApplication.Initialize();
+public:
+    SandboxGameModule() : _mainScene("Main Scene") {}
 
-	Palette& defaultPalette = Palette::DefaultPalette();
-	ConsoleGraphX_Internal::Screen::SetPalletColors_A(defaultPalette);
+    void Initialize() override
+    {
+        _mainScene.Initialize();
+    }
 
-	MainScene m("Main scene");
+    void RegisterScenes(ConsoleGraphX::SceneSystem& system) override
+    {
+        system.RegisterScene(new MainScene("Main Scene"));
+    }
 
-	mainApplication.WarmUp();
-	
-	mainApplication.Run();
+    void LoadInitialScene(ConsoleGraphX::SceneSystem& system) override
+    {
+        system.LoadScene("Main Scene");
+        
+    }
+};
 
-	return 0;
+extern "C" __declspec(dllexport) IGameModule * CreateGameModule()
+{
+    return new SandboxGameModule();
 }

@@ -11,7 +11,7 @@ TestWindowScript::TestWindowScript(Entity* entity) :  Script(entity), _m_window(
 
 void TestWindowScript::Awake()
 {
-	_m_window = WindowManager::Instance().CreateCGXWindow(200, 75, 3, 3, "TEST");
+	_m_window = static_cast<ConsoleGraphX::CrossProcessWindow*>(WindowManager::Instance().CreateCGXWindow(200, 75, 3, 3, "TEST"));
 }
 
 void TestWindowScript::Update(float deltaTime)

@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Scripts">
       <UniqueIdentifier>{07e6128e-ced4-494a-a4bb-9af7d32f5bbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\CustomWindow">
-      <UniqueIdentifier>{2ccb0601-bea2-4941-8ddf-35d5be1b694f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\CustomWindow">
       <UniqueIdentifier>{ab61d452-8d36-4290-b606-31e45527b154}</UniqueIdentifier>
     </Filter>
@@ -32,12 +29,6 @@
     </ClCompile>
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Scripts</Filter>
-    </ClCompile>
-    <ClCompile Include="main_scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="window_script.cpp">
-      <Filter>Source Files\CustomWindow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
