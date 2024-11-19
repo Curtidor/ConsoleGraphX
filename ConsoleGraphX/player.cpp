@@ -7,7 +7,7 @@
 #include "input_system.h"
 #include "camera.h"
 #include "vector3.h"
-#include "resourcec_manager.h"
+#include "resource_manager.h"
 #include "base_resource_pool.h"
 
 using namespace ConsoleGraphX;
@@ -23,7 +23,9 @@ Player::~Player()
 
 void Player::Awake()
 {
-	ConsoleGraphX_Internal::ResourceIndex index = ConsoleGraphX_Internal::ResourceManager::Instance().CreateTextureResource("../player_sprite.cxsp").second;
+	// TODO: look into what we want the behavoir to be should we expose the entites resource manager with a getter and use that manager
+	// or use the scenes manager which may or may not be the same as the entites
+	ConsoleGraphX_Internal::ResourceIndex index = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().CreateTextureResource("../player_sprite.cxsp").second;
 
 	_m_playerCam = _m_owner->GetComponent<Camera>();
 

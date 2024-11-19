@@ -1,13 +1,11 @@
-#include <string>
-#include <fstream>
-#include <ios>
+#include "PCH_CGX.h"
 #include <iosfwd>
+#include <fstream>
 #include <cstdint>
-#include <stdexcept>
-#include <utility>
 #include "texture.h"
 #include "file_utils.h"
 #include "texture_loader.h"
+#include "WinCore.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -32,7 +30,7 @@ namespace ConsoleGraphX_Internal
     {
         Texture* texture = new Texture(width, height);
 
-        const std::size_t expectedPixelDataSize = width * height * sizeof(CHAR_INFO);
+        const std::size_t expectedPixelDataSize = static_cast<size_t>(width) * height * sizeof(CHAR_INFO);
         textureFile.read(reinterpret_cast<char*>(texture->GetPixels()), expectedPixelDataSize);
 
         if (textureFile.fail())
@@ -60,7 +58,7 @@ namespace ConsoleGraphX_Internal
 
     void TextureLoader::_VerifyFileSize(std::ifstream& textureFile, uint32_t width, uint32_t height)
     {
-        std::size_t expectedPixelDataSize = width * height * sizeof(CHAR_INFO);
+        std::size_t expectedPixelDataSize = static_cast<size_t>(width) * height * sizeof(CHAR_INFO);
         std::streampos currentPosition = textureFile.tellg();
 
         textureFile.seekg(0, std::ios_base::end);

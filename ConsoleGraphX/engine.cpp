@@ -1,93 +1,93 @@
-#include <string>
-#include <chrono>
+#include "PCH_CGX.h"
+#include "WinCore.h"
 #include "engine.h"
-#include "frame_rate_controller.h"
-#include "logger.h"
+// managers
 #include "system_manager.h"
+#include "logger_manager.h"
+#include "resource_manager.h"
+// systems
 #include "input_system.h"
 #include "player_controller_system.h"
-#include "render_system.h"
-#include "resourcec_manager.h"
-#include "screen.h"
 #include "script_system.h"
-#include "color.h"
+#include "window_manager.h"
+//graphics
+#include "renderer.h"
+#include "screen.h"
+//others
 #include "logger.h"
-#include "console_handler.h"
-#include "debugger_manager.h"
+#include "profiler.h"
+
 
 namespace ConsoleGraphX
 {
-    Engine::Engine(short screen_width, short screen_height, short pixel_width, short pixel_height)
-        : _m_logger(ConsoleGraphX_Internal::Logger("Engine")), _m_systemManager(ConsoleGraphX_Internal::SystemManager()), _m_screen(ConsoleGraphX_Internal::Screen(screen_width, screen_height, pixel_width, pixel_height))
+    Engine::Engine(short screenWidth, short screenHeight, short pixelWidth, short pixelHeight)
+        : _m_logger(ConsoleGraphX_Internal::Logger("Engine")), _m_systemManager(ConsoleGraphX_Internal::SystemManager()), _m_isRunning(false)
     {
-        ConsoleGraphX_Internal::Screen::SetActiveScreen_A(&_m_screen);
-
         _m_systemManager.RegisterSystem<ScriptSystem>();
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
 
-        ConsoleGraphX_Internal::DebuggerManager::Initialize();
-        ConsoleGraphX_Internal::ResourceManager::Initialize();
+        // my bad
+        _m_window = new Window(
+            screenWidth, screenHeight, pixelWidth, pixelHeight, "Main"
+        );
+
+        ConsoleGraphX_Internal::Screen::SetActiveScreen_A(_m_window);
+    }
+
+    void Engine::Initialize()
+    {
+        ConsoleGraphX_Internal::LoggerManager::Initialize();
+
+        std::string& windowName = _m_window->GetWindowNameR();
+        
+        // i'd like to apologize for what's below
+        std::unique_ptr<Window> uniqueWindow = std::unique_ptr<Window>(_m_window); 
+        // what's above looks a bit suspicious, but remember wrapping a raw ptr in a smart ptr does not invalidate the raw ptr
+        // so the screen will still have a valid pointer
+
+        WindowManager::Instance().RegisterWindow(std::move(uniqueWindow));
+
+        _m_window = static_cast<Window*>(WindowManager::Instance().GetWindow(windowName));
+
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Engine Initialized.");
+    }
+
+    void Engine::WarmUp()
+    {
+        ScriptSystem::ScriptWarmUp();
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Engine Warmed Up..");
+    }
+
+    void Engine::Start()
+    {
+        _m_isRunning = true;
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Engine", "Starting Engine...");
     }
 
     void Engine::Shutdown()
     {
-        ConsoleGraphX_Internal::DebuggerManager::ShutDown();
-    }
-
-    void Engine::OnConsoleClose()
-    {
         _m_isRunning = false;
-        Shutdown();
+        ConsoleGraphX_Internal::LoggerManager::ShutDown(); // should be the last thing to close
     }
 
-    void Engine::Run()
+    bool Engine::IsRunning() const
     {
-        if (_m_isRunning)
-            return;
-
-        _m_isRunning = true;
-
-        _m_logger.LogMessage("Starting Engine.");
-
-        ConsoleHandler::RegisterEngine(this);
-        ConsoleHandler::SetHandler();
-
-        ScriptSystem::ScriptWarmUp();
-
-        ConsoleGraphX_Internal::Screen* active_screen = ConsoleGraphX_Internal::Screen::GetActiveScreen_A();
-
-        FrameRateController frameRateController(60);
-        std::chrono::nanoseconds deltaTime(0);
-        while (_m_isRunning)
-        {
-            auto frameStartTime = std::chrono::high_resolution_clock::now(); // Start frame time capture
-
-            _Update(std::chrono::duration_cast<std::chrono::milliseconds>(deltaTime).count() / 1000.0f); // Update with delta time in seconds
-
-            active_screen->DrawScreen();
-            active_screen->FillScreen({ ConsoleGraphX_Internal::Screen::s_pixel, Color::DarkYellow });
-
-            active_screen->SetConsoleName("FPS " + std::to_string(frameRateController.GetFramesPerSecond()));
-
-            auto frameEndTime = std::chrono::high_resolution_clock::now(); // End frame time capture
-            deltaTime = frameEndTime - frameStartTime; // Calculate delta time
-
-            active_screen->SetConsoleName("FPS " + std::to_string(1 / deltaTime.count()));
-
-            frameRateController.CaptureFrame(); // Capture the end of the frame
-
-        }
-        // this is here and not in shutdown as the current frame needs to finish before closing
-        ConsoleGraphX_Internal::ResourceManager::ShutDown();
+        return _m_isRunning;
     }
 
-    void Engine::_Update(float deltaTime)
+    void Engine::UpdateSystems(float deltaTime)
     {
         InputSystem::GetPressedKeys();
-
-        //InputSystem::UpdateMousePosition();
         _m_systemManager.Update(deltaTime);
-       
-        ConsoleGraphX_Internal::RenderSystem::DrawSprites();
     }
+
+    void Engine::Render(SceneSystem& sceneSystem, float alpha)
+    {
+        _m_window->FillCanvas(CHAR_INFO{ _m_window->s_pixel, 6 });
+        ConsoleGraphX_Internal::Renderer::DrawSprites(sceneSystem, alpha);
+        _m_window->DrawScreen();
+
+        ConsoleGraphX_Internal::CGXProfiler::Instance().DisplayMetrics();
+    }
+
 };

@@ -1,6 +1,5 @@
+#include "PCH_CGX.h"
 #include "camera.h"
-#include "vector3.h"
-#include "vector2.h"
 
 namespace ConsoleGraphX
 {

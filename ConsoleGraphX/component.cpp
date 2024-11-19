@@ -1,3 +1,4 @@
+#include "PCH_CGX.h"
 #include "component.h"
 
 /**

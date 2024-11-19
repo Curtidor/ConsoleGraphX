@@ -4,7 +4,8 @@
 namespace ConsoleGraphX
 {
 
-    class Vector3 {
+    class Vector3 
+    {
     public:
         float x;
         float y;
@@ -34,10 +35,16 @@ namespace ConsoleGraphX
         Vector3 operator/(float scalar) const;
         Vector3& operator/=(float scalar);
 
+        // move this to .cpp
+        bool operator!=(const Vector3& other) const 
+        {
+            return (x != other.x || y != other.y || z != other.z);
+        }
 
         float Magnitude() const;
         void AbsVector();
         void Normalize();
+        void RoundD();
     };
 
 };
