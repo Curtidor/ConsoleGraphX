@@ -61,28 +61,29 @@ namespace ConsoleGraphX
         static bool init = false;
         if (!init)
         {
-            palette.AddColor("Deep Plum", Color_CGX(20, 12, 28), 0);           // (20, 12, 28)
-            palette.AddColor("Dark Wine", Color_CGX(68, 36, 52), 1);           // (68, 36, 52)
-            palette.AddColor("Olive Beige", Color_CGX(117, 113, 97), 2);       // (117, 113, 97)
-            palette.AddColor("Copper Brown", Color_CGX(133, 76, 48), 3);       // (133, 76, 48)
-            palette.AddColor("Muted Gray", Color_CGX(78, 74, 78), 4);          // (78, 74, 78)
-            palette.AddColor("Crimson Red", Color_CGX(208, 70, 72), 5);        // (208, 70, 72)
-            palette.AddColor("Burnt Orange", Color_CGX(210, 125, 44), 6);      // (210, 125, 44)
-            palette.AddColor("Forest Green", Color_CGX(52, 101, 36), 7);       // (52, 101, 36)
-            palette.AddColor("Royal Blue", Color_CGX(48, 52, 109), 8);         // (48, 52, 109)
-            palette.AddColor("Light Rose", Color_CGX(210, 170, 153), 9);       // (210, 170, 153) // hair
-            palette.AddColor("Cool Blue Gray", Color_CGX(133, 149, 161), 10);  // (133, 149, 161)
-            palette.AddColor("Pale Mint", Color_CGX(222, 238, 214), 11);       // (222, 238, 214)
-            palette.AddColor("Teal Blue", Color_CGX(0, 0, 0), 12);       // (109, 194, 202)
-            palette.AddColor("Steel Blue", Color_CGX(89, 125, 206), 13);       // (89, 125, 206)
-            palette.AddColor("Golden Yellow", Color_CGX(218, 212, 94), 14);    // (218, 212, 94) //eyes
-            palette.AddColor("Lime Green", Color_CGX(109, 170, 44), 15);       // (109, 170, 44)
+            palette.AddColor("Soft Peach", Color_CGX(242, 192, 162), 0);        // #f2c0a2
+            palette.AddColor("Coral Pink", Color_CGX(233, 132, 114), 1);        // #e98472
+            palette.AddColor("Bright Red", Color_CGX(216, 35, 35), 2);          // #d82323
+            palette.AddColor("Deep Maroon", Color_CGX(152, 24, 60), 3);         // #98183c
+            palette.AddColor("Bright Green", Color_CGX(31, 203, 35), 4);        // #1fcb23
+            palette.AddColor("Forest Green", Color_CGX(18, 109, 48), 5);        // #126d30
+            palette.AddColor("Cyan", Color_CGX(38, 221, 221), 6);               // #26dddd
+            palette.AddColor("Deep Blue", Color_CGX(24, 103, 160), 7);          // #1867a0
+            palette.AddColor("Chestnut Brown", Color_CGX(147, 66, 38), 8);      // #934226
+            palette.AddColor("Dark Brown", Color_CGX(108, 37, 30), 9);          // #6c251e
+            palette.AddColor("Golden Yellow", Color_CGX(247, 226, 108), 10);    // #f7e26c
+            palette.AddColor("Mustard Yellow", Color_CGX(237, 179, 41), 11);    // #edb329
+            palette.AddColor("Burnt Orange", Color_CGX(231, 109, 20), 12);      // #e76d14
+            palette.AddColor("Soft White", Color_CGX(242, 242, 249), 13);       // #f2f2f9
+            palette.AddColor("Lavender Blue", Color_CGX(106, 95, 160), 14);     // #6a5fa0
+            palette.AddColor("Deep Black", Color_CGX(22, 20, 35), 15);          // #161423
 
             init = true;
         }
 
         return palette;
     }
+
 
 
 
