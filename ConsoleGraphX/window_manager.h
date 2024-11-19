@@ -11,27 +11,24 @@ namespace ConsoleGraphX
 	class WindowManager
 	{
 	public:
-		CGXEventArgs<Window*> OnWindowCreate;
-		CGXEventArgs<Window*> OnWindowRegister;
-		CGXEventArgs<Window*> OnWindowDeregister;
-
-		WindowManager();
+		CGXEventArgs<AbstractWindow*> OnWindowCreate;
+		CGXEventArgs<AbstractWindow*> OnWindowRegister;
+		CGXEventArgs<AbstractWindow*> OnWindowDeregister;
 
 	public:
 		static void Initialize();
 		static WindowManager& Instance();
 		static void ShutDown();
 
-		void RegisterWindow(std::unique_ptr<Window> window);
-		void DeregisterWindow(Window* window);
+		void RegisterWindow(std::unique_ptr<AbstractWindow> window);
+		void DeregisterWindow(const std::string& windowName);
 
-		Window* CreateCGXWindow(short width, short height, short fontWidth, short fontHeight, const char* name, WindowType windowType = WindowType::UserCreated);
-		Window* GetWindow(const std::string& windowName);
+		CrossProcessWindow* CreateCGXWindow(short width, short height, short fontWidth, short fontHeight, const char* name);
+		AbstractWindow* GetWindow(const std::string& windowName);
 
 
 	private:
-		std::unordered_map<std::string, std::unique_ptr<Window>> _m_windowsUser;
-		std::unordered_map<std::string, std::unique_ptr<Window>> _m_windowsEngine;
+		std::unordered_map<std::string, std::unique_ptr<AbstractWindow>> _m_windows;
 
 		static inline WindowManager* _s_instance = nullptr; 
 

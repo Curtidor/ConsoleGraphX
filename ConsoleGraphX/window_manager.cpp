@@ -1,14 +1,9 @@
 #include "PCH_CGX.h"
 #include <thread>
 #include "window_manager.h"
-#include "window_factory.h"
 
 namespace ConsoleGraphX
 {
-    WindowManager::WindowManager()
-    {
-    }
-
     void WindowManager::Initialize()
     {
         assert(!_s_instance);
@@ -30,59 +25,33 @@ namespace ConsoleGraphX
         delete _s_instance;
     }
 
-    void WindowManager::RegisterWindow(std::unique_ptr<ConsoleGraphX::Window> window)
+    void WindowManager::RegisterWindow(std::unique_ptr<ConsoleGraphX::AbstractWindow> window)
     {
+        //TODO: FIX HARDCODED SLEEP
         // this is called before the window is actually up so we have to wait a bit
         // this is a temp solution and should be fixed soon
-        // TODO
         Sleep(50);
 
         OnWindowRegister.InvokeNFC(window.get());
 
-        if (window->GetType() == ConsoleGraphX::WindowType::UserCreated)
+        _m_windows.insert({ window->GetWindowNameR(), std::move(window) });
+    }
+
+    void WindowManager::DeregisterWindow(const std::string& windowName)
+    {
+        auto it = _m_windows.find(windowName);
+        if (it != _m_windows.end())
         {
-            _m_windowsUser.insert({ window->GetWindowNameR(), std::move(window) });
-        }
-        else
-        {
-            _m_windowsUser.insert({ window->GetWindowNameR(), std::move(window) });
+            OnWindowDeregister.InvokeNFC(it->second.get());
+            _m_windows.erase(it);
         }
     }
 
-    void WindowManager::DeregisterWindow(ConsoleGraphX::Window* window)
+    // This method only creates cross process windows
+    // NOTE: This method automatically registers the window
+    ConsoleGraphX::CrossProcessWindow* WindowManager::CreateCGXWindow(short width, short height, short fontWidth, short fontHeight, const char* name)
     {
-        if (window->GetType() == ConsoleGraphX::WindowType::UserCreated)
-        {
-            auto it = _m_windowsUser.find(window->GetWindowNameR());
-            if (it != _m_windowsUser.end())
-            {
-                OnWindowDeregister.InvokeNFC(it->second.get());  
-                _m_windowsUser.erase(it);
-            }
-        }
-        else
-        {
-            auto it = _m_windowsEngine.find(window->GetWindowNameR());
-            if (it != _m_windowsEngine.end())
-            {
-                OnWindowDeregister.InvokeNFC(it->second.get()); 
-                _m_windowsEngine.erase(it);
-            }
-        }
-    }
-
-    ConsoleGraphX::Window* WindowManager::CreateCGXWindow(short width, short height, short fontWidth, short fontHeight, const char* name, ConsoleGraphX::WindowType windowType)
-    {
-        std::unique_ptr<Window> newWindow;
-
-        if (windowType == ConsoleGraphX::WindowType::UserCreated)
-        {
-            newWindow = ConsoleGraphX_Internal::CreateUserWindow(width, height, name, fontWidth, fontHeight);
-        }
-        else
-        {
-            newWindow = ConsoleGraphX_Internal::CreateEngineWindow(width, height, name, fontWidth, fontHeight);
-        }
+        std::unique_ptr<CrossProcessWindow> newWindow = std::make_unique<CrossProcessWindow>(width, height, fontWidth, fontHeight, name, nullptr);
 
         newWindow->CreateConsoleWindow();
 
@@ -90,36 +59,24 @@ namespace ConsoleGraphX
 
         RegisterWindow(std::move(newWindow));
 
-        return GetWindow(name);
+        return static_cast<CrossProcessWindow*>(GetWindow(name));
     }
 
-    Window* WindowManager::GetWindow(const std::string& windowName)
+    AbstractWindow* WindowManager::GetWindow(const std::string& windowName)
     {
-        auto itUser = _m_windowsUser.find(windowName);
-        if (itUser != _m_windowsUser.end())
+        auto itUser = _m_windows.find(windowName);
+        if (itUser != _m_windows.end())
             return itUser->second.get();
-
-        auto itEngine = _m_windowsEngine.find(windowName);
-        if (itEngine != _m_windowsEngine.end())
-            return itEngine->second.get();
 
         return nullptr;
     }
 
     void WindowManager::DestroyAllWindows()
     {
-        for (auto& [name, window] : _m_windowsUser)
+        for (auto& [name, window] : _m_windows)
         {
             window->Destroy();
         }
-        _m_windowsUser.clear();
-
-        for (auto& [name, window] : _m_windowsEngine)
-        {
-            window->Destroy();
-        }
-        _m_windowsEngine.clear();
+        _m_windows.clear();
     }
-
-
 };

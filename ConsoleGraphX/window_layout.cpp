@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX
 {
-	void WindowLayout::AddWindow(Window* window, const WindowPositioningRule& rule)
+	void WindowLayout::AddWindow(AbstractWindow* window, const WindowPositioningRule& rule)
 	{
 		_m_positioningRules.insert({ window, rule });
 
@@ -101,7 +101,7 @@ namespace ConsoleGraphX
         }
     }
 
-    void WindowLayout::_RemoveWindow(Window* window)
+    void WindowLayout::_RemoveWindow(AbstractWindow* window)
     {
         auto it = _m_positioningRules.find(window);
 

@@ -36,7 +36,7 @@ namespace ConsoleGraphX
 
     struct WindowPositioningRule
     {
-        Window* referenceWindow;
+        AbstractWindow* referenceWindow;
         Anchor anchor;
         Alignment alignment;
         Offset offset;
@@ -45,12 +45,12 @@ namespace ConsoleGraphX
     class WindowLayout
     {
     public:
-        void AddWindow(Window* window, const WindowPositioningRule& rule);
+        void AddWindow(AbstractWindow* window, const WindowPositioningRule& rule);
         void ApplyLayout();
 
     private:
-        void _RemoveWindow(Window* window);
+        void _RemoveWindow(AbstractWindow* window);
     private:
-        std::unordered_map<Window*, WindowPositioningRule> _m_positioningRules;
+        std::unordered_map<AbstractWindow*, WindowPositioningRule> _m_positioningRules;
     };
 };
