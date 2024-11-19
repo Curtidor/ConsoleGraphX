@@ -22,28 +22,30 @@ namespace ConsoleGraphX_Internal
 		: PixelCanvas(width, height),
 		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
-		DisableConsoleResize();
 
-		SetConsoleFontSizeWC(_m_screenBuffer->GetConsoleHandle(), _m_pixelWidth, _m_pixelHeight);
+		SetConsoleOutputCP(CP_UTF8);
+
+
 		// We set the console window size to 1x1 because if we try to set the console buffer size to dimensions smaller than 
 		// the current window size, the operation will fail. This is due to a restriction in the Windows Console API, which requires
 		// that the buffer size must always be at least as large as the window size.
 		// By temporarily shrinking the window to its smallest possible size, we can freely adjust the buffer dimensions to our desired
 		// size without encountering this limitation. Once the buffer is set, we can then resize the window back to the desired dimensions.
 		// More details: https://learn.microsoft.com/en-us/windows/console/window-and-screen-buffer-size
-		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), 2, 2); // sets to 1, 1 (does width-1, height-1)
+		// Set console window size to minimal (1x1)
+		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), 1, 1);
 
-		SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->m_bufferSize);
-
-		CONSOLE_SCREEN_BUFFER_INFO cInfo{};
-		GetConsoleScreenBufferInfo(_m_screenBuffer->GetConsoleHandle(), &cInfo);
-		
-		SMALL_RECT windowRect = { 0, 0, static_cast<SHORT>(width - 1), static_cast<SHORT>(height - 1) };
-		if (!SetConsoleWindowInfo(_m_screenBuffer->GetConsoleHandle(), TRUE, &windowRect)) 
+		if (!SetConsoleScreenBufferSize(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->m_bufferSize))
 		{
-			int x = GetLastError();
-			std::cerr << "Failed to set console window size. Error: " << x << std::endl;
+			return;
 		}
+
+		SetConsoleFontSizeWC(_m_screenBuffer->GetConsoleHandle(), fontWidth, fontHeight);
+
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(_m_screenBuffer->GetConsoleHandle(), &csbi);
+
+		SetConsoleWindowSizeWC(_m_screenBuffer->GetConsoleHandle(), csbi.dwMaximumWindowSize.X-1, csbi.dwMaximumWindowSize.Y-1);
 
 		FillCanvas({ s_pixel , 0 });
 	}
@@ -149,6 +151,13 @@ namespace ConsoleGraphX_Internal
 		return Screen::_s_activeScreen->_m_height; 
 	}
 
+	//NOTE FOR THE FOLLOWING PALLET METHODS
+	//	Inside the methos you'll see the following
+	//		consoleInfo.srWindow.Bottom++;
+	//		consoleInfo.srWindow.Right++;
+	//	This is here because SetConsoleScreenBufferInfoEx shrinks the window by 1 for some reason
+	//	to combat this we are incrementing the window size by 1
+
 	void Screen::SetPalletColors_A(std::array<ConsoleGraphX::Color_CGX, 16>& paletteColors) 
 	{
 		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};
@@ -161,6 +170,8 @@ namespace ConsoleGraphX_Internal
 			consoleInfo.ColorTable[i] = RGB(paletteColors[i].r, paletteColors[i].g, paletteColors[i].b);
 		}
 
+		consoleInfo.srWindow.Bottom++;
+		consoleInfo.srWindow.Right++;
 		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
@@ -177,6 +188,8 @@ namespace ConsoleGraphX_Internal
 			consoleInfo.ColorTable[i] = RGB(colors[i].r, colors[i].g, colors[i].b);
 		}
 
+		consoleInfo.srWindow.Bottom++;
+		consoleInfo.srWindow.Right++;
 		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
@@ -194,6 +207,8 @@ namespace ConsoleGraphX_Internal
 
 		consoleInfo.ColorTable[index] = RGB(color.r, color.g, color.b);
 
+		consoleInfo.srWindow.Bottom++;
+		consoleInfo.srWindow.Right++;
 		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
