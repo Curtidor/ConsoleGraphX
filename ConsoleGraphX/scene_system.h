@@ -9,14 +9,11 @@ namespace ConsoleGraphX
     class SceneSystem
     {
     private:
-        static inline Scene* _s_activeScene = nullptr;
-        static inline SceneSystem* _s_instance = nullptr;
-
+        Scene* _s_activeScene = nullptr;
         std::unordered_map<std::string, Scene*> _m_scenes;
 
     public:
-        void Initialize();
-        void ShutDown();
+        ~SceneSystem();
 
         void RegisterScene(Scene* scene);
         void DeregisterScene(const std::string& name);
@@ -27,9 +24,8 @@ namespace ConsoleGraphX
 
         const std::unordered_map<std::string, Scene*>& GetScenes();
 
-        static Scene* GetActiveScene();
-        static SceneSystem& Instance();
-        static ConsoleGraphX_Internal::ResourceManager& GetActiveResourceManager();
+        Scene* GetActiveScene();
+        ConsoleGraphX_Internal::ResourceManager& GetActiveResourceManager();
     };
 
 };

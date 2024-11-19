@@ -67,21 +67,7 @@ namespace ConsoleGraphX
         return _s_activeScene->GetResourceManager();
     }
 
-    SceneSystem& SceneSystem::Instance()
-    {
-        assert(_s_instance);
-
-        return *_s_instance;
-    }
-
-    void SceneSystem::Initialize()
-    {
-        assert(!_s_instance);
-
-        _s_instance = new SceneSystem();
-    }
-
-    void SceneSystem::ShutDown()
+    SceneSystem::~SceneSystem()
     {
         for (auto it = _m_scenes.end(); it != _m_scenes.begin(); )
         {
@@ -89,8 +75,6 @@ namespace ConsoleGraphX
             --it; // Decrement first, because .end() is past-the-end.
             it = _m_scenes.erase(it); // erase returns the next valid iterator, but in reverse we need to decrement manually.
         }
-
-        delete _s_instance;
     }
 
     const std::unordered_map<std::string, Scene*>& SceneSystem::GetScenes()

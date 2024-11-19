@@ -6,6 +6,11 @@
 #include "component.h"
 #include "base_resource_pool.h"
 
+namespace ConsoleGraphX_Internal
+{
+    class ResourceManager;
+}
+
 namespace ConsoleGraphX
 {
     struct Sprite : public ConsoleGraphX_Internal::PositionComponentBase, ConsoleGraphX_Internal::Component
@@ -26,9 +31,9 @@ namespace ConsoleGraphX
         Sprite();
         // this should only be used by internal functions
         Sprite(TransformID transform); 
-        Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, TransformID transform = -1);
-        Sprite(uint32_t width, uint32_t height, int color, TransformID transform = -1);
-        Sprite(int width, int height, int color, TransformID transform = -1);
+        Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
+        Sprite(uint32_t width, uint32_t height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
+        Sprite(int width, int height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
         
         Sprite(const Sprite& other);
 

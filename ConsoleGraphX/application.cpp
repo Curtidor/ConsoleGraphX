@@ -3,13 +3,14 @@
 #include "console_handler.h"
 #include "window_manager.h"
 #include "window_layout.h"
+#include "profiler.h"
 
 
 
 namespace ConsoleGraphX
 {
-    Application::Application()
-    : _m_engine(Engine(300, 120, 3, 3))
+    Application::Application(short screenWidth, short screenHeight, short pixelWidth, short pixelHeight)
+    : _m_engine(Engine(screenWidth, screenHeight, pixelWidth, pixelHeight))
     {
         ConsoleHandler::RegisterApplication(this);
         ConsoleHandler::SetHandler();
@@ -18,27 +19,15 @@ namespace ConsoleGraphX
     void Application::Initialize()
     {
         WindowManager::Initialize();
-        _m_sceneSystem.Initialize();
         _m_engine.Initialize();
     }
 
     void Application::WarmUp()
     {
         _m_engine.WarmUp();
-
-        Window* logger = WindowManager::Instance().GetWindow("Logger");
-        Window* test = WindowManager::Instance().GetWindow("TEST");
-
-        Window* main = WindowManager::Instance().GetWindow("Main");
-
-        WindowPositioningRule wpLogger = { main, Anchor::None, Alignment::Below, { 7,-6 } };
-        WindowPositioningRule wpTest = { main, Anchor::None, Alignment::LeftOf, { 0,0 } };
-
-        _m_layout.AddWindow(logger, wpLogger);
-        _m_layout.AddWindow(test, wpTest);
     }
 
-    void Application::Run()
+    void Application::Run(SceneSystem& sceneSystem)
     {
         _m_engine.Start();
 
@@ -73,7 +62,7 @@ namespace ConsoleGraphX
 
             // Render the frame
             float alpha = accumulator / targetUpdateRate;
-            _m_engine.Render(alpha);
+            _m_engine.Render(sceneSystem, alpha);
 
             // FPS update (once per second)
             if (fpsTimeCounter >= 1.0f)
@@ -82,23 +71,39 @@ namespace ConsoleGraphX
                 frameCounter = 0;
                 fpsTimeCounter = 0.0f;
 
-                //_m_engine->UpdateFPS(framesPerSecond); // A method in the engine to set the FPS display
             }
+
+            ConsoleGraphX_Internal::INCREMENT_COUNTER("FPS", framesPerSecond);
+
 
             _m_layout.ApplyLayout();
         }
+
+        // signal that the main loop has exited
+        {
+            std::lock_guard<std::mutex> lock(_m_mutex);
+            _m_mainLoopExited = true;
+        }
+        _m_mainLoopCondition.notify_one();
     }
 
     void Application::Shutdown()
     {
-        _m_sceneSystem.ShutDown();
         _m_engine.Shutdown();
-        WindowManager::ShutDown();
+        
+        // wait for the main loop to exit before shutting down the WindowManager
+        // this way any final render calls will have a valid screen to draw to
+        {
+            std::unique_lock<std::mutex> lock(_m_mutex);
+            _m_mainLoopCondition.wait(lock, [this]() { return _m_mainLoopExited; });
+        }
 
+        WindowManager::ShutDown();
     }
 
     void Application::OnConsoleClose()
     {
+        OnClose.Invoke();
         Shutdown();
     }
 };

@@ -76,8 +76,13 @@ namespace ConsoleGraphX
 
 
         template <typename T, typename... Args>
-        ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args) {
-            if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value) 
+        ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args) 
+        {
+            if constexpr (std::is_same_v<T, ConsoleGraphX::Sprite>)
+            {
+                return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)..., _m_resourceManager, _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
+            }
+            else if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value)
             {
                 return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
             }

@@ -17,12 +17,12 @@ namespace ConsoleGraphX
 	{}
 
 	// used when creating a sprite from a already made texture
-	Sprite::Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, TransformID transformID)
+	Sprite::Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transformID)
 		: PositionComponentBase(transformID), _m_width(1), _m_height(1),
 		m_textureIndex(textureIndex), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
 	{
-		ConsoleGraphX_Internal::Texture* t = ConsoleGraphX::SceneSystem::GetActiveResourceManager().GetResource<ConsoleGraphX_Internal::Texture>(textureIndex);
+		ConsoleGraphX_Internal::Texture* t = rManager.GetResource<ConsoleGraphX_Internal::Texture>(textureIndex);
 		_m_width = t->GetWidth();
 		_m_height = t->GetHeight();
 
@@ -30,21 +30,21 @@ namespace ConsoleGraphX
 	}
 
 	// used when creating a sprite with no texture
-	Sprite::Sprite(uint32_t width, uint32_t height, int color, TransformID transformD)
+	Sprite::Sprite(uint32_t width, uint32_t height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transformD)
 		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
 		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		m_textureIndex = ConsoleGraphX::SceneSystem::GetActiveResourceManager().CreateTextureResource(width, height, color).second;
+		m_textureIndex = rManager.CreateTextureResource(width, height, color).second;
 	}
 
 	// used when creating a sprite with no texture
-	Sprite::Sprite(int width, int height, int color, TransformID transformD)
+	Sprite::Sprite(int width, int height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transformD)
 		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
 		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
-		m_textureIndex = ConsoleGraphX::SceneSystem::GetActiveResourceManager().CreateTextureResource(width, height, color).second;
+		m_textureIndex = rManager.CreateTextureResource(width, height, color).second;
 	}
 
 	// used when cloning sprites

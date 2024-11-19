@@ -83,7 +83,7 @@ namespace ConsoleGraphX
             {
                 // If the cast succeeds, clone the component with transform for Sprite
                 clonedComponentIndex = spritePool->CloneComponentWithTransform(
-                    componentIdIndexPair.second, entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]
+                    componentIdIndexPair.second, _m_resourceManager, entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]
                 );
             }
             else
