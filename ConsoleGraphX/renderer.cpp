@@ -9,6 +9,8 @@
 #include "verify_macro.h"
 #include "texture.h"
 #include "transform.h"
+#include "scene_system.h"
+#include "profiler.h"
 
 
 /*
@@ -19,13 +21,19 @@ to copy pixels for each region. This can improve performance, especially if you 
 
 namespace ConsoleGraphX_Internal 
 {
-    void Renderer::DrawSprites(float alpha)
+    void Renderer::DrawSprites(ConsoleGraphX::SceneSystem& sceneSystem, float alpha)
     {
-        ResourcePool<ConsoleGraphX::Camera>& cameraPool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<ConsoleGraphX::Camera>();
-        ResourcePool<ConsoleGraphX::Sprite>& spritePool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<ConsoleGraphX::Sprite>();
+        PROFILE_SCOPE("RENDER");
+
+        ResourceManager& activeManager = sceneSystem.GetActiveResourceManager();
+
+        ResourcePool<ConsoleGraphX::Camera>& cameraPool = activeManager.GetResourcePool<ConsoleGraphX::Camera>();
+        ResourcePool<ConsoleGraphX::Sprite>& spritePool = activeManager.GetResourcePool<ConsoleGraphX::Sprite>();
 
         std::vector<ConsoleGraphX::Camera>* cameras = cameraPool.GetPoolItems();
         std::vector<ConsoleGraphX::Sprite>* sprites = spritePool.GetPoolItems();
+
+        INCREMENT_COUNTER("TOTAL SPRITES", sprites->size());
 
         for (const ConsoleGraphX::Camera& cam : *cameras)
         {
@@ -59,17 +67,19 @@ namespace ConsoleGraphX_Internal
                 if (!_IsEntityVisibleInView(overlapPoints, sprite.Size()))
                     continue;
 
+                INCREMENT_COUNTER("ON SCREEN SPRITES", 1);
+
                 // Draw the sprite with the interpolated position
-                Renderer::_DrawSprite(relativePosition, sprite, overlapPoints);
+                Renderer::_DrawSprite(sceneSystem, relativePosition, sprite, overlapPoints);
             }
         }
     }
 
 
-    void Renderer::_DrawSprite(const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
+    void Renderer::_DrawSprite(ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
     {
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
-        CHAR_INFO* pixels = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<Texture>().GetResourceFromPool(sprite.m_textureIndex)->GetPixels();
+        CHAR_INFO* pixels = sceneSystem.GetActiveResourceManager().GetResourcePool<Texture>().GetResourceFromPool(sprite.m_textureIndex)->GetPixels();
 
         CGX_VERIFY(pixels, "Null texture");
 
