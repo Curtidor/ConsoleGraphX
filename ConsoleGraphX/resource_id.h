@@ -14,14 +14,21 @@ namespace  ConsoleGraphX_Internal
 {
     using ResourceID = size_t;
 
-    // NOTE TO FUTURE ME
-    // This whole compile-time ID thing was more of a "let's dive into metaprogramming" experiment
-    // rather than a serious attempt at optimizing the code. 
-    // Feel free to simplify things if it become a problem in terms of maintenance 
-    // (which it shouldn't, at the time of writing this as only the registry needs updating) 
-    // as the runtime system is pretty efficient and doesn't require forward dec.
-    // HOWEVER, remember, runtime id's do introduce some minimal overhead, which maybe be 
-    // important as some systems work with builtin components in tight loops.
+    // NOTE TO FUTURE ME:
+    // The compile-time ID system was primarily just for learning about metaprogramming and its affects on performance.
+    // At the time of writing this:
+    // - The system works efficiently for its intended use, especially for built-in components processed in tight loops.
+    // - Maintenance overhead is minimal as only the registry (and forward declarations) need updating when adding/removing components.
+    //
+    // HOWEVER:
+    // - If maintaining this system becomes too cumbersome, consider simplifying it.
+    // - Using runtime IDs may be more straightforward but introduces a small overhead.
+    //   This overhead could be noticeable in performance-critical systems working with built-in components.
+    //
+    // TL;DR:
+    // Stick with compile-time IDs unless maintaining this system becomes unmanageable.
+    // Be mindful of the trade-offs between simplicity and performance when refactoring.
+
 
 
     template <typename ResourceType>

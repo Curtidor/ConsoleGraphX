@@ -1,34 +1,28 @@
+#include "PCH_CGX.h"
+#include <cassert>
 #include "scene_system.h"
-#include <stdexcept>
-#include <string>
-#include <unordered_map>
 #include "entity.h"
 #include "scene.h"
+#include "resource_manager.h"
 
 namespace ConsoleGraphX
 {
-    Scene* SceneSystem::_s_activeScene;
-    std::unordered_map<std::string, Scene*> SceneSystem::_s_scenes;
-
-    void SceneSystem::RegisterScene(Scene* scene)
+    void SceneSystem::RegisterScene(std::unique_ptr<Scene> scene)
     {
-        _s_scenes[scene->GetSceneName()] = scene;
-
-       // ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityCreation", std::bind(&Scene::RegisterEntity, scene, std::placeholders::_1));
-       // ConsoleGraphX_Internal::Dispatcher<Entity*>::RegisterListener("EntityDeletionEvent", std::bind(&Scene::DeregisterEntity, scene, std::placeholders::_1));
+        _m_scenes[scene->GetSceneName()] = std::move(scene);
     }
 
     void SceneSystem::DeregisterScene(const std::string& name)
     {
-        auto it = _s_scenes.find(name);
+        auto it = _m_scenes.find(name);
 
         if (name == _s_activeScene->GetSceneName())
             _s_activeScene = nullptr;
 
         DeleteScene(name);
-        if (it != _s_scenes.end())
+        if (it != _m_scenes.end())
         {
-            _s_scenes.erase(it);
+            _m_scenes.erase(it);
         }
     }
 
@@ -38,26 +32,16 @@ namespace ConsoleGraphX
         {
             throw std::runtime_error("Scene must be registered");
         }
-        _s_activeScene = _s_scenes[name];
+        // if we make it to here we can guarantee that name is in _m_scenes allow for a direct "index"
+        _s_activeScene = _m_scenes[name].get();
         _s_activeScene->Initialize();
-    }
 
-    void SceneSystem::DeleteScene(const std::string& name)
-    {
-        auto it = _s_scenes.find(name);
-        if (it != _s_scenes.end())
-        {
-            Scene* scene = it->second;
-            for (Entity entity : scene->GetEntities())
-            {
-                scene->DeregisterEntity(entity);
-            }
-        }
+        ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&_s_activeScene->GetResourceManager());
     }
 
     bool SceneSystem::IsSceneRegistered(const std::string& name)
     {
-        return _s_scenes.find(name) != _s_scenes.end();
+        return _m_scenes.find(name) != _m_scenes.end();
     }
 
     Scene* SceneSystem::GetActiveScene()
@@ -65,9 +49,32 @@ namespace ConsoleGraphX
         return _s_activeScene;
     }
 
-    const std::unordered_map<std::string, Scene*>& SceneSystem::GetScenes()
+    ConsoleGraphX_Internal::ResourceManager& SceneSystem::GetActiveResourceManager()
     {
-        return _s_scenes;
+        return _s_activeScene->GetResourceManager();
+    }
+
+    void SceneSystem::DeleteScene(const std::string& name)
+    {
+        auto it = _m_scenes.find(name);
+        if (it != _m_scenes.end())
+        {
+            Scene& scene = *it->second;
+            for (const Entity& entity : scene.GetEntities())
+            {
+                scene.DeregisterEntity(entity);
+            }
+        }
+    }
+
+    SceneSystem::~SceneSystem()
+    {
+        for (auto it = _m_scenes.end(); it != _m_scenes.begin(); )
+        {
+            DeleteScene(it->first);
+            --it; // Decrement first, because .end() is past-the-end.
+            it = _m_scenes.erase(it); // erase returns the next valid iterator, but in reverse we need to decrement manually.
+        }
     }
 };
 

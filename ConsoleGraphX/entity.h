@@ -24,7 +24,7 @@ namespace ConsoleGraphX_Internal
 
     public:
         static size_t GetId();
-        static void RecycleId(ConsoleGraphX::Entity& entity);
+        static void RecycleId(size_t id);
     };
 };
 
@@ -46,7 +46,8 @@ namespace ConsoleGraphX
         void _CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap);
 
         template <typename T>
-        std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& GetIndexMap() {
+        std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& GetIndexMap()
+        {
             if constexpr (ConsoleGraphX_Internal::IsScript<T>) 
             {
                 return _m_scriptIdToIndexes;
@@ -56,7 +57,6 @@ namespace ConsoleGraphX
                 return _m_componentIdToIndexMap;
             }
         }
-
 
         template <typename T, typename... Args>
         ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args) {
@@ -220,7 +220,7 @@ namespace ConsoleGraphX
 
         Transform* GetTransform();
 
-        void DestroyEntity() const;
+        void DestroyEntityResources() const;
 
         /**
          * @brief Equality operator for comparing entities.

@@ -31,9 +31,9 @@ namespace ConsoleGraphX_Internal
         return id;
     }
 
-    void EntityIDs::RecycleId(ConsoleGraphX::Entity& entity)
+    void EntityIDs::RecycleId(size_t id)
     {
-        _s_recycledIds.push(entity.m_id);
+        _s_recycledIds.push(id);
     }
 };
 
@@ -103,7 +103,7 @@ namespace ConsoleGraphX
             entity._m_scriptIdToIndexes.insert({ scriptIdIndexPair.first, clonedComponentIndex });
         }
 
-
+        // this is here for simply convinances, and should be moved to a spawner class or something of the sorts
         float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
         float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
         float z = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.z, maxSpread.z);
@@ -156,8 +156,14 @@ namespace ConsoleGraphX
 
     void Entity::KillEntity()
     {
-        DestroyEntity();
-        ConsoleGraphX_Internal::EntityIDs::RecycleId(*this);
+        for(Entity* child : _m_children)
+        {
+            child->DestroyEntityResources();
+            ConsoleGraphX_Internal::EntityIDs::RecycleId(child->m_id);
+        }
+
+        DestroyEntityResources();
+        ConsoleGraphX_Internal::EntityIDs::RecycleId(this->m_id);
     }
 
     size_t Entity::GetId() const
@@ -170,7 +176,7 @@ namespace ConsoleGraphX
         return this->GetComponent<Transform>();
     }
 
-    void Entity::DestroyEntity() const
+    void Entity::DestroyEntityResources() const
     {
         ConsoleGraphX_Internal::ResourceManager::Instance().DestroyEntityResources(_m_componentIdToIndexMap);
         ConsoleGraphX_Internal::ResourceManager::Instance().DestroyEntityResources(_m_scriptIdToIndexes);
@@ -178,6 +184,8 @@ namespace ConsoleGraphX
 
     void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap)
     {
+        // this is here so if we try to double add a componet in a debug build we will get an error, as no entity should have
+        // two of the same components, other scripts
         #ifdef _DEBUG
         if (indexMap.find(componentId) != indexMap.end())
         {

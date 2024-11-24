@@ -42,7 +42,7 @@ namespace ConsoleGraphX
     }
 
 
-    void Scene::DeregisterEntity(Entity& entity)
+    void Scene::DeregisterEntity(const Entity& entity)
     {
         auto itEntity = _m_entities.find(entity);
         if (itEntity == _m_entities.end())
