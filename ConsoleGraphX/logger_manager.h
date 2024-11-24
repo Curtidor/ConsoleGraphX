@@ -6,23 +6,26 @@
 #include <mutex>
 #include <thread>
 #include <memory>
-#include "../IPC/sender.h"
+#include "screen.h"
+#include "window.h"
 
 namespace ConsoleGraphX_Internal
 {
-    class DebuggerManager
+    class LoggerManager
     {
     private:
-        static inline DebuggerManager* _s_instance = nullptr;
+        static inline LoggerManager* _s_instance = nullptr;
 
         bool _m_terminate;  // flag to terminate the queue processing
         int _m_maxMessages = 1000;
         std::mutex _m_mutex;  // mutex for synchronizing access to the message queue
         std::thread _m_thread;  // thread for processing the message queue
         std::condition_variable _m_cv;  // condition variable for queue processing
-        std::unique_ptr<Sender<std::string>> _m_sender;
         std::queue<std::string> _m_messageQueue; 
         HANDLE _m_receiverProcessHandle = nullptr;
+
+        ConsoleGraphX::CrossProcessWindow* _m_loggerWindow;
+
 
 
     public:
@@ -35,25 +38,20 @@ namespace ConsoleGraphX_Internal
 
         static void Initialize();
         static void ShutDown();
-        static DebuggerManager& Instance();
+        static LoggerManager& Instance();
 
-        // Constructor: Initializes the debugger with a name and starts the receiver
-        DebuggerManager(const std::wstring& debuggerName);
+        LoggerManager(const char* loggerName);
 
-        // Destructor: Cleans up resources and terminates the queue processing thread
-        ~DebuggerManager();
+        ~LoggerManager();
 
         // Log a message with the specified log level (default: INFO)
         void LogMessage(const std::string& loggerName, const std::string& message, LogLevel level = LogLevel::CGX_INFO);
+        void AttachWindow(ConsoleGraphX::CrossProcessWindow* window);
+        void DetachWindow(ConsoleGraphX::AbstractWindow* window);
 
     private:
         // Process the message queue in a separate thread
         void _ProcessQueue();
-
-        // Starts the debugger receiver process
-        void _StartDebuggerReceiver();
-        void _StopDebuggerReceiver();
-
         // Formats the log message with the specified log level
         void _FormatLogMessage(std::string& message, LogLevel level);
     };

@@ -12,7 +12,7 @@ namespace ConsoleGraphX_Internal
     class ComponentPoolScript : public ResourcePool<ConsoleGraphX::Script*>
     {
     public:
-        ComponentPoolScript(size_t maxFreeIndexThreshold): ResourcePool(maxFreeIndexThreshold)
+        ComponentPoolScript()
         {}
 
         [[nodiscard]] ResourceIndex CloneComponentWithEntity(ResourceIndex index, ConsoleGraphX::Entity* owner)
