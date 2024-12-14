@@ -2,8 +2,10 @@
 #include <processthreadsapi.h>
 #include <filesystem>
 #include <handleapi.h>
+#include <exception>
 #include "window.h"
 #include "../WinCore/WinCore.h"
+#include "../WinCore/console_handler.h"
 
 namespace ConsoleGraphX
 {
@@ -19,16 +21,38 @@ namespace ConsoleGraphX
         OnWindowDestroyed.Invoke(this);
     }
 
+    void Window::SetupWindow()
+    {
+        std::string closeEventName = WINDOW_CLOSE_EVENT_NAME(std::string(_m_windowName));
+
+        HANDLE closeEvent = CreateEventA(nullptr, TRUE, FALSE, closeEventName.c_str());
+        if (closeEvent == INVALID_HANDLE_VALUE)
+        {
+            DWORD errorCode = GetLastError();
+            std::cerr << "Failed to create close event. Error: " << errorCode << std::endl;
+            throw std::runtime_error("Fatal: failed to make window close event");
+        }
+
+        std::function<void()> windowCloseCallback = [this, closeEvent]()
+            {
+                SetEvent(closeEvent);
+            };
+
+        WinCore::ConsoleHandler::RegisterCloseCallback(windowCloseCallback);
+        WinCore::ConsoleHandler::SetHandler();
+
+        _m_closeEvent = closeEvent;
+    }
+
     CrossProcessWindow::CrossProcessWindow(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight,
         const std::string& windowName, std::unique_ptr<ConsoleGraphX_Internal::PixelBuffer> sBuffer)
         : AbstractWindow(windowName), Screen(width, height, fontWidth, fontHeight, std::move(sBuffer)),
         _m_processHandle(INVALID_HANDLE_VALUE), _m_hMapFile(INVALID_HANDLE_VALUE), _m_sharedMem(nullptr)
-    {
-    }
+    {}
 
     void CrossProcessWindow::Destroy()
     {
-        TerminateProcess(_m_processHandle, 0);
+        bool terminationStatus = TerminateProcess(_m_processHandle, 0);
         CloseHandle(_m_processHandle);
 
         if (_m_sharedMem)
@@ -44,7 +68,7 @@ namespace ConsoleGraphX
         OnWindowDestroyed.Invoke(this);
     }
 
-    void CrossProcessWindow::CreateConsoleWindow()
+    void CrossProcessWindow::SetupWindow()
     {
         _CreateWindowImpl(_m_width, _m_height, _m_pixelWidth, _m_pixelHeight, _m_windowName);
         _AccessSharedMemory();

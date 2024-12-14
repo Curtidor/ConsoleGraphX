@@ -41,7 +41,7 @@ namespace ConsoleGraphX_Internal
             _m_window = window;
         }
 
-        // Adds time to a named timer
+        // adds time to a named timer
         void AddTime(const std::string& name, double duration) 
         {
             _m_timers[name].totalTime += duration;
@@ -63,10 +63,9 @@ namespace ConsoleGraphX_Internal
 
             int y = 0;
 
-            // Write the header
             _m_window->WriteText("==================== CGX Profiler Metrics ====================", 2, y++);
 
-            // Temporary buffer for the current line
+            // temporary buffer for the current line
             std::string buffer;
             std::string spaces(30, ' ');
 
@@ -77,7 +76,7 @@ namespace ConsoleGraphX_Internal
                 _m_window->WriteText(spaces, 2, y);
                 _m_window->WriteText(buffer, 2, y++);
 
-                // Reset timer data after displaying
+                // reset timer data after displaying
                 timer.totalTime = 0.0f;
                 timer.count = 0;
             }
@@ -91,46 +90,42 @@ namespace ConsoleGraphX_Internal
                 _m_window->WriteText(buffer, 2, y++);
 
 
-                // Reset counter data after displaying
                 count = 0;
             }
         }
 
     private:
-        // Private constructor for singleton
         CGXProfiler() = default;
 
         static inline CGXProfiler* _s_instance = nullptr;
         ConsoleGraphX::CrossProcessWindow* _m_window = nullptr;
-        // Struct to store timer information
         struct TimerData
         {
             double totalTime = 0.0;
             int count = 0;
         };
 
-        // Timer map and counter map
         std::unordered_map<std::string, TimerData> _m_timers;
         std::unordered_map<std::string, int> _m_counters;
     };
 
-    // Scoped timer helper class
     class Timer
     {
     public:
-        Timer(const std::string& name)
+        Timer(std::string_view name)
             : _name(name), _start(std::chrono::high_resolution_clock::now()) {}
 
         ~Timer()
         {
             auto end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> duration = end - _start;
-            CGXProfiler::Instance().AddTime(_name, duration.count());
+            CGXProfiler::Instance().AddTime(std::string(_name), duration.count());
         }
 
     private:
-        std::string _name;
+        std::string_view _name;
         std::chrono::time_point<std::chrono::high_resolution_clock> _start;
     };
+
 
 }

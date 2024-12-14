@@ -28,6 +28,7 @@ namespace ConsoleGraphX
         Entity* GetEntity(int id);
         Entity* GetEntity(const std::string& tag);
 
+        void Destroy();
         void DeregisterEntity(const Entity& entity);
 
         const std::unordered_set<Entity, Entity::Hash, Entity::Equal>& GetEntities();

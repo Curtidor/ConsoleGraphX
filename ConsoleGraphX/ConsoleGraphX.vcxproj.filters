@@ -73,9 +73,6 @@
     <Filter Include="Header Files\Engine\Core\Application">
       <UniqueIdentifier>{e8f7b5db-1a1c-4cb2-ac24-772e77bc2f9b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Core\Console">
-      <UniqueIdentifier>{42bc20b3-2c43-4b00-9ebb-5e20231314e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Core\Utils">
       <UniqueIdentifier>{90e5b037-05df-4292-a8c6-d2b01e10f261}</UniqueIdentifier>
     </Filter>
@@ -84,9 +81,6 @@
     </Filter>
     <Filter Include="Source Files\Engine\Utils">
       <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Console">
-      <UniqueIdentifier>{3c8aaeb1-598f-43a1-b01d-fb15b42da7e2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Engine\Core\Window">
       <UniqueIdentifier>{ca3a58f1-bf67-4df2-8db6-990c6a67b6f2}</UniqueIdentifier>
@@ -195,9 +189,6 @@
     <ClInclude Include="frame_rate_controller.h">
       <Filter>Header Files\Engine\Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="console_handler.h">
-      <Filter>Header Files\Engine\Core\Console</Filter>
-    </ClInclude>
     <ClInclude Include="verify_macro.h">
       <Filter>Header Files\Engine\Core\Utils</Filter>
     </ClInclude>
@@ -285,6 +276,15 @@
     <ClInclude Include="profiler.h">
       <Filter>Header Files\Engine\Core\Profiler</Filter>
     </ClInclude>
+    <ClInclude Include="entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shared_window_memory.h">
+      <Filter>Header Files\Engine\Core\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="generator.h">
+      <Filter>Header Files\Engine\Core\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vector2.cpp">
@@ -338,9 +338,6 @@
     <ClCompile Include="entity.cpp">
       <Filter>Source Files\Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="entity.h">
-      <Filter>Header Files\Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="texture_loader.cpp">
       <Filter>Source Files\Engine\Resources</Filter>
     </ClCompile>
@@ -368,9 +365,6 @@
     <ClCompile Include="frame_rate_controller.cpp">
       <Filter>Source Files\Engine\Core\Application</Filter>
     </ClCompile>
-    <ClCompile Include="console_handler.cpp">
-      <Filter>Source Files\Engine\Console</Filter>
-    </ClCompile>
     <ClCompile Include="application.cpp">
       <Filter>Source Files\Engine\Core\Application</Filter>
     </ClCompile>
@@ -385,9 +379,6 @@
     </ClCompile>
     <ClCompile Include="window_manager.cpp">
       <Filter>Source Files\Engine\Core\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="shared_window_memory.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
     </ClCompile>
     <ClCompile Include="pixel_canvas.cpp">
       <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>

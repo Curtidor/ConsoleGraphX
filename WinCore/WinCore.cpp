@@ -28,11 +28,15 @@ namespace WinCore
         SetConsoleTitleA(name.c_str());
     }
 
-    void SetConsoleWindowSize(HANDLE handle, short width, short height)
+    int SetConsoleWindowSize(HANDLE handle, short width, short height)
     {
         SMALL_RECT rect = { 0, 0, width, height };
-        bool x = SetConsoleWindowInfo(handle, TRUE, &rect);
-        int error = GetLastError();
+        bool consoleWasSet = SetConsoleWindowInfo(handle, TRUE, &rect);
+
+        if (!consoleWasSet)
+            return  GetLastError();
+        else
+            return 0;
     }
 
     // Disables resizing of the console in calling process
@@ -62,8 +66,6 @@ namespace WinCore
                 SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
         }
     }
-
-
 
     // IPC HELPERS
 
@@ -115,6 +117,23 @@ namespace WinCore
             return NULL;
         }
 
+        return hMapFile;
+    }
+
+    HANDLE CreateSharedMemory(DWORD totalSize, LPCSTR name)
+    {
+        HANDLE hMapFile = CreateFileMappingA(
+            INVALID_HANDLE_VALUE,    // Use the paging file
+            NULL,                    // Default security
+            PAGE_READWRITE,          // Read/write access
+            0,                       // Maximum object size (high-order DWORD)
+            totalSize,               // Maximum object size (low-order DWORD)
+            name);                   // Name of the mapping object
+
+        if (hMapFile == NULL)
+        {
+            std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
+        }
         return hMapFile;
     }
 

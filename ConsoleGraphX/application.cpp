@@ -1,37 +1,25 @@
 #include "PCH_CGX.h"
 #include "application.h"
-#include "console_handler.h"
 #include "window_manager.h"
 #include "window_layout.h"
 #include "profiler.h"
 
-
-
 namespace ConsoleGraphX
 {
     Application::Application()
-    : _m_engine(Engine())
-    {
-        ConsoleHandler::RegisterApplication(this);
-        ConsoleHandler::SetHandler();
-    }
+        : _m_engine(Engine())
+    {}
 
-    void Application::Initialize()
+    void Application::WarmUp(SceneSystem& sceneSystem)
     {
-        ConsoleGraphX_Internal::LoggerManager::Initialize();
-        WindowManager::Initialize();
-    }
-
-    void Application::WarmUp()
-    {
-        _m_engine.WarmUp();
+        _m_engine.WarmUp(sceneSystem);
     }
 
     void Application::Run(SceneSystem& sceneSystem)
     {
-        _m_isRunning = true;
+        _m_state = ApplicationState::Running;
 
-        const float targetUpdateRate = 1.0f / 60.0f; // Fixed timestep of 60 updates per second
+        const float targetUpdateRate = 1.0f / 60.0f;
         float accumulator = 0.0f;
         int framesPerSecond = 0;
         int frameCounter = 0;
@@ -39,70 +27,69 @@ namespace ConsoleGraphX
 
         auto previousTime = std::chrono::high_resolution_clock::now();
 
-        while (_m_isRunning)
+        bool notified = false;
+        while (_m_state != ApplicationState::Stopped)
         {
-            // Get the current time and calculate delta time
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<float> deltaTime = currentTime - previousTime;
-            previousTime = currentTime;
-
-            // Add delta time to the accumulator
-            accumulator += deltaTime.count();
-
-            // Update FPS counter
-            fpsTimeCounter += deltaTime.count();
-            frameCounter++;
-
-            // Fixed timestep for updating systems
-            while (accumulator >= targetUpdateRate)
+            if (_m_state == ApplicationState::Running)
             {
-                _m_engine.UpdateSystems(targetUpdateRate);
-                accumulator -= targetUpdateRate;
+                auto currentTime = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<float> deltaTime = currentTime - previousTime;
+                previousTime = currentTime;
+
+                accumulator += deltaTime.count();
+                fpsTimeCounter += deltaTime.count();
+                frameCounter++;
+
+                while (accumulator >= targetUpdateRate && _m_state == ApplicationState::Running)
+                {
+                    _m_engine.UpdateSystems(targetUpdateRate, sceneSystem);
+                    accumulator -= targetUpdateRate;
+                }
+                float alpha = accumulator / targetUpdateRate;
+                _m_engine.Render(sceneSystem, alpha);
             }
 
-            // Render the frame
-            float alpha = accumulator / targetUpdateRate;
-            _m_engine.Render(sceneSystem, alpha);
+            WindowManager::Instance().ProcessToCloseWindows();
 
-            // FPS update (once per second)
-            if (fpsTimeCounter >= 1.0f)
+            if (_m_state == ApplicationState::ShuttingDown && !notified)
             {
-                framesPerSecond = frameCounter;
-                frameCounter = 0;
-                fpsTimeCounter = 0.0f;
+                {
+                    std::lock_guard<std::mutex> lock(_m_mutex);
+                    _m_condition.notify_one();
+                }
 
+                notified = true;
             }
-
-            ConsoleGraphX_Internal::INCREMENT_COUNTER("FPS", framesPerSecond);
         }
-
-        // signal that the main loop has exited
-        {
-            std::lock_guard<std::mutex> lock(_m_mutex);
-            _m_mainLoopExited = true;
-        }
-        _m_mainLoopCondition.notify_one();
     }
 
     void Application::Shutdown()
     {
-        _m_isRunning = false;
-        ConsoleGraphX_Internal::LoggerManager::ShutDown(); 
-        
-        // wait for the main loop to exit before shutting down the WindowManager
-        // this way any final render calls will have a valid screen to draw to
         {
             std::unique_lock<std::mutex> lock(_m_mutex);
-            _m_mainLoopCondition.wait(lock, [this]() { return _m_mainLoopExited; });
+            _m_state = ApplicationState::ShuttingDown;
+
+            _m_condition.wait(lock);
+
+            _m_state = ApplicationState::Stopped;
+
+            ConsoleGraphX_Internal::LoggerManager::ShutDown();
+            WindowManager::ShutDown();
+           
+            std::cout << "Shut down done" << std::endl;
         }
-
-        WindowManager::ShutDown();
-
+       
     }
 
-    void Application::OnConsoleClose()
+    void Application::OnConsoleClose(AbstractWindow* window)
     {
         OnClose.Invoke();
-        Shutdown();
+
+        std::thread shutdownThread([this]() {
+            Shutdown();
+            });
+
+        // detach the thread to allow it to run independently
+        shutdownThread.detach();
     }
-};
+}

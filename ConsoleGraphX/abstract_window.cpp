@@ -1,13 +1,25 @@
 #include "PCH_CGX.h"
 #include "abstract_window.h"
+#include "logger_manager.h"
 
 namespace ConsoleGraphX
 {
     AbstractWindow::AbstractWindow(const std::string& windowName)
-        : _m_windowName(windowName), _m_windowHWND(NULL)
+        : _m_windowName(windowName), _m_windowHWND(NULL), _m_closeEvent(INVALID_HANDLE_VALUE)
     {}
 
-    std::string_view AbstractWindow::GetWindowName() const
+    bool AbstractWindow::OpenCloseEvent()
+    {
+        if (_m_closeEvent && _m_closeEvent != INVALID_HANDLE_VALUE)
+            return true;
+
+        std::string eventName = WINDOW_CLOSE_EVENT_NAME(_m_windowName);
+        _m_closeEvent = OpenEventA(EVENT_ALL_ACCESS, FALSE, eventName.c_str());
+
+        return (_m_closeEvent && _m_closeEvent != INVALID_HANDLE_VALUE);
+    }   
+
+    const std::string_view AbstractWindow::GetWindowName() const
     {
         return _m_windowName;
     }
@@ -17,20 +29,19 @@ namespace ConsoleGraphX
         return _m_windowName;
     }
 
-    WindowPositionData AbstractWindow::GetWindowPosition()
+    const WindowPositionData AbstractWindow::GetWindowPosition() const
     {
-        if (_m_windowHWND == NULL)
-        {
-            _TrySetWindowHandle();
-        }
+        HWND windowHWND = GetHWND();
 
-        if (_m_windowHWND == NULL)
+        if (windowHWND == NULL)
             return { 0, 0, 0, 0 };
 
         RECT sizeData{};
-        if (!GetWindowRect(_m_windowHWND, &sizeData))
+        if (!GetWindowRect(windowHWND, &sizeData))
         {
-            std::cerr << "Failed to get window rect: " << GetLastError() << std::endl;
+            std::string errorMessage = "Failed to get window rect: " + std::to_string(GetLastError());
+            ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("AdjustZOrder", errorMessage);
+
             return { 0, 0, 0, 0 };
         }
 
@@ -43,17 +54,19 @@ namespace ConsoleGraphX
         return positionData;
     }
 
-    const HWND AbstractWindow::GetHWND()
+    const HWND AbstractWindow::GetHWND() const
     {
-        // if users want a gaurenteed handle, they must implment some kind of retry logic on their end,
-        // assumming this function returns a bad HWND, which is possible if calling this function
-        // before the console spawn
-        if (_m_windowHWND == nullptr)
+        if (_m_windowHWND == NULL)
         {
-            _m_windowHWND = FindWindowA(NULL, _m_windowName.c_str());
+           return FindWindowA(NULL, _m_windowName.c_str());
         }
         
         return _m_windowHWND;
+    }
+
+    const HANDLE AbstractWindow::GetCloseEventHandle() const
+    {
+        return _m_closeEvent;
     }
 
     void AbstractWindow::SetWindowPosition(short x, short y)
@@ -62,20 +75,13 @@ namespace ConsoleGraphX
         SetWindowPos(_m_windowHWND, NULL, std::max<short>(x, 0), y, wp.width, wp.height, SWP_NOZORDER | SWP_SHOWWINDOW);
     }
 
+    void AbstractWindow::SetHWND(HWND windowHWND)
+    {
+        _m_windowHWND = windowHWND;
+    }
+
     void AbstractWindow::ResizeWindow(unsigned short newWidth, unsigned short newHeight)
     {
         OnWindowResized.InvokeNF(newWidth, newHeight);
-    }
-
-    void AbstractWindow::_TrySetWindowHandle()
-    {
-        HWND hwnd = FindWindowA(NULL, _m_windowName.c_str());
-        if (hwnd == NULL)
-        {
-            int error = GetLastError();
-            std::cerr << "Failed to find window: " << error << std::endl;
-            return;
-        }
-        _m_windowHWND = hwnd;
     }
 }

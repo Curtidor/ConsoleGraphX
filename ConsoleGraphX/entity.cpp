@@ -155,7 +155,7 @@ namespace ConsoleGraphX
         }
     }
 
-    void Entity::KillEntity()
+    void Entity::KillEntity() const
     {
         for(Entity* child : _m_children)
         {
@@ -183,9 +183,14 @@ namespace ConsoleGraphX
         _m_resourceManager.DestroyEntityResources(_m_scriptIdToIndexes);
     }
 
+    ConsoleGraphX_Internal::ResourceManager& Entity::GetResourceManager() const
+    {
+        return _m_resourceManager;
+    }
+
     void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap)
     {
-        // this is here so if we try to double add a componet in a debug build we will get an error, as no entity should have
+        // this is here so if we try to double add a component in a debug build we will get an error, as no entity should have
         // two of the same components, other scripts
         #ifdef _DEBUG
         if (indexMap.find(componentId) != indexMap.end())

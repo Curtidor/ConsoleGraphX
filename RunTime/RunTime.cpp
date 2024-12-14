@@ -4,6 +4,7 @@
 #include "../ConsoleGraphX/palette.h"
 #include "../ConsoleGraphX/screen.h"
 #include "../ConsoleGraphX/IGameModule.h"
+#include "../ConsoleGraphX/window_manager.h"
 #include "../ConsoleGraphX/profiler.h"
 #include "../WinCore/WinCore.h"
 
@@ -16,27 +17,25 @@ int main()
     SceneSystem sceneSystem;
     Application mainApplication = Application();
 
-    // Initialize the application
-    mainApplication.Initialize();
-
     ConsoleGraphX_Internal::CGXProfiler::Initialize();
+    ConsoleGraphX_Internal::LoggerManager::Initialize();
+    WindowManager::Initialize();
 
     auto [gameModule, moduleHandle] = WinCore::LoadModule<IGameModule>("Sandbox.dll", "CreateGameModule");
     if (!gameModule)
     {
-        std::cerr << "Failed to load game module." << std::endl;
+        ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Application", "Failed to load game module.");
         return -1;
     }
 
     // Initialize and register scenes
-    gameModule->Initialize();
     gameModule->RegisterScenes(sceneSystem);
-    gameModule->LoadInitialScene(sceneSystem);
+    sceneSystem.LoadScene("Main Scene");
 
     Scene* s = sceneSystem.GetActiveScene();
     ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&s->_m_resourceManager);
 
-    mainApplication.WarmUp();
+    mainApplication.WarmUp(sceneSystem);
 
     Palette& defaultPalette = Palette::DefaultPalette();
     ConsoleGraphX_Internal::Screen::SetPalletColors_A(defaultPalette);

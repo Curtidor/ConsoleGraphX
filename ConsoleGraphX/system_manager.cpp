@@ -12,11 +12,11 @@ namespace ConsoleGraphX_Internal
 		}
 	}
 
-	void SystemManager::Update(float deltaTime)
+	void SystemManager::Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem)
 	{
 		for (ConsoleGraphX::BaseSystem* system : _m_systems)
 		{
-			system->Update(deltaTime);
+			system->Update(deltaTime, sceneSystem);
 		}
 	}
 };

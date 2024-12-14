@@ -21,7 +21,7 @@ to copy pixels for each region. This can improve performance, especially if you 
 
 namespace ConsoleGraphX_Internal 
 {
-    void Renderer::DrawSprites(ConsoleGraphX::SceneSystem& sceneSystem, float alpha)
+    void Renderer::DrawSprites(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, float alpha)
     {
         PROFILE_SCOPE("RENDER");
 
@@ -70,13 +70,13 @@ namespace ConsoleGraphX_Internal
                 INCREMENT_COUNTER("ON SCREEN SPRITES", 1);
 
                 // Draw the sprite with the interpolated position
-                Renderer::_DrawSprite(sceneSystem, relativePosition, sprite, overlapPoints);
+                Renderer::_DrawSprite(screen, sceneSystem, relativePosition, sprite, overlapPoints);
             }
         }
     }
 
 
-    void Renderer::_DrawSprite(ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
+    void Renderer::_DrawSprite(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
     {
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
         CHAR_INFO* pixels = sceneSystem.GetActiveResourceManager().GetResourcePool<Texture>().GetResourceFromPool(sprite.m_textureIndex)->GetPixels();
@@ -86,7 +86,7 @@ namespace ConsoleGraphX_Internal
         const int spriteWidth = sprite.GetWidth();
         const int spriteHeight = sprite.GetHeight();
 
-        const int screenWidth = Screen::GetWidth_A();
+        const int screenWidth = screen.GetWidth();
 
         int buffer_offset = static_cast<int>((overlapPoints.left > 0 ? 0 : relEntityPosition.x) + (overlapPoints.top > 0 ? 0 : relEntityPosition.y) * screenWidth);
 
@@ -101,7 +101,7 @@ namespace ConsoleGraphX_Internal
 
             CHAR_INFO* dest = buffer + buffer_offset;
 
-            Screen::SetPixels_A(srcStart, srcEnd, dest);
+            screen.SetPixels(srcStart, srcEnd, dest);
 
             buffer_offset += screenWidth;
         }

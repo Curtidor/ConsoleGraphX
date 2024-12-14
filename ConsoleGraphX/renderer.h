@@ -1,10 +1,11 @@
 #pragma once
 #include <utility>
+#include <cstdlib>
 #include "sprite.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "scene_system.h"
-#include <cstdlib>
+#include "screen.h"
 
 namespace ConsoleGraphX_Internal 
 {
@@ -59,13 +60,13 @@ namespace ConsoleGraphX_Internal
 		 * @param sprite Pointer to the sprite to be drawn.
 		 * @param overlapPoints The overlap points of the sprite with the camera's view.
 		 */
-		static void _DrawSprite(ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
+		static void _DrawSprite(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints);
 
 	public:
 		/**
 		 * @brief Draws sprites of entities within the camera's view.
 		 * @param entities Vector of pointers to entities to be drawn.
 		 */
-		static void DrawSprites(ConsoleGraphX::SceneSystem& sceneSystem, float aplha);
+		static void DrawSprites(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, float aplha);
 	};
 };

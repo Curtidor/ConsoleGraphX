@@ -1,4 +1,5 @@
 #pragma once
+#include "scene_system.h"
 
 namespace ConsoleGraphX
 {
@@ -6,7 +7,7 @@ namespace ConsoleGraphX
 	{
 	public:
 		virtual void Initialize() = 0;
-		virtual void Update(float delta_time) = 0;
+		virtual void Update(float delta_time, SceneSystem& sceneSystem) = 0;
 
 		virtual ~BaseSystem() = default;
 	};

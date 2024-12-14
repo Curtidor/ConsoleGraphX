@@ -10,9 +10,9 @@ namespace ConsoleGraphX
 	void ScriptSystem::Initialize() 
 	{}
 
-	void ScriptSystem::Update(float deltaTime)
+	void ScriptSystem::Update(float deltaTime, SceneSystem& sceneSystem)
 	{
-		ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<Script>();
+		ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = sceneSystem.GetActiveResourceManager().GetResourcePool<Script>();
 		std::vector<Script*>& scripts = *scriptPool.GetPoolItems();
 
 		for (Script* script : scripts)
@@ -24,9 +24,9 @@ namespace ConsoleGraphX
 		}
 	}
 
-	void ScriptSystem::ScriptWarmUp()
+	void ScriptSystem::ScriptWarmUp(SceneSystem& sceneSystem)
 	{
-		ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<Script>();
+		ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = sceneSystem.GetActiveResourceManager().GetResourcePool<Script>();
 		std::vector<Script*>& scripts = *scriptPool.GetPoolItems();
 
 		for (Script* script : scripts)

@@ -4,7 +4,7 @@
 
 void ConsoleHandler::SetHandler() 
 {
-    SetConsoleCtrlHandler(ConsoleHandlerRoutine, TRUE);
+    SetConsoleCtrlHandler(_ConsoleHandlerRoutine, TRUE);
 }
 
 void ConsoleHandler::RegisterApplication(ConsoleGraphX::Application* app)
@@ -14,7 +14,7 @@ void ConsoleHandler::RegisterApplication(ConsoleGraphX::Application* app)
     _s_instance = app;
 }
 
-BOOL WINAPI ConsoleHandler::ConsoleHandlerRoutine(DWORD ctrlType) 
+BOOL WINAPI ConsoleHandler::_ConsoleHandlerRoutine(DWORD ctrlType) 
 {
     if (_s_instance && (ctrlType == CTRL_CLOSE_EVENT || ctrlType == CTRL_LOGOFF_EVENT || ctrlType == CTRL_SHUTDOWN_EVENT)) 
     {

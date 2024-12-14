@@ -13,5 +13,5 @@ private:
     static inline ConsoleGraphX::Application* _s_instance = nullptr;
 
 private:
-    static BOOL WINAPI ConsoleHandlerRoutine(DWORD ctrlType);
+    static BOOL WINAPI _ConsoleHandlerRoutine(DWORD ctrlType);
 };

@@ -55,7 +55,18 @@ namespace ConsoleGraphX
             _m_tagIDMap.erase(itId);
         }
 
+
         _m_entities.erase(itEntity);
+    }
+
+    void Scene::Destroy()
+    {
+        for (const Entity& entity : _m_entities)
+        {
+            entity.KillEntity();
+        }
+
+        _m_entities.clear();
     }
 
     Entity* Scene::GetEntity(int id)

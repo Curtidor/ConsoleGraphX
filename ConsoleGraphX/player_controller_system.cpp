@@ -10,13 +10,11 @@ namespace ConsoleGraphX
 {
 
     void PlayerControllerSystem::Initialize()
-    {
+    {}
 
-    }
-
-    void PlayerControllerSystem::Update(float deltaTime)
+    void PlayerControllerSystem::Update(float deltaTime, SceneSystem& sceneSystem)
     {
-        ConsoleGraphX_Internal::ResourcePool<PlayerController>& controllerPool = ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager().GetResourcePool<PlayerController>();
+        ConsoleGraphX_Internal::ResourcePool<PlayerController>& controllerPool = sceneSystem.GetActiveResourceManager().GetResourcePool<PlayerController>();
         std::vector<PlayerController>* controllers = controllerPool.GetPoolItems();
 
         for (PlayerController& controller : *controllers)

@@ -4,7 +4,7 @@
 
 namespace ConsoleGraphX_Internal
 {
-	PixelCanvas::PixelCanvas(unsigned short width, unsigned short height) 
+	PixelCanvas::PixelCanvas(unsigned short width, unsigned short height) // Used when making a canvas in the same process 
 		: _m_width(width), _m_height(height), _m_screenBuffer(nullptr)
 	{
 		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -15,7 +15,7 @@ namespace ConsoleGraphX_Internal
 		_m_screenBuffer = std::make_unique<PixelBufferHandle>(PixelBufferHandle(hConsole, width, height));
 	}
 
-	PixelCanvas::PixelCanvas(unsigned short width, unsigned short height, std::unique_ptr<PixelBuffer> sBuffer)
+	PixelCanvas::PixelCanvas(unsigned short width, unsigned short height, std::unique_ptr<PixelBuffer> sBuffer) // Used when making a cross process canvas
 		: _m_width(width), _m_height(height), _m_screenBuffer(std::move(sBuffer))
 	{}
 

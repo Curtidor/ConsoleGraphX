@@ -1,5 +1,6 @@
 #include "../ConsoleGraphX/IGameModule.h"
 #include "main_scene.h"
+#include "second_scene.h"
 
 /*
 RGB(242, 192, 162)
@@ -25,25 +26,11 @@ using namespace ConsoleGraphX;
 
 class SandboxGameModule : public IGameModule
 {
-    MainScene _mainScene;
-
 public:
-    SandboxGameModule() : _mainScene("Main Scene") {}
-
-    void Initialize() override
-    {
-        _mainScene.Initialize();
-    }
-
     void RegisterScenes(ConsoleGraphX::SceneSystem& system) override
     {
         system.RegisterScene(std::make_unique<MainScene>("Main Scene"));
-    }
-
-    void LoadInitialScene(ConsoleGraphX::SceneSystem& system) override
-    {
-        system.LoadScene("Main Scene");
-        
+        system.RegisterScene(std::make_unique<SecondScene>("Second Scene"));
     }
 };
 

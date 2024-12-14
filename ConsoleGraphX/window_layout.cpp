@@ -1,6 +1,7 @@
 #include "PCH_CGX.h"
 #include <memory>
 #include "window_layout.h"
+#include "logger_manager.h"
 
 namespace ConsoleGraphX
 {
@@ -103,30 +104,32 @@ namespace ConsoleGraphX
     }
 
 
-    bool AdjustZOrder(std::vector<WindowZOrder>& windows) {
-        if (windows.empty()) {
-            std::cerr << "No windows provided for Z-order adjustment.\n";
+    bool AdjustZOrder(std::vector<WindowZOrder>& windows) 
+    {
+        if (windows.empty())
+        {
+            ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("AdjustZOrder", "WindowZOrder vecotr is empty");
             return false;
         }
 
         // Sort the windows by their Z-order value (ascending: lower Z-order is closer to the top).
-        std::sort(windows.begin(), windows.end(), [](const WindowZOrder& a, const WindowZOrder& b) {
+        std::sort(windows.begin(), windows.end(), [](const WindowZOrder& a, const WindowZOrder& b) 
+            {
             return a.zOrder < b.zOrder;
             });
 
-        // Apply Z-order adjustments.
 
-        // MAIN TOP
-        // EDITOR
-        // LOGGER
-        // RTIP
-
-        for (size_t i = 0; i < windows.size(); ++i) {
+        for (size_t i = 0; i < windows.size(); ++i) 
+        {
             HWND hwndInsertAfter = (i == 0) ? HWND_TOPMOST : windows[i - 1].hwnd;
 
-            if (!SetWindowPos(windows[i].hwnd, hwndInsertAfter, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)) {
-                std::cerr << "Failed to adjust Z-order for window at index " << i << ". Error: "
-                    << GetLastError() << "\n";
+            if (!SetWindowPos(windows[i].hwnd, hwndInsertAfter, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)) 
+            {
+                std::string errorMessage = "Failed to adjust Z-order for window at index " + std::to_string(i) +
+                    ". Error: " + std::to_string(GetLastError());
+
+                ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("AdjustZOrder", errorMessage);
+
                 return false;
             }
         }

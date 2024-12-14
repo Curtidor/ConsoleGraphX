@@ -11,7 +11,6 @@
 
 namespace ConsoleGraphX_Internal
 {
-	// Needs to be initalized manually, due to unknown handle state, this typically means that this screen belongs to a window
 	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer)
 		: PixelCanvas(width, height, std::move(sBuffer)),
 		_m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
@@ -22,7 +21,6 @@ namespace ConsoleGraphX_Internal
 		: PixelCanvas(width, height),
 		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
-
 		SetConsoleOutputCP(CP_UTF8);
 
 
@@ -52,13 +50,32 @@ namespace ConsoleGraphX_Internal
 
 	bool Screen::DrawScreen()
 	{
-		if (!WriteConsoleOutput(_m_screenBuffer->GetConsoleHandle(), _m_screenBuffer->GetBuffer(),
-			_m_screenBuffer->GetBufferSize(), _m_screenBuffer->m_bufferCoord, &_m_screenBuffer->m_writePosition))
+		/*
+		 * OPTIMIZATION IDEA:
+		 * Instead of redrawing the entire screen buffer every frame, consider dynamically adjusting
+		 * the size of the rectangular region (`m_writePosition`) to only cover areas that have changed.
+		 *
+		 * Benefits:
+		 * - Reduces the amount of data sent to the console, improving performance.
+		 * - Minimizes unnecessary operations for static or mostly unchanged screens.
+		 *
+		 * Implementation Notes:
+		 * - Track changes to the screen buffer (e.g., using a dirty region system or change flags).
+		 * - Update only the affected region instead of the entire screen.
+		 * - Handle edge cases where multiple regions are updated (merge regions or handle them sequentially).
+		 */
+		if (!WriteConsoleOutput(
+			_m_screenBuffer->GetConsoleHandle(),
+			_m_screenBuffer->GetBuffer(),
+			_m_screenBuffer->GetBufferSize(),
+			_m_screenBuffer->m_bufferCoord,
+			&_m_screenBuffer->m_writePosition))
 		{
 			return false;
 		}
 		return true;
 	}
+
 
 	void Screen::SetPixel_A(int x, int y, CHAR_INFO s_pixel)
 	{
@@ -175,6 +192,7 @@ namespace ConsoleGraphX_Internal
 		SetConsoleScreenBufferInfoEx(_s_activeScreen->_m_screenBuffer->GetConsoleHandle(), &consoleInfo);
 	}
 
+	// sets the pallet of the console in calling process
 	void Screen::SetPalletColors_A(ConsoleGraphX::Palette& paletteColors)
 	{
 		CONSOLE_SCREEN_BUFFER_INFOEX consoleInfo{};

@@ -99,7 +99,7 @@ namespace  ConsoleGraphX_Internal
         static inline size_t nextID = BuiltInResoruceTypes::count; // tracks the next available ID
     };
 
-    static inline bool IsScriptFromID(ResourceID id)
+    static inline bool IsScriptFromId(ResourceID id)
     {
         // id == 0 or id >= all built in component types
         return id == GenResourceID::Get<ConsoleGraphX::Script>() || id >= BuiltInResoruceTypes::count;

@@ -2,6 +2,7 @@
 #include <unordered_set>
 #include <type_traits>
 #include "base_system.h"
+#include "scene_system.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -26,6 +27,6 @@ namespace ConsoleGraphX_Internal
 
 		}
 
-		void Update(float deltaTime);
+		void Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem);
 	};
 };

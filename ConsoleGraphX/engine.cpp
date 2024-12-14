@@ -34,32 +34,28 @@ namespace ConsoleGraphX
         _m_window = window;
     }
 
-    void Engine::WarmUp()
+    void Engine::WarmUp(SceneSystem& sceneSystem)
     {
         if (_m_window == nullptr)
         {
-            // if there is no window provided for the main game app, make a default window
-            std::unique_ptr<Window> window = std::unique_ptr<Window>(std::make_unique<Window>(300, 120, 3, 3, "Main"));
-            WindowManager::Instance().RegisterWindow(std::move(window));
-
-            _m_window = static_cast<Window*>(WindowManager::Instance().GetWindow("Main"));
+            _m_window =  static_cast<Window*>(WindowManager::Instance().CreateCGXWindow<Window>(300, 120, 3, 3, "Main"));
 
             ConsoleGraphX_Internal::Screen::SetActiveScreen_A(_m_window);
         }
 
-        ScriptSystem::ScriptWarmUp();
+        ScriptSystem::ScriptWarmUp(sceneSystem);
     }
 
-    void Engine::UpdateSystems(float deltaTime)
+    void Engine::UpdateSystems(float deltaTime, SceneSystem& sceneSystem)
     {
         InputSystem::GetPressedKeys();
-        _m_systemManager.Update(deltaTime);
+        _m_systemManager.Update(deltaTime, sceneSystem);
     }
 
     void Engine::Render(SceneSystem& sceneSystem, float alpha)
     {
         _m_window->FillCanvas(CHAR_INFO{ _m_window->s_pixel, 6 });
-        ConsoleGraphX_Internal::Renderer::DrawSprites(sceneSystem, alpha);
+        ConsoleGraphX_Internal::Renderer::DrawSprites(*_m_window, sceneSystem, alpha);
         _m_window->DrawScreen();
 
         ConsoleGraphX_Internal::CGXProfiler::Instance().DisplayMetrics();

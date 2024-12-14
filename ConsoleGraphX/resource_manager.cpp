@@ -31,9 +31,9 @@ namespace ConsoleGraphX_Internal
         for (const auto& pair : componentIdToIndexMap)
         {
             // if component is a Script or a user-defined component (custom script)
-            ResourceID compID = IsScriptFromID(pair.first) ? GenResourceID::Get<ConsoleGraphX::Script>() : pair.first;
+            ResourceID compID = IsScriptFromId(pair.first) ? GenResourceID::Get<ConsoleGraphX::Script>() : pair.first;
             
-            //_m_resourcePools[compID]->RemoveResourceFromPool(pair.second);
+            GetResourcePoolFromId(compID).RemoveResourceFromPool(pair.second);
         }
     }
 };

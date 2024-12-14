@@ -21,12 +21,18 @@
     <ClInclude Include="WinCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="console_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinCore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PCH_WCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="console_handler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

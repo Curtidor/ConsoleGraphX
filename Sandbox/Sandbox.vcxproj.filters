@@ -16,8 +16,8 @@
     <Filter Include="Source Files\Scripts">
       <UniqueIdentifier>{07e6128e-ced4-494a-a4bb-9af7d32f5bbe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\CustomWindow">
-      <UniqueIdentifier>{ab61d452-8d36-4290-b606-31e45527b154}</UniqueIdentifier>
+    <Filter Include="Header Files\Scripts">
+      <UniqueIdentifier>{d8bf96c2-a977-4dd5-b2d2-0afb14eda677}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,19 +30,25 @@
     <ClCompile Include="snow.cpp">
       <Filter>Source Files\Scripts</Filter>
     </ClCompile>
+    <ClCompile Include="scene_switcher.cpp">
+      <Filter>Source Files\Scripts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="window_script.h">
-      <Filter>Header Files\CustomWindow</Filter>
-    </ClInclude>
     <ClInclude Include="main_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="player.h">
+    <ClInclude Include="second_scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>Header Files\Scripts</Filter>
+    </ClInclude>
     <ClInclude Include="snow.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_switcher.h">
+      <Filter>Header Files\Scripts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

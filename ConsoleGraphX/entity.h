@@ -1,5 +1,8 @@
 #pragma once
-#include "PCH_CGX.h"
+#include <exception>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
 #include "transform.h"
 #include "resource_id.h"
 #include "resource_manager.h"
@@ -135,7 +138,7 @@ namespace ConsoleGraphX
         /**
          * @brief Destroys the entity, removing it from the ECS.
          */
-        void KillEntity();
+        void KillEntity() const;
 
         /**
          * @brief Gets a reference to the components associated with this entity.
@@ -244,6 +247,7 @@ namespace ConsoleGraphX
         Transform* GetTransform();
 
         void DestroyEntityResources() const;
+        ConsoleGraphX_Internal::ResourceManager& GetResourceManager() const;
 
         /**
          * @brief Equality operator for comparing entities.

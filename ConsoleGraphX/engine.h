@@ -19,10 +19,10 @@ namespace ConsoleGraphX
         Engine();
        
         void AttachWindow(Window* window);
-        void WarmUp();
+        void WarmUp(SceneSystem& sceneSystem);
         void Shutdown();
 
-        void UpdateSystems(float deltaTime);
+        void UpdateSystems(float deltaTime, SceneSystem& sceneSystem);
         void Render(SceneSystem& sceneSystem, float alpha);
     };
 };

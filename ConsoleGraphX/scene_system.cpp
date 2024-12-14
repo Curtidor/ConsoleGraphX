@@ -19,11 +19,8 @@ namespace ConsoleGraphX
         if (name == _s_activeScene->GetSceneName())
             _s_activeScene = nullptr;
 
+
         DeleteScene(name);
-        if (it != _m_scenes.end())
-        {
-            _m_scenes.erase(it);
-        }
     }
 
     void SceneSystem::LoadScene(const std::string& name)
@@ -32,6 +29,13 @@ namespace ConsoleGraphX
         {
             throw std::runtime_error("Scene must be registered");
         }
+
+        // just incase there isnt an already active scene 
+        if (_s_activeScene != nullptr)
+        {
+            _s_activeScene->Destroy();
+        }
+
         // if we make it to here we can guarantee that name is in _m_scenes allow for a direct "index"
         _s_activeScene = _m_scenes[name].get();
         _s_activeScene->Initialize();
@@ -57,23 +61,26 @@ namespace ConsoleGraphX
     void SceneSystem::DeleteScene(const std::string& name)
     {
         auto it = _m_scenes.find(name);
-        if (it != _m_scenes.end())
-        {
-            Scene& scene = *it->second;
-            for (const Entity& entity : scene.GetEntities())
-            {
-                scene.DeregisterEntity(entity);
-            }
-        }
+        
+        if (it == _m_scenes.end())
+            return;
+
+        Scene& scene = *it->second;
+        scene.Destroy();
+
+        _m_scenes.erase(it);
+    }
+
+    SceneSystem::SceneSystem()
+    {
     }
 
     SceneSystem::~SceneSystem()
     {
         for (auto it = _m_scenes.end(); it != _m_scenes.begin(); )
         {
-            DeleteScene(it->first);
-            --it; // Decrement first, because .end() is past-the-end.
-            it = _m_scenes.erase(it); // erase returns the next valid iterator, but in reverse we need to decrement manually.
+            //DeleteScene(it->first);
+            //--it; // Decrement first, because .end() is past-the-end.
         }
     }
 };

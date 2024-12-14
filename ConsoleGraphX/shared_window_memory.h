@@ -1,5 +1,6 @@
 #pragma once
-#include "PCH_CGX.h" 
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <bitset>
 
 // WARNING: This structure is intended to be used **only** in the Window class and WindowHandler program for a very specific use case.

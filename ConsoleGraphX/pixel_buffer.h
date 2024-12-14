@@ -14,7 +14,7 @@ namespace ConsoleGraphX_Internal
 
 
     protected:
-        CHAR_INFO* _m_buffer;   // Buffer for storing the screen information
+        CHAR_INFO* _m_buffer;   
 
     public:
         PixelBuffer(short width, short height);
