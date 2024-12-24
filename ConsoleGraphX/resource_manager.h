@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <array>
 #include <utility>
+#include <variant>
 #include <string>
 #include <cstdint>
 #include <stdexcept>
@@ -67,6 +68,16 @@ namespace ConsoleGraphX_Internal
         using type = std::tuple<typename PoolForType<Types>::type...>;
     };
 
+    template <typename Tuple>
+    struct TupleToVariant;
+
+    template <typename... Ts>
+    struct TupleToVariant<std::tuple<Ts...>>
+    {
+        using type = std::variant<std::reference_wrapper<Ts>...>;
+    };
+
+    using ResourcePoolVariant = TupleToVariant<PoolsForTypes<BuiltInResoruceTypes::type>::type>::type;
 
     class ResourceManager
     {
@@ -76,28 +87,29 @@ namespace ConsoleGraphX_Internal
 
     private:
         template <std::size_t N = 0, typename... Ts>
-        BaseResourcePool& _GetResourcePoolByIndex(std::tuple<Ts...>& tpl, std::size_t index)
+        typename TupleToVariant<std::tuple<Ts...>>::type _GetResourcePoolByIndex(std::tuple<Ts...>& tpl, std::size_t index)
         {
             if constexpr (N < sizeof...(Ts))
             {
                 if (index == N)
                 {
-                    return std::get<N>(tpl); 
+                    return std::ref(std::get<N>(tpl)); // Wrap the pool reference in std::reference_wrapper
                 }
                 else
                 {
-                    return _GetResourcePoolByIndex<N + 1>(tpl, index);  // Recursively check the next index
+                    return _GetResourcePoolByIndex<N + 1>(tpl, index); // Recursively check the next index
                 }
             }
             throw std::out_of_range("Index out of bounds");
         }
+
 
     public:
         static void SetActiveManager(ResourceManager* manager);
         static ResourceManager& GetActiveResourceManager();
 
     public:
-        BaseResourcePool& GetResourcePoolFromId(ResourceID id);
+         ResourcePoolVariant GetResourcePoolFromId(ResourceID id);
 
         template <typename ResourceType>
         auto& GetResourcePool() 

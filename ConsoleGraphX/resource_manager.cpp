@@ -1,4 +1,5 @@
 #include "PCH_CGX.h"
+#include <variant>
 #include "base_resource_pool.h"
 #include "resource_id.h"
 #include "resource_manager.h"
@@ -7,7 +8,7 @@
 
 namespace ConsoleGraphX_Internal
 {
-    BaseResourcePool& ResourceManager::GetResourcePoolFromId(ResourceID id)
+    ResourcePoolVariant ResourceManager::GetResourcePoolFromId(ResourceID id)
     {
         return _GetResourcePoolByIndex(_m_resourcePoolsT, id);
     }
@@ -31,9 +32,15 @@ namespace ConsoleGraphX_Internal
         for (const auto& pair : componentIdToIndexMap)
         {
             // if component is a Script or a user-defined component (custom script)
-            ResourceID compID = IsScriptFromID(pair.first) ? GenResourceID::Get<ConsoleGraphX::Script>() : pair.first;
-            
-            //_m_resourcePools[compID]->RemoveResourceFromPool(pair.second);
+            ResourceID compID = IsScriptFromId(pair.first) ? GenResourceID::Get<ConsoleGraphX::Script>() : pair.first;
+
+            auto poolVariant = _GetResourcePoolByIndex(_m_resourcePoolsT, compID);
+            std::visit([&pair](auto& poolWrapper) 
+                {
+                    auto& pool = poolWrapper.get(); // unwrap the reference
+                    pool.RemoveResourceFromPool(pair.second);
+                }, poolVariant);
+
         }
     }
 };
