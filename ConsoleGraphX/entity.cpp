@@ -75,26 +75,36 @@ namespace ConsoleGraphX
                 continue;
             }
 
-            ConsoleGraphX_Internal::BaseResourcePool& pool = _m_resourceManager.GetResourcePoolFromId(componentIdIndexPair.first);
+            auto poolVariant = _m_resourceManager.GetResourcePoolFromId(componentIdIndexPair.first);
 
-            ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex;
+            ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex = 0;
 
-            if (auto* spritePool = dynamic_cast<ConsoleGraphX_Internal::ComponentPoolSprite*>(&pool))
-            {
-                // If the cast succeeds, clone the component with transform for Sprite
-                clonedComponentIndex = spritePool->CloneComponentWithTransform(
-                    componentIdIndexPair.second, _m_resourceManager, entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]
-                );
-            }
-            else
-            {
-                clonedComponentIndex = pool.CloneResource(componentIdIndexPair.second);
-            }
+            std::visit([&](auto& poolWrapper)
+                {
+                    auto& pool = poolWrapper.get(); // unwrap the std::reference_wrapper
 
-            // insert the cloned component index into the new entity's map
+                    using PoolType = std::decay_t<decltype(pool)>;
+
+                    if constexpr (std::is_same_v<PoolType, ConsoleGraphX_Internal::ComponentPoolSprite>)
+                    {
+                        // clone with transform for Sprite
+                        clonedComponentIndex = pool.CloneComponentWithTransform(
+                            componentIdIndexPair.second,
+                            _m_resourceManager,
+                            entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]
+                        );
+                    }
+                    else
+                    {
+                        // general case for other pools
+                        clonedComponentIndex = pool.CloneResource(componentIdIndexPair.second);
+                    }
+                }, poolVariant);
+
+
+            // Insert the cloned component index into the new entity's map
             entity._m_componentIdToIndexMap.insert({ componentIdIndexPair.first, clonedComponentIndex });
         }
-
 
         ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = _m_resourceManager.GetResourcePool<Script>();
         for (const auto& scriptIdIndexPair : _m_scriptIdToIndexes)
@@ -104,7 +114,7 @@ namespace ConsoleGraphX
             entity._m_scriptIdToIndexes.insert({ scriptIdIndexPair.first, clonedComponentIndex });
         }
 
-        // this is here for simply convinances, and should be moved to a spawner class or something of the sorts
+        // this is here for simply connivances, and should be moved to a spawner class or something of the sorts
         float x = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.x, maxSpread.x);
         float y = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.y, maxSpread.y);
         float z = RandomNumberGenerator::GenerateRandomFloatInRange(minSpread.z, maxSpread.z);
