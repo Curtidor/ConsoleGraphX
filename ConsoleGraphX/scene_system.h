@@ -3,6 +3,7 @@
 #include <string>
 #include "resource_manager.h"
 #include "scene.h"
+#include "events.h"
 
 namespace ConsoleGraphX
 {
@@ -13,7 +14,12 @@ namespace ConsoleGraphX
         std::unordered_map<std::string, std::unique_ptr<Scene>> _m_scenes;
 
     public:
+
+    public:
+        SceneSystem();
         ~SceneSystem();
+
+        void ShutDown();
 
         void RegisterScene(std::unique_ptr<Scene> scene);
         void DeregisterScene(const std::string& name);
