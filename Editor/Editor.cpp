@@ -9,20 +9,22 @@
 #include <windows.h>
 #include <thread>
 #include <iostream>
-#include "../ConsoleGraphX/application.h"
-#include "../ConsoleGraphX/palette.h"
-#include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/window.h"
-#include "../ConsoleGraphX/window_manager.h"
-#include "../ConsoleGraphX/window_layout.h"
-#include "../ConsoleGraphX/window_styles.h"
-#include "../ConsoleGraphX/logger_manager.h"
-#include "../ConsoleGraphX/IGameModule.h"
-#include "../ConsoleGraphX/profiler.h"
+#include "./Engine/Core/Window/window.h"
+#include "./Engine/Core/Window/window_styles.h"
+#include "./Engine/Core/Window/window_manager.h"
+#include "./Engine/Core/Application/application.h"
+#include "./Engine/Core/Application/IGameModule.h"
+#include "./Engine/Core/Profiler/profiler.h"
+#include "./Engine/Core/Logger/logger_manager.h"
+#include "./Engine/Systems/input_system.h"
+#include "./Engine/Graphics/palette.h"
+#include "./Engine/Graphics/ScreenGraphics/screen.h"
+#include "./Engine/Layout/window_layout.h"
 #include "../WinCore/WinCore.h"
 
 using namespace ConsoleGraphX;
 using namespace ConsoleGraphX_Internal;
+
 
 /**
  * @brief Initializes the application and systems.
@@ -34,6 +36,9 @@ static IGameModule* InitializeApplication(HMODULE& moduleHandle)
     CGXProfiler::Initialize();
     LoggerManager::Initialize();
     WindowManager::Initialize();
+    InputSystem::Initialize();
+
+    InputSystem& i =  InputSystem::Instance();
 
     auto [gameModule, handle] = WinCore::LoadModule<IGameModule>("Sandbox.dll", "CreateGameModule");
     moduleHandle = handle;
@@ -173,6 +178,7 @@ int main()
     
     delete gameModule;
     FreeLibrary(moduleHandle);
+
 
     return 0;
 }

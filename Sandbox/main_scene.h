@@ -1,15 +1,16 @@
 #pragma once
 #include <string>
 #include "main_scene.h"
-#include "snow.h"
-#include "../ConsoleGraphX/scene.h"
-#include "../ConsoleGraphX/sprite.h"
-#include "../ConsoleGraphX/entity.h"
-#include "../ConsoleGraphX/player.h"
-#include "../ConsoleGraphX/scene.h"
-#include "../ConsoleGraphX/vector3.h"
-#include "../ConsoleGraphX/camera.h"
-#include "../ConsoleGraphX/screen.h"
+#include "../Sandbox/Scripts/snow.h"
+#include "../Sandbox/Scripts/player.h"
+#include "../Sandbox/Scripts/scene_switcher.h"
+#include "../ConsoleGraphX/Engine/Scene/scene.h"
+#include "../ConsoleGraphX/Engine/Components/PositionComponents/sprite.h"
+#include "../ConsoleGraphX/Engine/Core/entity.h"
+#include "../ConsoleGraphX/Engine/Scene/scene.h"
+#include "../ConsoleGraphX/Engine/Math/vector3.h"
+#include "../ConsoleGraphX/Engine/Components/camera.h"
+#include "../ConsoleGraphX/Engine/Graphics/ScreenGraphics/screen.h"
 
 // Register->Load->Initialize->Run
 
@@ -36,12 +37,15 @@ public:
 		snow->AddComponent<Snow>();
 		snow->AddComponent<Sprite>(1, 1, 13);
 
-		for (int i = 0; i < 700; i++)
+		Entity* sceneSwticher = RegisterEntityN();
+		sceneSwticher->AddComponent<SceneSwitcher>();
+
+	/*	for (int i = 0; i < 700; i++)
 		{
 			Entity* clonedSnow = RegisterEntityN();
 
 			snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
-		}
+		}*/
 
 		ResourceIndex wallTIndex = _m_resourceManager.CreateTextureResource("Sprites/wall_sprite.cxsp").second;
 		ResourceIndex grassTIndex = _m_resourceManager.CreateTextureResource("Sprites/grass_sprite.cxsp").second;
@@ -57,5 +61,6 @@ public:
 		Entity* grass = RegisterEntityN();
 		grass->AddComponent<Sprite>(grassTIndex);
 		grass->GetTransform()->SetPosition(0.0f, static_cast<float>(120 - 12));
+
 	}
 };

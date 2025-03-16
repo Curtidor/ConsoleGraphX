@@ -10,13 +10,13 @@
 #include <wincontypes.h>
 #include <errhandlingapi.h>
 #include <memoryapi.h>
-#include "../WinCore/WinCore.h"
-#include "../WinCore/console_handler.h"
-#include "../ConsoleGraphX/window_styles.h"
-#include "../ConsoleGraphX/shared_window_memory.h"
-#include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/pixel_buffer.h"
-#include "../ConsoleGraphX/abstract_window.h"
+#include "./WinCore.h"
+#include "./console_handler.h"
+#include "./Engine/Core/Window/window_styles.h"
+#include "./Engine/Core/Window/shared_window_memory.h"
+#include "./Engine/Graphics/ScreenGraphics/screen.h"
+#include "./Engine/Graphics/ScreenGraphics/pixel_buffer.h"
+#include "./Engine/Core/Window/abstract_window.h"
 #include "console_handler.h"
 
 /**
@@ -30,7 +30,7 @@
  * @param appName Title of the application.
  */
 static void InitializeConsole(HANDLE hConsole, unsigned short screenWidth, unsigned short screenHeight,
-    unsigned short fontWidth, unsigned short fontHeight, const char* appName) 
+    unsigned short fontWidth, unsigned short fontHeight, const char* appName)
 {
     WinCore::SetConsoleWindowSize(hConsole, 1, 1);
     SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth), static_cast<short>(screenHeight) });
@@ -44,8 +44,8 @@ static void InitializeConsole(HANDLE hConsole, unsigned short screenWidth, unsig
     SetConsoleTitleA(appName);
     WinCore::DisableConsoleResize();
 
-    // TEMP (need a better way to excluded the editor) apply borderless style for non-editor applications
-    if (strcmp(appName, "Editor") != 0) 
+    // apply borderless style for non-editor applications
+    if (strcmp(appName, "Editor") != 0)
     {
         ApplyWindowStyles(WindowStyles::Borderless, GetConsoleWindow());
     }
@@ -79,7 +79,7 @@ static void RunMainLoop(ConsoleGraphX_Internal::Screen& screen, HANDLE closeEven
     float fpsTimeCounter = 0.0f;
     auto startTime = std::chrono::high_resolution_clock::now();
 
-    while (true) 
+    while (true)
     {
         if (WaitForSingleObject(closeEvent, 0) == WAIT_OBJECT_0)
         {
@@ -93,13 +93,13 @@ static void RunMainLoop(ConsoleGraphX_Internal::Screen& screen, HANDLE closeEven
         fpsTimeCounter += deltaTime.count();
         startTime = currentTime;
 
-        if (fpsTimeCounter >= 1.0f) 
+        if (fpsTimeCounter >= 1.0f)
         {
             frameCount = 0;
             fpsTimeCounter = 0.0f;
         }
 
-        if (!screen.DrawScreen()) 
+        if (!screen.DrawScreen())
         {
             std::cerr << "Failed to write to console: " << GetLastError() << std::endl;
             break;
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
     }
 
     // register a callback to signal the close event and wait for cleanup
-    auto closeCallback = [closeEvent = closeEvent.get(), cleanupEvent = cleanupEvent.get()]() 
+    auto closeCallback = [closeEvent = closeEvent.get(), cleanupEvent = cleanupEvent.get()]()
         {
             SetEvent(closeEvent); // signal close event
             WaitForSingleObject(cleanupEvent, INFINITE); // wait until cleanup is done
@@ -186,5 +186,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
-
 

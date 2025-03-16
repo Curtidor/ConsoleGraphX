@@ -1,419 +1,345 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Components">
+      <UniqueIdentifier>{6B7DD516-5735-1764-C03C-F0BFAC13B254}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Components\PositionComponents">
+      <UniqueIdentifier>{7536FB31-E14E-E25B-AAFB-71F516D376F5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Core">
+      <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine">
-      <UniqueIdentifier>{181451c3-ed62-4708-b706-29c96a7e8a16}</UniqueIdentifier>
+    <Filter Include="Core\Application">
+      <UniqueIdentifier>{F1A4822F-DD9D-A181-06D0-8606F227818D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Components">
-      <UniqueIdentifier>{5a7a9445-18d0-4bcc-bae3-2b627e407462}</UniqueIdentifier>
+    <Filter Include="Core\Event">
+      <UniqueIdentifier>{FF1F37CD-EBD7-781A-54DF-517640B6130B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Core">
-      <UniqueIdentifier>{bd97b40a-8eb4-4744-aedc-7b2af5996e18}</UniqueIdentifier>
+    <Filter Include="Core\Logger">
+      <UniqueIdentifier>{3D8AF183-A93F-6A79-3234-64509EE8607D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Graphics">
-      <UniqueIdentifier>{9465da6b-4e59-4e14-80a0-c16db140702f}</UniqueIdentifier>
+    <Filter Include="Core\PCH">
+      <UniqueIdentifier>{383E99C2-240B-F4CD-4D24-E2753950295C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Math">
-      <UniqueIdentifier>{51ccf120-4294-41f7-a8be-872f1231b1fb}</UniqueIdentifier>
+    <Filter Include="Core\Profiler">
+      <UniqueIdentifier>{40690CF1-AC29-8827-7564-D1A4E1E3CC03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Systems">
-      <UniqueIdentifier>{04a42c38-ca92-4fcf-be38-1cd54e92f2c7}</UniqueIdentifier>
+    <Filter Include="Core\Utils">
+      <UniqueIdentifier>{0EA057CE-FA57-991B-635F-72774F36340C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine">
-      <UniqueIdentifier>{279d6cfb-2f05-4a10-8c0a-bd4e70d6b6a5}</UniqueIdentifier>
+    <Filter Include="Core\Window">
+      <UniqueIdentifier>{5581319D-C136-AA92-4A2B-A469B6DFA096}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Components">
-      <UniqueIdentifier>{17e73452-3736-4e17-8a14-ab69050eab22}</UniqueIdentifier>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{1653CE33-0220-293F-2B39-17E717655ECD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Core">
-      <UniqueIdentifier>{4675e770-8b37-4546-8f30-c7b3486d1732}</UniqueIdentifier>
+    <Filter Include="Graphics\ScreenGraphics">
+      <UniqueIdentifier>{36A8493F-A2DF-91D6-ABE9-F5F917A0B8CF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Graphics">
-      <UniqueIdentifier>{70e0add5-ebaf-453e-b8cc-601e0e6d26da}</UniqueIdentifier>
+    <Filter Include="Layout">
+      <UniqueIdentifier>{039F46C0-EF40-7196-D8FB-84EAC43CF8E6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Math">
-      <UniqueIdentifier>{f3cd728d-8019-4d50-aff6-2647ac812827}</UniqueIdentifier>
+    <Filter Include="Math">
+      <UniqueIdentifier>{AFF4887C-9B2B-8A0D-4418-7010302E060F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Systems">
-      <UniqueIdentifier>{6ff06f32-d0ac-4b0e-8867-5c4a8a27dc9a}</UniqueIdentifier>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{000BCD17-6C75-818E-B5B3-3234215D5FE3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Components\PositionComponents">
-      <UniqueIdentifier>{650d484c-fb6b-4007-8a94-42a6032a4c41}</UniqueIdentifier>
+    <Filter Include="Resources\Pools">
+      <UniqueIdentifier>{7C2DB231-E8B8-1FF6-F1C9-A2EA5DD47BF6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Components\PositionComponents">
-      <UniqueIdentifier>{5cbef222-1440-4735-8977-477da25a5bd5}</UniqueIdentifier>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{B3F7140E-1F0C-3DBF-E88D-E01E546139F0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Engine\Scene">
-      <UniqueIdentifier>{71c89564-e3f1-4012-8436-1ab066d43570}</UniqueIdentifier>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{1DDE831B-89BD-02B7-92D5-8D8DFE336918}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Scene">
-      <UniqueIdentifier>{ac04f004-a464-4c63-b7d5-cc2d5686bef5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Resources">
-      <UniqueIdentifier>{dbc62e24-c7a6-4baa-8aec-f18a92aa1d3b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Resources">
-      <UniqueIdentifier>{f0336b6d-87ec-4bef-a2a5-26f3bfad4906}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Core\Application">
-      <UniqueIdentifier>{7e96d16e-1a2d-45db-8435-5fed422d1bf5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Application">
-      <UniqueIdentifier>{e8f7b5db-1a1c-4cb2-ac24-772e77bc2f9b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Console">
-      <UniqueIdentifier>{42bc20b3-2c43-4b00-9ebb-5e20231314e6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Utils">
-      <UniqueIdentifier>{90e5b037-05df-4292-a8c6-d2b01e10f261}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Resources\Pools">
-      <UniqueIdentifier>{8abd294c-557c-4d71-9df6-479068baa609}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Utils">
-      <UniqueIdentifier>{a2fa11b4-1898-44c7-a1ca-aed2aeca09e0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Console">
-      <UniqueIdentifier>{3c8aaeb1-598f-43a1-b01d-fb15b42da7e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Window">
-      <UniqueIdentifier>{ca3a58f1-bf67-4df2-8db6-990c6a67b6f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Event">
-      <UniqueIdentifier>{373252fe-22ae-4d8c-8409-95213aaacfa6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Graphics\ScreenGraphics">
-      <UniqueIdentifier>{385ee418-24e3-4bd5-9b0e-1e9e585e5065}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Graphics\ScreenGraphics">
-      <UniqueIdentifier>{df74beca-af1a-40b5-9412-7f25b305611a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\PCH">
-      <UniqueIdentifier>{5099a81e-c733-4fb7-8d7d-401b4e7ab7dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Core\PCH">
-      <UniqueIdentifier>{df01e23b-06df-4227-b0fb-0ac4c5eb0e90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Core\Window">
-      <UniqueIdentifier>{3040e328-8529-4958-ab1e-45470573a393}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Logger">
-      <UniqueIdentifier>{a4c2076e-bbee-4f52-b90c-eb06a7fdf453}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Core\Logger">
-      <UniqueIdentifier>{a66b28f2-e9cf-4f78-9a73-5a4993446d63}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Engine\Layout">
-      <UniqueIdentifier>{fb724397-eb8e-40cf-b0e5-8b29a04136d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Layout">
-      <UniqueIdentifier>{0f089672-ffed-44b9-aea9-93d9f345d3d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\Core\Profiler">
-      <UniqueIdentifier>{0368f5e9-d5d6-48bb-89b9-b63e3805041a}</UniqueIdentifier>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{F68B420E-62A0-6ABF-2B22-0E1F97F566F0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vector2.h">
-      <Filter>Header Files\Engine\Math</Filter>
+    <ClInclude Include="Engine\Components\PositionComponents\player_controller.h">
+      <Filter>Components\PositionComponents</Filter>
     </ClInclude>
-    <ClInclude Include="vector3.h">
-      <Filter>Header Files\Engine\Math</Filter>
+    <ClInclude Include="Engine\Components\PositionComponents\position_component.h">
+      <Filter>Components\PositionComponents</Filter>
     </ClInclude>
-    <ClInclude Include="component.h">
-      <Filter>Header Files\Engine\Components</Filter>
+    <ClInclude Include="Engine\Components\PositionComponents\sprite.h">
+      <Filter>Components\PositionComponents</Filter>
     </ClInclude>
-    <ClInclude Include="input_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+    <ClInclude Include="Engine\Components\camera.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="scene_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+    <ClInclude Include="Engine\Components\component.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Header Files\Engine\Components</Filter>
+    <ClInclude Include="Engine\Components\script.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="sprite.h">
-      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    <ClInclude Include="Engine\Components\transform.h">
+      <Filter>Components</Filter>
     </ClInclude>
-    <ClInclude Include="player_controller.h">
-      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    <ClInclude Include="Engine\Core\Application\IGameModule.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header Files\Engine\Components</Filter>
+    <ClInclude Include="Engine\Core\Application\application.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="script.h">
-      <Filter>Header Files\Engine\Components</Filter>
+    <ClInclude Include="Engine\Core\Application\dispatcher.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="position_component.h">
-      <Filter>Header Files\Engine\Components\PositionComponents</Filter>
+    <ClInclude Include="Engine\Core\Application\engine.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="base_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+    <ClInclude Include="Engine\Core\Application\frame_rate_controller.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="player_controller_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+    <ClInclude Include="Engine\Core\Application\system_manager.h">
+      <Filter>Core\Application</Filter>
     </ClInclude>
-    <ClInclude Include="script_system.h">
-      <Filter>Header Files\Engine\Systems</Filter>
+    <ClInclude Include="Engine\Core\Event\event_base.h">
+      <Filter>Core\Event</Filter>
     </ClInclude>
-    <ClInclude Include="scene.h">
-      <Filter>Header Files\Engine\Scene</Filter>
+    <ClInclude Include="Engine\Core\Event\event_handle.h">
+      <Filter>Core\Event</Filter>
     </ClInclude>
-    <ClInclude Include="texture_loader.h">
-      <Filter>Header Files\Engine\Resources</Filter>
+    <ClInclude Include="Engine\Core\Event\events.h">
+      <Filter>Core\Event</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Header Files\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\Core\Logger\logger.h">
+      <Filter>Core\Logger</Filter>
     </ClInclude>
-    <ClInclude Include="resource_manager.h">
-      <Filter>Header Files\Engine\Resources</Filter>
+    <ClInclude Include="Engine\Core\Logger\logger_manager.h">
+      <Filter>Core\Logger</Filter>
     </ClInclude>
-    <ClInclude Include="logger_manager.h">
-      <Filter>Header Files\Engine\Core\Logger</Filter>
+    <ClInclude Include="Engine\Core\PCH\PCH_CGX.h">
+      <Filter>Core\PCH</Filter>
     </ClInclude>
-    <ClInclude Include="engine.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Core\Profiler\profiler.h">
+      <Filter>Core\Profiler</Filter>
     </ClInclude>
-    <ClInclude Include="system_manager.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Core\Utils\file_utils.h">
+      <Filter>Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="dispatcher.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Core\Utils\generator.h">
+      <Filter>Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="frame_rate_controller.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Core\Utils\meta_utils.h">
+      <Filter>Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="console_handler.h">
-      <Filter>Header Files\Engine\Core\Console</Filter>
+    <ClInclude Include="Engine\Core\Utils\random_numbers.h">
+      <Filter>Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="verify_macro.h">
-      <Filter>Header Files\Engine\Core\Utils</Filter>
+    <ClInclude Include="Engine\Core\Utils\verify_macro.h">
+      <Filter>Core\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="resource_id.h">
-      <Filter>Header Files\Engine\Resources</Filter>
+    <ClInclude Include="Engine\Core\Window\abstract_window.h">
+      <Filter>Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="component_script_pool.h">
-      <Filter>Header Files\Engine\Resources\Pools</Filter>
+    <ClInclude Include="Engine\Core\Window\shared_window_memory.h">
+      <Filter>Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="component_sprite_pool.h">
-      <Filter>Header Files\Engine\Resources\Pools</Filter>
+    <ClInclude Include="Engine\Core\Window\window.h">
+      <Filter>Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="resource_pool.h">
-      <Filter>Header Files\Engine\Resources\Pools</Filter>
+    <ClInclude Include="Engine\Core\Window\window_manager.h">
+      <Filter>Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="base_resource_pool.h">
-      <Filter>Header Files\Engine\Resources\Pools</Filter>
+    <ClInclude Include="Engine\Core\Window\window_styles.h">
+      <Filter>Core\Window</Filter>
     </ClInclude>
-    <ClInclude Include="file_utils.h">
-      <Filter>Header Files\Engine\Core\Utils</Filter>
+    <ClInclude Include="Engine\Core\entity.h">
+      <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="meta_utils.h">
-      <Filter>Header Files\Engine\Core\Utils</Filter>
+    <ClInclude Include="Engine\Graphics\ScreenGraphics\pixel_buffer.h">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClInclude>
-    <ClInclude Include="random_numbers.h">
-      <Filter>Header Files\Engine\Core\Utils</Filter>
+    <ClInclude Include="Engine\Graphics\ScreenGraphics\pixel_canvas.h">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClInclude>
-    <ClInclude Include="application.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Graphics\ScreenGraphics\screen.h">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClInclude>
-    <ClInclude Include="renderer.h">
-      <Filter>Header Files\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\Graphics\color.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="window.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
+    <ClInclude Include="Engine\Graphics\palette.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="events.h">
-      <Filter>Header Files\Engine\Core\Event</Filter>
+    <ClInclude Include="Engine\Graphics\pallet_manager.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="event_base.h">
-      <Filter>Header Files\Engine\Core\Event</Filter>
+    <ClInclude Include="Engine\Graphics\renderer.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="event_handle.h">
-      <Filter>Header Files\Engine\Core\Event</Filter>
+    <ClInclude Include="Engine\Graphics\texture.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="screen.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClInclude Include="Engine\Layout\window_layout.h">
+      <Filter>Layout</Filter>
     </ClInclude>
-    <ClInclude Include="palette.h">
-      <Filter>Header Files\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\Math\vector2.h">
+      <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="pallet_manager.h">
-      <Filter>Header Files\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\Math\vector3.h">
+      <Filter>Math</Filter>
     </ClInclude>
-    <ClInclude Include="color.h">
-      <Filter>Header Files\Engine\Graphics</Filter>
+    <ClInclude Include="Engine\Resources\Pools\base_resource_pool.h">
+      <Filter>Resources\Pools</Filter>
     </ClInclude>
-    <ClInclude Include="window_manager.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
+    <ClInclude Include="Engine\Resources\Pools\component_script_pool.h">
+      <Filter>Resources\Pools</Filter>
     </ClInclude>
-    <ClInclude Include="PCH_CGX.h">
-      <Filter>Header Files\Engine\Core\PCH</Filter>
+    <ClInclude Include="Engine\Resources\Pools\component_sprite_pool.h">
+      <Filter>Resources\Pools</Filter>
     </ClInclude>
-    <ClInclude Include="pixel_canvas.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClInclude Include="Engine\Resources\Pools\resource_pool.h">
+      <Filter>Resources\Pools</Filter>
     </ClInclude>
-    <ClInclude Include="logger.h">
-      <Filter>Header Files\Engine\Core\Logger</Filter>
+    <ClInclude Include="Engine\Resources\resource_id.h">
+      <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="window_layout.h">
-      <Filter>Header Files\Engine\Layout</Filter>
+    <ClInclude Include="Engine\Resources\resource_manager.h">
+      <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="pixel_buffer.h">
-      <Filter>Header Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClInclude Include="Engine\Resources\texture_loader.h">
+      <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include="window_styles.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
+    <ClInclude Include="Engine\Scene\scene.h">
+      <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="abstract_window.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
+    <ClInclude Include="Engine\Systems\base_system.h">
+      <Filter>Systems</Filter>
     </ClInclude>
-    <ClInclude Include="IGameModule.h">
-      <Filter>Header Files\Engine\Core\Application</Filter>
+    <ClInclude Include="Engine\Systems\input_system.h">
+      <Filter>Systems</Filter>
     </ClInclude>
-    <ClInclude Include="profiler.h">
-      <Filter>Header Files\Engine\Core\Profiler</Filter>
+    <ClInclude Include="Engine\Systems\player_controller_system.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Systems\scene_system.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Systems\script_system.h">
+      <Filter>Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="vector2.cpp">
-      <Filter>Source Files\Engine\Math</Filter>
+    <ClCompile Include="Engine\Components\PositionComponents\player_controller.cpp">
+      <Filter>Components\PositionComponents</Filter>
     </ClCompile>
-    <ClCompile Include="vector3.cpp">
-      <Filter>Source Files\Engine\Math</Filter>
+    <ClCompile Include="Engine\Components\PositionComponents\position_component.cpp">
+      <Filter>Components\PositionComponents</Filter>
     </ClCompile>
-    <ClCompile Include="input_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+    <ClCompile Include="Engine\Components\PositionComponents\sprite.cpp">
+      <Filter>Components\PositionComponents</Filter>
     </ClCompile>
-    <ClCompile Include="component.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
+    <ClCompile Include="Engine\Components\camera.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="scene_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+    <ClCompile Include="Engine\Components\component.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="random_numbers.cpp">
-      <Filter>Source Files\Engine\Utils</Filter>
+    <ClCompile Include="Engine\Components\script.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
+    <ClCompile Include="Engine\Components\transform.cpp">
+      <Filter>Components</Filter>
     </ClCompile>
-    <ClCompile Include="player_controller.cpp">
-      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    <ClCompile Include="Engine\Core\Application\application.cpp">
+      <Filter>Core\Application</Filter>
     </ClCompile>
-    <ClCompile Include="sprite.cpp">
-      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    <ClCompile Include="Engine\Core\Application\engine.cpp">
+      <Filter>Core\Application</Filter>
     </ClCompile>
-    <ClCompile Include="transform.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
+    <ClCompile Include="Engine\Core\Application\frame_rate_controller.cpp">
+      <Filter>Core\Application</Filter>
     </ClCompile>
-    <ClCompile Include="script.cpp">
-      <Filter>Source Files\Engine\Components</Filter>
+    <ClCompile Include="Engine\Core\Logger\logger.cpp">
+      <Filter>Core\Logger</Filter>
     </ClCompile>
-    <ClCompile Include="position_component.cpp">
-      <Filter>Source Files\Engine\Components\PositionComponents</Filter>
+    <ClCompile Include="Engine\Core\Logger\logger_manager.cpp">
+      <Filter>Core\Logger</Filter>
     </ClCompile>
-    <ClCompile Include="player_controller_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+    <ClCompile Include="Engine\Core\PCH\PCH_CGX.cpp">
+      <Filter>Core\PCH</Filter>
     </ClCompile>
-    <ClCompile Include="script_system.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+    <ClCompile Include="Engine\Core\Window\abstract_window.cpp">
+      <Filter>Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="system_manager.cpp">
-      <Filter>Source Files\Engine\Systems</Filter>
+    <ClCompile Include="Engine\Core\Window\window.cpp">
+      <Filter>Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="scene.cpp">
-      <Filter>Source Files\Engine\Scene</Filter>
+    <ClCompile Include="Engine\Core\Window\window_manager.cpp">
+      <Filter>Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="entity.cpp">
-      <Filter>Source Files\Engine\Core</Filter>
+    <ClCompile Include="Engine\Core\Window\window_styles.cpp">
+      <Filter>Core\Window</Filter>
     </ClCompile>
-    <ClCompile Include="entity.h">
-      <Filter>Header Files\Engine\Core</Filter>
+    <ClCompile Include="Engine\Core\entity.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="texture_loader.cpp">
-      <Filter>Source Files\Engine\Resources</Filter>
+    <ClCompile Include="Engine\Graphics\ScreenGraphics\pixel_buffer.cpp">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClCompile Include="Engine\Graphics\ScreenGraphics\pixel_canvas.cpp">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="file_utils.cpp">
-      <Filter>Source Files\Engine\Utils</Filter>
+    <ClCompile Include="Engine\Graphics\ScreenGraphics\screen.cpp">
+      <Filter>Graphics\ScreenGraphics</Filter>
     </ClCompile>
-    <ClCompile Include="resource_manager.cpp">
-      <Filter>Source Files\Engine\Resources</Filter>
+    <ClCompile Include="Engine\Graphics\palette.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="palette.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClCompile Include="Engine\Graphics\pallet_manager.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="pallet_manager.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClCompile Include="Engine\Graphics\renderer.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="logger_manager.cpp">
-      <Filter>Source Files\Engine\Core\Logger</Filter>
+    <ClCompile Include="Engine\Graphics\texture.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
-      <Filter>Source Files\Engine\Core\Application</Filter>
+    <ClCompile Include="Engine\Layout\window_layout.cpp">
+      <Filter>Layout</Filter>
     </ClCompile>
-    <ClCompile Include="frame_rate_controller.cpp">
-      <Filter>Source Files\Engine\Core\Application</Filter>
+    <ClCompile Include="Engine\Math\vector2.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="console_handler.cpp">
-      <Filter>Source Files\Engine\Console</Filter>
+    <ClCompile Include="Engine\Math\vector3.cpp">
+      <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="application.cpp">
-      <Filter>Source Files\Engine\Core\Application</Filter>
+    <ClCompile Include="Engine\Resources\resource_manager.cpp">
+      <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClCompile Include="Engine\Resources\texture_loader.cpp">
+      <Filter>Resources</Filter>
     </ClCompile>
-    <ClCompile Include="screen.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClCompile Include="Engine\Scene\scene.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="PCH_CGX.cpp">
-      <Filter>Source Files\Engine\Core\PCH</Filter>
+    <ClCompile Include="Engine\Systems\input_system.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="window_manager.cpp">
-      <Filter>Source Files\Engine\Core\Window</Filter>
+    <ClCompile Include="Engine\Systems\player_controller_system.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="shared_window_memory.h">
-      <Filter>Header Files\Engine\Core\Window</Filter>
+    <ClCompile Include="Engine\Systems\scene_system.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="pixel_canvas.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClCompile Include="Engine\Systems\script_system.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="logger.cpp">
-      <Filter>Source Files\Engine\Core\Logger</Filter>
+    <ClCompile Include="Engine\Systems\system_manager.cpp">
+      <Filter>Systems</Filter>
     </ClCompile>
-    <ClCompile Include="window_layout.cpp">
-      <Filter>Source Files\Engine\Layout</Filter>
+    <ClCompile Include="Engine\Utils\file_utils.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="pixel_buffer.cpp">
-      <Filter>Source Files\Engine\Graphics\ScreenGraphics</Filter>
+    <ClCompile Include="Engine\Utils\random_numbers.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="window_styles.cpp">
-      <Filter>Source Files\Engine\Core\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="abstract_window.cpp">
-      <Filter>Source Files\Engine\Core\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="window.cpp">
-      <Filter>Source Files\Engine\Core\Window</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Python\SpriteMaker\sprtie.cxsp">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

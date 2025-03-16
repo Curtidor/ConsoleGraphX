@@ -1,14 +1,16 @@
 #include <windows.h>
 #include <utility>
-#include "../ConsoleGraphX/application.h"
-#include "../ConsoleGraphX/palette.h"
-#include "../ConsoleGraphX/screen.h"
-#include "../ConsoleGraphX/IGameModule.h"
-#include "../ConsoleGraphX/profiler.h"
-#include "../WinCore/WinCore.h"
+#include "./Engine/Core/Application/application.h"
+#include "./Engine/Core/Application/IGameModule.h"
+#include "./Engine/Core/Window/window_manager.h"
+#include "./Engine/Core/Profiler/profiler.h"
+#include "./Engine/Systems/input_system.h"
+#include "./Engine/Graphics/palette.h"
+#include "./Engine/Graphics/ScreenGraphics/screen.h""
+#include "./WinCore.h"
 
 using namespace ConsoleGraphX;
-
+using namespace ConsoleGraphX_Internal;
 
 
 int main()
@@ -16,30 +18,29 @@ int main()
     SceneSystem sceneSystem;
     Application mainApplication = Application();
 
-    // Initialize the application
-    mainApplication.Initialize();
-
-    ConsoleGraphX_Internal::CGXProfiler::Initialize();
+    CGXProfiler::Initialize();
+    LoggerManager::Initialize();
+    WindowManager::Initialize();
+    InputSystem::Initialize();
 
     auto [gameModule, moduleHandle] = WinCore::LoadModule<IGameModule>("Sandbox.dll", "CreateGameModule");
     if (!gameModule)
     {
-        std::cerr << "Failed to load game module." << std::endl;
+        LoggerManager::Instance().LogMessage("Application", "Failed to load game module.");
         return -1;
     }
 
     // Initialize and register scenes
-    gameModule->Initialize();
     gameModule->RegisterScenes(sceneSystem);
-    gameModule->LoadInitialScene(sceneSystem);
+    sceneSystem.LoadScene("Main Scene");
 
     Scene* s = sceneSystem.GetActiveScene();
-    ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&s->_m_resourceManager);
+    ResourceManager::SetActiveManager(&s->_m_resourceManager);
 
-    mainApplication.WarmUp();
+    mainApplication.WarmUp(sceneSystem);
 
     Palette& defaultPalette = Palette::DefaultPalette();
-    ConsoleGraphX_Internal::Screen::SetPalletColors_A(defaultPalette);
+    Screen::SetPalletColors_A(defaultPalette);
 
     mainApplication.Run(sceneSystem);
 
