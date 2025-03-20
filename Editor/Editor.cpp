@@ -20,6 +20,7 @@
 #include "./Engine/Graphics/palette.h"
 #include "./Engine/Graphics/ScreenGraphics/screen.h"
 #include "./Engine/Layout/window_layout.h"
+#include "./Engine/Systems/scene_system.h"
 #include "../WinCore/WinCore.h"
 
 using namespace ConsoleGraphX;
@@ -109,7 +110,7 @@ static void ConfigureWindows(Application& mainApplication, std::vector<WindowZOr
  * @param innerLayout Reference to the inner WindowLayout instance.
  * @param isClosing Reference to the closing state flag.
  */
-static void RunApplication(Application& mainApplication, SceneSystem& sceneSystem, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout, bool& isClosing)
+static void RunApplication(Application& mainApplication, ConsoleGraphX::SceneSystem& sceneSystem, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout, bool& isClosing)
 {
     std::thread windowPositioner([&]()
         {
@@ -141,7 +142,8 @@ static void RunApplication(Application& mainApplication, SceneSystem& sceneSyste
 int main() 
 {
     Application mainApplication;
-    SceneSystem sceneSystem;
+    
+    ConsoleGraphX::SceneSystem& sceneSystem = *static_cast<ConsoleGraphX::SceneSystem*>(mainApplication.m_engine.GetSystemManager().GetSystem<SceneSystem>());
     HMODULE moduleHandle = nullptr;
 
     IGameModule* gameModule = InitializeApplication(moduleHandle);
