@@ -77,7 +77,7 @@ namespace ConsoleGraphX_Internal
         using type = std::variant<std::reference_wrapper<Ts>...>;
     };
 
-    using ResourcePoolVariant = TupleToVariant<PoolsForTypes<BuiltInResoruceTypes::type>::type>::type;
+    using ResourcePoolVariant = TupleToVariant<PoolsForTypes<BuiltInResoruceTypes::type>::type>::type; // im so sorry
 
     class ResourceManager
     {
@@ -94,7 +94,7 @@ namespace ConsoleGraphX_Internal
                 if (index == N)
                 {
                     return std::ref(std::get<N>(tpl)); // Wrap the pool reference in std::reference_wrapper
-                }
+                } // thats right
                 else
                 {
                     return _GetResourcePoolByIndex<N + 1>(tpl, index); // Recursively check the next index
