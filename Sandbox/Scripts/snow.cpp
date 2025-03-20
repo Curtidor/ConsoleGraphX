@@ -32,9 +32,9 @@ void Snow::Awake()
 	_m_transform = _m_owner->GetComponent<Transform>();
 }
 
-void Snow::Update(float deltaTime)
+void Snow::Update(UpdateContext& context)
 {
-	_m_transform->m_position += Vector3(0, 9.3f, 0) * deltaTime;
+	_m_transform->m_position += Vector3(0, 9.3f, 0) * context.deltaTime;
 
 	if (_m_transform->m_position.y >= 188)
 	{

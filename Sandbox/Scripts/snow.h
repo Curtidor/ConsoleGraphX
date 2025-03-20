@@ -15,7 +15,7 @@ public:
 	Snow(const Snow& other, Entity* owner);
 
 	void Awake() override;
-	void Update(float deltaTime) override;
+	void Update(UpdateContext& context) override;
 
 	void Clone(Script*& script) override;
 	void Clone(Script*& script, Entity* owner) override;
