@@ -1,15 +1,24 @@
 #pragma once
-#include <unordered_set>
+#include <unordered_map>
+#include <typeindex>
 #include <type_traits>
 #include "Engine\Systems\base_system.h"
 #include "Engine\Systems\scene_system.h"
 
 namespace ConsoleGraphX_Internal
 {
+	/**
+	 * @brief Manages systems using a runtime type index.
+	 *
+	 * This class stores systems in an unordered_map using std::type_index.
+	 * Unlike components, system lookups are infrequent, so we do not use a
+	 * compile-time ID system for performance. The overhead of std::type_index
+	 * is negligible given that system queries are rare.
+	 */
 	class SystemManager
 	{
 	private:
-		std::unordered_set<ConsoleGraphX::BaseSystem*> _m_systems;
+		std::unordered_map<std::type_index, ConsoleGraphX::BaseSystem*> _m_systems;
 
 	public:
 		~SystemManager();
@@ -17,16 +26,34 @@ namespace ConsoleGraphX_Internal
 		template <typename SystemType>
 		void RegisterSystem()
 		{
-			static_assert(std::is_base_of<ConsoleGraphX::BaseSystem, SystemType>::value, "The passed type must be derived from BaseSystem.");
+			static_assert(std::is_base_of<ConsoleGraphX::BaseSystem, SystemType>::value,
+				"The passed type must be derived from BaseSystem.");
+
+			std::type_index typeIndex(typeid(SystemType));
+
+			// Prevent duplicate registration
+			if (_m_systems.find(typeIndex) != _m_systems.end())
+				return;
 
 			ConsoleGraphX::BaseSystem* system = new SystemType();
-
 			system->Initialize();
+			_m_systems[typeIndex] = system;
+		}
 
-			_m_systems.insert(system);
+		template <typename SystemType>
+		SystemType* GetSystem()
+		{
+			static_assert(std::is_base_of<ConsoleGraphX::BaseSystem, SystemType>::value,
+				"The requested type must be derived from BaseSystem.");
 
+			auto it = _m_systems.find(std::type_index(typeid(SystemType)));
+			if (it != _m_systems.end())
+				return static_cast<SystemType*>(it->second);
+
+			return nullptr; // System not found
 		}
 
 		void Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem);
 	};
 };
+

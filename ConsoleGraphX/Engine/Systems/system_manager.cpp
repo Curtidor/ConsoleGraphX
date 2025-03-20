@@ -1,22 +1,24 @@
 #include "PCH_CGX.h"
+#include <utility>
 #include "Engine\Core\Application\system_manager.h"
 #include "Engine\Systems\base_system.h"
+#include "Engine\Systems\scene_system.h"
 
 namespace ConsoleGraphX_Internal 
 {
 	SystemManager::~SystemManager()
 	{
-		for (ConsoleGraphX::BaseSystem* system : _m_systems)
+		for (auto& systemPair : _m_systems)
 		{
-			delete system;
+			delete systemPair.second;
 		}
 	}
 
 	void SystemManager::Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem)
 	{
-		for (ConsoleGraphX::BaseSystem* system : _m_systems)
+		for (auto& systemPair : _m_systems)
 		{
-			system->Update(deltaTime, sceneSystem);
+			systemPair.second->Update(deltaTime, sceneSystem);
 		}
 	}
 };
