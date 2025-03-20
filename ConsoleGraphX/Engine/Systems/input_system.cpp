@@ -32,11 +32,11 @@ namespace ConsoleGraphX
 
     void InputSystem::GetPressedKeys()
     {
-        std::fill(std::begin(_s_instance->keys), std::end(_s_instance->keys), false);
+        std::fill(std::begin(_s_instance->_m_keys), std::end(_s_instance->_m_keys), false);
         while (KeyPressed())
         {
             char key = GetKey();
-            _s_instance->keys[key] = true;
+            _s_instance->_m_keys[key] = true;
         }
     }
 
@@ -48,12 +48,12 @@ namespace ConsoleGraphX
     bool InputSystem::IsKeyPressed(Key key)
     {
         char lowercaseKey = std::tolower(static_cast<char>(key));
-        return _s_instance->keys[static_cast<int>(lowercaseKey)] || _s_instance->keys[static_cast<int>(key)];
+        return _s_instance->_m_keys[static_cast<int>(lowercaseKey)] || _s_instance->_m_keys[static_cast<int>(key)];
     }
 
     const Vector2 InputSystem::GetMousePosition()
     {
-        return _s_instance->mousePos;
+        return _s_instance->_m_mousePos;
     }
 
     void InputSystem::HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent)
@@ -61,19 +61,19 @@ namespace ConsoleGraphX
         switch (mouseEvent.dwEventFlags)
         {
         case 0:
-            _s_instance->leftMouseButtonDown = (mouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED);
-            _s_instance->rightMouseButtonDown = (mouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED);
+            _s_instance->_m_leftMouseButtonDown = (mouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED);
+            _s_instance->_m_rightMouseButtonDown = (mouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED);
             break;
         case MOUSE_MOVED:
-            _s_instance->mousePos.x = mouseEvent.dwMousePosition.X;
-            _s_instance->mousePos.y = mouseEvent.dwMousePosition.Y;
+            _s_instance->_m_mousePos.x = mouseEvent.dwMousePosition.X;
+            _s_instance->_m_mousePos.y = mouseEvent.dwMousePosition.Y;
             break;
         }
     }
 
     void InputSystem::HandleKeyEvent(const KEY_EVENT_RECORD& keyEvent)
     {
-        _s_instance->keys[keyEvent.wVirtualKeyCode] = keyEvent.bKeyDown;
+        _s_instance->_m_keys[keyEvent.wVirtualKeyCode] = keyEvent.bKeyDown;
     }
 
     void InputSystem::ProcessInput()
@@ -98,5 +98,35 @@ namespace ConsoleGraphX
         }
 
         FlushConsoleInputBuffer(hStdin);
+    }
+
+    Input InputSystem::GetInputSnapshot()
+    {
+        return Input(
+            _s_instance->_m_keys,
+            _s_instance->_m_mousePos,
+            _s_instance->_m_leftMouseButtonDown,
+            _s_instance->_m_rightMouseButtonDown
+        );
+    }
+
+    Input::Input(const std::array<bool, 255>& keys, Vector2 mousePos, bool leftClick, bool rightClick): 
+        keyStates(keys), mousePosition(mousePos), leftMouseButton(leftClick), rightMouseButton(rightClick)
+    {}
+
+    bool Input::IsKeyPressed(Key key) const
+    {
+        char lowercaseKey = std::tolower(static_cast<char>(key));
+        return keyStates[static_cast<int>(lowercaseKey)] || keyStates[static_cast<int>(key)];
+    }
+
+    bool Input::IsLeftMousePressed() const
+    {
+        return leftMouseButton;
+    }
+
+    bool Input::IsRightMousePressed() const
+    {
+        return rightMouseButton;
     }
 }

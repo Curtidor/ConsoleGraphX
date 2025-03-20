@@ -1,6 +1,7 @@
 #pragma once
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <array>
 #include <wincontypes.h>
 #include "Engine\Math\vector2.h"
 
@@ -82,6 +83,23 @@ namespace ConsoleGraphX
         Delete = 127
     };
 
+    struct Input
+    {
+    public:
+        std::array<bool, 255> keyStates{};
+        Vector2 mousePosition{};
+
+        bool leftMouseButton = false;
+        bool rightMouseButton = false;
+
+    public:
+        Input(const std::array<bool, 255>& keys, Vector2 mousePos, bool leftClick, bool rightClick);
+
+        bool IsKeyPressed(Key key) const;
+        bool IsLeftMousePressed() const;
+        bool IsRightMousePressed() const;
+    };
+
     class InputSystem
     {
     public:
@@ -89,29 +107,28 @@ namespace ConsoleGraphX
         static InputSystem& Instance();
         static void ShutDown();
 
-        void GetPressedKeys();
         bool KeyPressed();
         bool IsKeyPressed(Key key);
         const Vector2 GetMousePosition();
+        void GetPressedKeys();
         void HandleMouseEvent(const MOUSE_EVENT_RECORD& mouseEvent);
         void HandleKeyEvent(const KEY_EVENT_RECORD& keyEvent);
         void ProcessInput();
+        Input GetInputSnapshot(); 
 
     private:
         static InputSystem* _s_instance;
 
-        InputSystem() = default;  // Private constructor
+        std::array<bool, 255> _m_keys;
+        bool _m_leftMouseButtonDown = false;
+        bool _m_rightMouseButtonDown = false;
+        Vector2 _m_mousePos = { 0, 0 };
+
+    private:
+        InputSystem() = default;
         InputSystem(const InputSystem&) = delete;
         InputSystem& operator=(const InputSystem&) = delete;
 
-        bool keys[255] = { false };
-        Vector2 mousePos = { 0, 0 };
-        bool leftMouseButtonDown = false;
-        bool rightMouseButtonDown = false;
-
         char GetKey();
     };
-
-    // explicitly declare `_s_instance` as extern so it is shared across EXE and DLL ([Editor or Runtime] and Game)
-    extern InputSystem* _s_instance;
 }
