@@ -15,7 +15,7 @@ using namespace ConsoleGraphX_Internal;
 
 int main()
 {
-    SceneSystem sceneSystem;
+    ConsoleGraphX::SceneSystem sceneSystem;
     Application mainApplication = Application();
 
     CGXProfiler::Initialize();
