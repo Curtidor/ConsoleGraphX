@@ -1,16 +1,16 @@
 #pragma once
 #include <string>
 #include "main_scene.h"
-#include "../Sandbox/Scripts/snow.h"
-#include "../Sandbox/Scripts/player.h"
-#include "../Sandbox/Scripts/scene_switcher.h"
-#include "../ConsoleGraphX/Engine/Scene/scene.h"
-#include "../ConsoleGraphX/Engine/Components/PositionComponents/sprite.h"
-#include "../ConsoleGraphX/Engine/Core/entity.h"
-#include "../ConsoleGraphX/Engine/Scene/scene.h"
-#include "../ConsoleGraphX/Engine/Math/vector3.h"
-#include "../ConsoleGraphX/Engine/Components/camera.h"
-#include "../ConsoleGraphX/Engine/Graphics/ScreenGraphics/screen.h"
+#include "./Scripts/snow.h"
+#include "./Scripts/player.h"
+#include "./Scripts/scene_switcher.h"
+#include "./Engine/Scene/scene.h"
+#include "./Engine/Components/PositionComponents/sprite.h"
+#include "./Engine/Core/entity.h"
+#include "./Engine/Scene/scene.h"
+#include "./Engine/Math/vector3.h"
+#include "./Engine/Components/camera.h"
+#include "./Engine/Graphics/ScreenGraphics/screen.h"
 
 // Register->Load->Initialize->Run
 
@@ -37,8 +37,8 @@ public:
 		snow->AddComponent<Snow>();
 		snow->AddComponent<Sprite>(1, 1, 13);
 
-		Entity* sceneSwticher = RegisterEntityN();
-		sceneSwticher->AddComponent<SceneSwitcher>();
+		Entity* sceneSwitcher = RegisterEntityN();
+		ResourceIndex switcherIndex = sceneSwitcher->AddComponent<SceneSwitcher>();
 
 	/*	for (int i = 0; i < 700; i++)
 		{
