@@ -16,8 +16,8 @@ namespace ConsoleGraphX
     {
         auto it = _m_scenes.find(name);
 
-        if (name == _s_activeScene->GetSceneName())
-            _s_activeScene = nullptr;
+        if (name == _m_activeScene->GetSceneName())
+            _m_activeScene = nullptr;
 
 
         DeleteScene(name);
@@ -25,22 +25,35 @@ namespace ConsoleGraphX
 
     void SceneSystem::LoadScene(const std::string& name)
     {
+        _m_sceneToLoad = name;
+
+        if (!_m_activeScene)
+        {
+            LoadSceneImpl(_m_sceneToLoad);
+            _m_sceneToLoad.clear();
+        }
+    }
+
+    void SceneSystem::LoadSceneImpl(const std::string& name)
+    {
         if (!IsSceneRegistered(name))
         {
             throw std::runtime_error("Scene must be registered");
         }
 
         // just incase there isnt an already active scene 
-        if (_s_activeScene != nullptr)
+        if (_m_activeScene != nullptr)
         {
-            _s_activeScene->Destroy();
+            _m_activeScene->Destroy();
         }
 
         // if we make it to here we can guarantee that name is in _m_scenes allow for a direct "index"
-        _s_activeScene = _m_scenes[name].get();
-        _s_activeScene->Initialize();
+        _m_activeScene = _m_scenes[name].get();
+        SceneSystem& system = *this;
+        _m_activeScene->Initialize();
 
-        ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&_s_activeScene->GetResourceManager());
+
+        ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&_m_activeScene->GetResourceManager());
     }
 
     bool SceneSystem::IsSceneRegistered(const std::string& name)
@@ -50,12 +63,12 @@ namespace ConsoleGraphX
 
     Scene* SceneSystem::GetActiveScene()
     {
-        return _s_activeScene;
+        return _m_activeScene;
     }
 
     ConsoleGraphX_Internal::ResourceManager& SceneSystem::GetActiveResourceManager()
     {
-        return _s_activeScene->GetResourceManager();
+        return _m_activeScene->GetResourceManager();
     }
 
     void SceneSystem::DeleteScene(const std::string& name)
@@ -72,11 +85,21 @@ namespace ConsoleGraphX
     }
 
     SceneSystem::SceneSystem()
-    {
-    }
+    {}
 
     SceneSystem::~SceneSystem()
+    {}
+
+    void SceneSystem::Initialize()
+    {}
+
+    void SceneSystem::Update(float delta_time, SceneSystem& sceneSystem)
     {
+        if (_m_sceneToLoad.empty())
+            return;
+
+        LoadSceneImpl(_m_sceneToLoad);
+        _m_sceneToLoad.clear();
     }
 
     void SceneSystem::ShutDown()
