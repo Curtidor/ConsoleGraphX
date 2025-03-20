@@ -44,7 +44,7 @@ namespace ConsoleGraphX
 
 	void Script::Awake() {}
 	void Script::Start() {}
-	void Script::Update(float deltaTime) {}
+	void Script::Update(UpdateContext& context) {}
 
 	bool Script::IsEnabled() const
 	{

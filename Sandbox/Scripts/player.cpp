@@ -38,7 +38,7 @@ void Player::Awake()
 	_m_owner->AddComponent<PlayerController>(100, 5, 9);
 }
 
-void Player::Update(float deltaTime)
+void Player::Update(UpdateContext& context)
 {
 	Vector3 playerPosition = _m_owner->GetComponent<Transform>()->m_position;
 

@@ -15,5 +15,5 @@ public:
 	~Player();
 
 	void Awake() override;
-	void Update(float deltaTime) override;
+	void Update(UpdateContext& context) override;
 };

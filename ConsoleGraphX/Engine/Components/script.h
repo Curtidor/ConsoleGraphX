@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Components\component.h"
+#include "Engine\Core\Application\update_context.h"
 
 namespace ConsoleGraphX
 {
@@ -57,7 +58,7 @@ namespace ConsoleGraphX
         
         virtual void Awake();
         virtual void Start();
-        virtual void Update(float delta_time);
+        virtual void Update(UpdateContext& context);
 
         bool IsEnabled() const;
         void SetState(bool state);

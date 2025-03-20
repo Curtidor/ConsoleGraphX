@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_set>
 #include "Engine\Systems\base_system.h"
+#include "Engine\Systems\scene_system.h"
 
 namespace ConsoleGraphX
 {

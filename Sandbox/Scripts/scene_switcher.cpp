@@ -22,17 +22,11 @@ void SceneSwitcher::Awake()
 {
 }
 
-void SceneSwitcher::Update(float deltaTime)
+void SceneSwitcher::Update(UpdateContext& context)
 {
-	/*InputSystem& inputSystem = InputSystem::Instance();
-	if (inputSystem.IsKeyPressed(Key::E))
+	if (context.input.IsKeyPressed(Key::E))
 	{
-		_m_sceneSystem->LoadScene("Second Scene");
-	}*/
+		context.sceneSystem.LoadScene("Second Scene");
+	}
 }
 
-void SceneSwitcher::AttachSceneSystem(SceneSystem* system)
-{
-	// aaahhh im sure the pointer isn't nullptr
-	_m_sceneSystem = system;
-}

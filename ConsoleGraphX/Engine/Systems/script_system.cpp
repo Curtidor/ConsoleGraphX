@@ -4,6 +4,9 @@
 #include "Engine\Resources\resource_manager.h"
 #include "Engine\Resources\Pools\component_script_pool.h"
 #include "Engine\Resources\resource_manager.h"
+#include "Engine\Core\Application\update_context.h"
+#include "Engine\Systems\input_system.h"
+
 
 namespace ConsoleGraphX
 {
@@ -15,11 +18,13 @@ namespace ConsoleGraphX
 		ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = sceneSystem.GetActiveResourceManager().GetResourcePool<Script>();
 		std::vector<Script*>& scripts = *scriptPool.GetPoolItems();
 
+		UpdateContext context{sceneSystem,  deltaTime, InputSystem::Instance().GetInputSnapshot() };
+
 		for (Script* script : scripts)
 		{
 			if (script != nullptr && script->IsEnabled())
 			{
-				script->Update(deltaTime);
+				script->Update(context);
 			}
 		}
 	}
