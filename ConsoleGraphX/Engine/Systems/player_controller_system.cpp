@@ -5,6 +5,7 @@
 #include "Engine\Components\transform.h"
 #include "Engine\Resources\resource_manager.h"
 #include "Engine\Resources\Pools\resource_pool.h"
+#include "Engine\Systems\scene_system.h"
 
 namespace ConsoleGraphX
 {
