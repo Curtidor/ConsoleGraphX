@@ -103,6 +103,7 @@
     <ClInclude Include="Engine\Core\Application\engine.h" />
     <ClInclude Include="Engine\Core\Application\frame_rate_controller.h" />
     <ClInclude Include="Engine\Core\Application\system_manager.h" />
+    <ClInclude Include="Engine\Core\Application\update_context.h" />
     <ClInclude Include="Engine\Core\Event\event_base.h" />
     <ClInclude Include="Engine\Core\Event\event_handle.h" />
     <ClInclude Include="Engine\Core\Event\events.h" />

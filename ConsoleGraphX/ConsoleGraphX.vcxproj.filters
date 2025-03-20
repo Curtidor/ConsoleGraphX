@@ -225,6 +225,7 @@
     <ClInclude Include="Engine\Systems\script_system.h">
       <Filter>Systems</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\Application\update_context.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Components\PositionComponents\player_controller.cpp">
