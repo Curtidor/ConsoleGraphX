@@ -24,5 +24,7 @@ namespace ConsoleGraphX
 
         void UpdateSystems(float deltaTime, SceneSystem& sceneSystem);
         void Render(SceneSystem& sceneSystem, float alpha);
+
+        ConsoleGraphX_Internal::SystemManager& GetSystemManager();
     };
 };
