@@ -4,12 +4,14 @@
 // managers
 #include "Engine\Core\Application\system_manager.h"
 #include "Engine\Core\Logger\logger_manager.h"
+#include "Engine\Core\Window\window_manager.h"
 #include "Engine\Resources\resource_manager.h"
+
 // systems
 #include "Engine\Systems\input_system.h"
 #include "Engine\Systems\player_controller_system.h"
 #include "Engine\Systems\script_system.h"
-#include "Engine\Core\Window\window_manager.h"
+#include "Engine\Systems\scene_system.h"
 //graphics
 #include "Engine\Graphics\renderer.h"
 #include "Engine\Graphics\ScreenGraphics\screen.h"
@@ -25,6 +27,7 @@ namespace ConsoleGraphX
     {
         _m_systemManager.RegisterSystem<ScriptSystem>();
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
+        _m_systemManager.RegisterSystem<SceneSystem>();
     }
 
     void Engine::AttachWindow(Window* window)
@@ -60,6 +63,12 @@ namespace ConsoleGraphX
 
         ConsoleGraphX_Internal::CGXProfiler::Instance().DisplayMetrics();
     }
+
+    ConsoleGraphX_Internal::SystemManager& Engine::GetSystemManager()
+    {
+        return _m_systemManager;
+    }
+
 
     void Engine::Shutdown()
     {
