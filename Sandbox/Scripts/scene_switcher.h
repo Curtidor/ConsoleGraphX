@@ -6,17 +6,12 @@ using namespace ConsoleGraphX;
 
 struct SceneSwitcher : public Script
 {
-private:
-	SceneSystem* _m_sceneSystem;
-
 public:
 	SceneSwitcher();
 	SceneSwitcher(Entity* owner);
 	~SceneSwitcher();
 
 	void Awake() override;
-	void Update(float deltaTime) override;
+	void Update(UpdateContext& context) override;
 
-
-	void AttachSceneSystem(SceneSystem* system);
 }; 
