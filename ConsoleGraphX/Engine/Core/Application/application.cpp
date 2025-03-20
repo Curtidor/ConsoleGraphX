@@ -7,12 +7,12 @@
 namespace ConsoleGraphX
 {
     Application::Application()
-        : _m_engine(Engine())
+        : m_engine(Engine())
     {}
 
     void Application::WarmUp(SceneSystem& sceneSystem)
     {
-        _m_engine.WarmUp(sceneSystem);
+        m_engine.WarmUp(sceneSystem);
     }
 
     void Application::Run(SceneSystem& sceneSystem)
@@ -42,11 +42,11 @@ namespace ConsoleGraphX
 
                 while (accumulator >= targetUpdateRate && _m_state == ApplicationState::Running)
                 {
-                    _m_engine.UpdateSystems(targetUpdateRate, sceneSystem);
+                    m_engine.UpdateSystems(targetUpdateRate, sceneSystem);
                     accumulator -= targetUpdateRate;
                 }
                 float alpha = accumulator / targetUpdateRate;
-                _m_engine.Render(sceneSystem, alpha);
+                m_engine.Render(sceneSystem, alpha);
             }
 
             WindowManager::Instance().ProcessToCloseWindows();

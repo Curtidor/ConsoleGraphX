@@ -27,6 +27,9 @@ namespace ConsoleGraphX
         void Shutdown();    
         void OnConsoleClose(AbstractWindow* window);
 
+    public:
+        Engine m_engine;
+
     private:
 
         std::condition_variable _m_condition;
@@ -34,7 +37,6 @@ namespace ConsoleGraphX
         bool _m_mainLoopExited = false;
         bool _m_isRunning = false;
 
-        Engine _m_engine; 
         ApplicationState _m_state;
     };
 
