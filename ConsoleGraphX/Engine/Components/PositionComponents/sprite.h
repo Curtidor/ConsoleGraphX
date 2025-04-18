@@ -31,9 +31,9 @@ namespace ConsoleGraphX
         Sprite();
         // this should only be used by internal functions
         Sprite(TransformID transform); 
-        Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
-        Sprite(uint32_t width, uint32_t height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
-        Sprite(int width, int height, int color, ConsoleGraphX_Internal::ResourceManager& rManager, TransformID transform = -1);
+        Sprite(ConsoleGraphX_Internal::ResourceIndex textureIndex, ConsoleGraphX_Internal::ResourceManager* rManager, TransformID transform = -1);
+        Sprite(uint32_t width, uint32_t height, int color, ConsoleGraphX_Internal::ResourceManager* rManager, TransformID transform = -1);
+        Sprite(int width, int height, int color, ConsoleGraphX_Internal::ResourceManager* rManager, TransformID transform = -1);
         
         Sprite(const Sprite& other);
 

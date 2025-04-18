@@ -99,6 +99,9 @@
     <ClInclude Include="Engine\Core\Application\system_manager.h">
       <Filter>Core\Application</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Core\Application\update_context.h">
+      <Filter>Core\Application</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\Core\Event\event_base.h">
       <Filter>Core\Event</Filter>
     </ClInclude>
@@ -225,7 +228,6 @@
     <ClInclude Include="Engine\Systems\script_system.h">
       <Filter>Systems</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\Application\update_context.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Components\PositionComponents\player_controller.cpp">

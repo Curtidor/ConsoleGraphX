@@ -33,6 +33,9 @@ namespace ConsoleGraphX
          */
         EventCallBackHandle(CallableTypeImpl<Func, Args...>&& callback, size_t h)
             : m_callback(std::move(callback)), handle(h) {}
+
+        EventCallBackHandle(const EventCallBackHandle&) = default;
+        EventCallBackHandle& operator=(const EventCallBackHandle&) = default;
     };
 
 };

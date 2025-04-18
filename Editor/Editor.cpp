@@ -39,8 +39,6 @@ static IGameModule* InitializeApplication(HMODULE& moduleHandle)
     WindowManager::Initialize();
     InputSystem::Initialize();
 
-    InputSystem& i =  InputSystem::Instance();
-
     auto [gameModule, handle] = WinCore::LoadModule<IGameModule>("Sandbox.dll", "CreateGameModule");
     moduleHandle = handle;
 
@@ -110,26 +108,37 @@ static void ConfigureWindows(Application& mainApplication, std::vector<WindowZOr
  * @param innerLayout Reference to the inner WindowLayout instance.
  * @param isClosing Reference to the closing state flag.
  */
-static void RunApplication(Application& mainApplication, ConsoleGraphX::SceneSystem& sceneSystem, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout, bool& isClosing)
+static void RunApplication(Application& mainApplication, ConsoleGraphX::SceneSystem& sceneSystem, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout)
 {
-    std::thread windowPositioner([&]()
-        {
-        while (!isClosing) // bool by ref, :-( mb
-        {
-            AdjustZOrder(zOrders);
+    std::atomic<bool> isClosing = false;
 
-            Sleep(200);
+    // let Application trigger the shutdown signal
+    mainApplication.OnClose.AddListener([&isClosing]() 
+        {
+            isClosing.store(true, std::memory_order_release);
+        });
 
-            innerLayout.ApplyLayout();
-            outerLayout.ApplyLayout();
-        }
+    std::thread windowPositioner([&]() 
+        {
+            while (!isClosing.load(std::memory_order_acquire))
+            {
+                AdjustZOrder(zOrders);
+
+                Sleep(200);
+
+                innerLayout.ApplyLayout();
+                outerLayout.ApplyLayout();
+            }
         });
 
     LoggerManager::Instance().LogMessage("Application", "Starting Application...");
-    mainApplication.Run(sceneSystem);
+    mainApplication.Run(sceneSystem, &isClosing);
 
-    windowPositioner.join();
+    // ensure the thread is safely joined
+    if (windowPositioner.joinable())
+        windowPositioner.join();
 }
+
 
 /**
  * @brief Main entry point for the application.
@@ -168,13 +177,9 @@ int main()
 
     ConfigureWindows(mainApplication, zOrders, outerLayout, innerLayout);
 
-    bool isClosing = false;
-    auto closeCallback = [&isClosing]() { isClosing = true; };
-    mainApplication.OnClose.AddListener(closeCallback);
-    
     WindowManager::Instance().MonitorWindowCloses(); // kick off the monitoring thread
 
-    RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout, isClosing);
+    RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout);
     
     sceneSystem.ShutDown();
     

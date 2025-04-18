@@ -7,19 +7,19 @@ namespace ConsoleGraphX_Internal
 {
 
     Texture::Texture()
-        : _m_width(1), _m_height(1) 
+        : _m_width(1), _m_height(1), _m_id(-1)
     {
         _m_pixels = new CHAR_INFO[_m_width * _m_height];
     }
 
-    Texture::Texture(uint32_t width, uint32_t height)
-        : _m_width(width), _m_height(height)
+    Texture::Texture(uint32_t width, uint32_t height, uint32_t id)
+        : _m_width(width), _m_height(height), _m_id(id)
     {
         _m_pixels = new CHAR_INFO[width * height];
     }
 
-    Texture::Texture(uint32_t width, uint32_t height, int color)
-        : _m_width(width), _m_height(height)
+    Texture::Texture(uint32_t width, uint32_t height, uint32_t id, int color)
+        : _m_width(width), _m_height(height), _m_id(id)
     {
         _m_pixels = new CHAR_INFO[width * height];
 
@@ -36,11 +36,12 @@ namespace ConsoleGraphX_Internal
     }
 
     Texture::Texture(Texture&& other) noexcept
-        : _m_pixels(nullptr), _m_width(0), _m_height(0)
+        : _m_pixels(nullptr), _m_width(0), _m_height(0), _m_id(0)
     {
         std::swap(_m_pixels, other._m_pixels);
         std::swap(_m_width, other._m_width);
         std::swap(_m_height, other._m_height);
+        std::swap(_m_id, other._m_id);
     }
 
     Texture& Texture::operator=(Texture&& other) noexcept

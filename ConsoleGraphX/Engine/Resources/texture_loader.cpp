@@ -15,22 +15,23 @@ namespace ConsoleGraphX_Internal
 
         std::ifstream textureFile = OpenFile(filename);
 
-        auto [width, height] = _ReadTextureDimensions(textureFile);
+        TextureInfo tInfo{};
+        _ReadTextureHeader(tInfo, textureFile);
 
         // verify the file size matches expectations
-        _VerifyFileSize(textureFile, width, height);
+        _VerifyFileSize(textureFile, tInfo.width, tInfo.height);
 
-        Texture* texture = _AllocateAndReadTexture(textureFile, width, height);
+        Texture* texture = _AllocateAndReadTexture(textureFile, tInfo);
 
         textureFile.close();
         return texture;
     }
 
-    Texture* TextureLoader::_AllocateAndReadTexture(std::ifstream& textureFile, uint32_t width, uint32_t height)
+    Texture* TextureLoader::_AllocateAndReadTexture(std::ifstream& textureFile, TextureInfo& tInfo)
     {
-        Texture* texture = new Texture(width, height);
+        Texture* texture = new Texture(tInfo.width, tInfo.height, tInfo.id);
 
-        const std::size_t expectedPixelDataSize = static_cast<size_t>(width) * height * sizeof(CHAR_INFO);
+        const std::size_t expectedPixelDataSize = static_cast<size_t>(tInfo.width) * tInfo.height * sizeof(CHAR_INFO);
         textureFile.read(reinterpret_cast<char*>(texture->GetPixels()), expectedPixelDataSize);
 
         if (textureFile.fail())
@@ -42,18 +43,16 @@ namespace ConsoleGraphX_Internal
         return texture;
     }
 
-    std::pair<uint32_t, uint32_t> TextureLoader::_ReadTextureDimensions(std::ifstream& textureFile)
+    void TextureLoader::_ReadTextureHeader(TextureInfo& tInfo, std::ifstream& textureFile)
     {
-        uint32_t width = 0, height = 0;
-        textureFile.read(reinterpret_cast<char*>(&width), 4);
-        textureFile.read(reinterpret_cast<char*>(&height),4);
+        textureFile.read(reinterpret_cast<char*>(&tInfo.width), 4);
+        textureFile.read(reinterpret_cast<char*>(&tInfo.height), 4);
+        textureFile.read(reinterpret_cast<char*>(&tInfo.id),4);
 
         if (textureFile.fail())
         {
             throw std::runtime_error("Failed to read texture dimensions");
         }
-
-        return { width, height };
     }
 
     void TextureLoader::_VerifyFileSize(std::ifstream& textureFile, uint32_t width, uint32_t height)

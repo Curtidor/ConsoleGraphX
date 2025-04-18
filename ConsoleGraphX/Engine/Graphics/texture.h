@@ -11,12 +11,13 @@ namespace ConsoleGraphX_Internal
     private:
         CHAR_INFO* _m_pixels; 
         uint32_t _m_width;         
-        uint32_t _m_height;      
+        uint32_t _m_height;
+        uint32_t _m_id;
 
     public:
         Texture();
-        Texture(uint32_t w, uint32_t h);
-        Texture(uint32_t width, uint32_t height, int color);
+        Texture(uint32_t w, uint32_t h, uint32_t id);
+        Texture(uint32_t width, uint32_t height, uint32_t id, int color);
         ~Texture();
 
         // don't allow textures to be copied

@@ -27,6 +27,10 @@ namespace ConsoleGraphX_Internal
         return *_s_activeResourceManager;
     }
 
+    ResourceManager::ResourceManager()
+    {
+    }
+
     void ResourceManager::DestroyEntityResources(const std::unordered_map<ResourceID, ResourceIndex>& componentIdToIndexMap)
     {
         for (const auto& pair : componentIdToIndexMap)

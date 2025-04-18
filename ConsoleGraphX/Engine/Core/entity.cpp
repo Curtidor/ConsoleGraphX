@@ -1,10 +1,10 @@
 #include "PCH_CGX.h"
+#include "Engine\Core\Event\events.h"
 #include "Engine\Core\Utils\random_numbers.h"
 #include "Engine\Components\transform.h"
-#include "PCH_CGX.h"
+#include "Engine\Components\script.h"
 #include "Engine\Resources\resource_id.h"
 #include "Engine\Resources\resource_manager.h"
-#include "Engine\Components\script.h"
 #include "Engine\Resources\Pools\base_resource_pool.h"
 #include "Engine\Resources\Pools\component_sprite_pool.h"
 #include "Engine\Resources\Pools\component_script_pool.h"
@@ -36,30 +36,59 @@ namespace ConsoleGraphX_Internal
 
 namespace ConsoleGraphX
 {
-    Entity::Entity(int id) : m_id(id), m_tag(""), _m_parent(nullptr), _m_resourceManager(ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager())
+    Entity::Entity(int id) : m_id(id), m_tag(""), _m_parent(nullptr), _m_resourceManager(&ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager())
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager) : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager) : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""), _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager, int id) : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id) : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager, int id, const std::string& tag) : m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id, const std::string& tag) : m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         AddComponent<Transform>();
     }
 
     Entity::~Entity()
     {}
+
+    Entity::Entity(Entity && other) noexcept
+        : _m_parent(other._m_parent),
+        _m_resourceManager(other._m_resourceManager),
+        _m_children(std::move(other._m_children)),
+        _m_componentIdToIndexMap(std::move(other._m_componentIdToIndexMap)),
+        _m_scriptIdToIndexes(std::move(other._m_scriptIdToIndexes)),
+        m_id(other.m_id),
+        m_tag(std::move(other.m_tag))
+    {
+        other._m_parent = nullptr;
+    }
+
+    Entity& Entity::operator=(Entity&& other) noexcept
+    {
+        if (this != &other)
+        {
+            _m_parent = other._m_parent;
+            _m_resourceManager = other._m_resourceManager;
+            _m_children = std::move(other._m_children);
+            _m_componentIdToIndexMap = std::move(other._m_componentIdToIndexMap);
+            _m_scriptIdToIndexes = std::move(other._m_scriptIdToIndexes);
+            //m_id = other.m_id;
+            m_tag = std::move(other.m_tag);
+
+            other._m_parent = nullptr;
+        }
+        return *this;
+    }
 
     void Entity::Clone(Entity& entity)
     {
@@ -75,7 +104,7 @@ namespace ConsoleGraphX
                 continue;
             }
 
-            auto poolVariant = _m_resourceManager.GetResourcePoolFromId(componentIdIndexPair.first);
+            auto poolVariant = _m_resourceManager->GetResourcePoolFromId(componentIdIndexPair.first);
 
             ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex = 0;
 
@@ -102,11 +131,11 @@ namespace ConsoleGraphX
                 }, poolVariant);
 
 
-            // Insert the cloned component index into the new entity's map
+            // insert the cloned component index into the new entity's map
             entity._m_componentIdToIndexMap.insert({ componentIdIndexPair.first, clonedComponentIndex });
         }
 
-        ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = _m_resourceManager.GetResourcePool<Script>();
+        ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = _m_resourceManager->GetResourcePool<Script>();
         for (const auto& scriptIdIndexPair : _m_scriptIdToIndexes)
         {
             ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex = scriptPool.CloneComponentWithEntity(scriptIdIndexPair.second, &entity);
@@ -165,16 +194,18 @@ namespace ConsoleGraphX
         }
     }
 
-    void Entity::KillEntity() const
+    void Entity::KillEntity()
     {
-        for(Entity* child : _m_children)
+        for(const Entity* child : _m_children)
         {
             child->DestroyEntityResources();
             ConsoleGraphX_Internal::EntityIDs::RecycleId(child->m_id);
         }
 
         DestroyEntityResources();
-        ConsoleGraphX_Internal::EntityIDs::RecycleId(this->m_id);
+        ConsoleGraphX_Internal::EntityIDs::RecycleId(m_id);
+
+        EntityDestroyedEvent.Invoke(m_id);
     }
 
     size_t Entity::GetId() const
@@ -189,13 +220,13 @@ namespace ConsoleGraphX
 
     void Entity::DestroyEntityResources() const
     {
-        _m_resourceManager.DestroyEntityResources(_m_componentIdToIndexMap);
-        _m_resourceManager.DestroyEntityResources(_m_scriptIdToIndexes);
+        _m_resourceManager->DestroyEntityResources(_m_componentIdToIndexMap);
+        _m_resourceManager->DestroyEntityResources(_m_scriptIdToIndexes);
     }
 
     ConsoleGraphX_Internal::ResourceManager& Entity::GetResourceManager() const
     {
-        return _m_resourceManager;
+        return *_m_resourceManager;
     }
 
     void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap)

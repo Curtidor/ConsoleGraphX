@@ -109,6 +109,10 @@ namespace ConsoleGraphX_Internal
         static ResourceManager& GetActiveResourceManager();
 
     public:
+        ResourceManager();
+        ResourceManager(ResourceManager&&) = default;
+        ResourceManager& operator=(ResourceManager&&) = default;
+
          ResourcePoolVariant GetResourcePoolFromId(ResourceID id);
 
         template <typename ResourceType>
@@ -150,6 +154,7 @@ namespace ConsoleGraphX_Internal
             ResourcePool<Texture>& tPool = GetResourcePool<Texture>();
 
             return { GenResourceID::Get<Texture>(), tPool.PlaceResourceInPool(std::move(*texture)) };
+
         }
 
         std::pair<ResourceID, ResourceIndex> CreateTextureResource(uint32_t width, uint32_t height, int color)

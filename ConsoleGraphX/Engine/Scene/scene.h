@@ -14,6 +14,9 @@ namespace ConsoleGraphX
 
         std::unordered_set<Entity, Entity::Hash, Entity::Equal> _m_entities;
         std::unordered_map<std::string, int> _m_tagIDMap;
+
+    private:
+        void _EntityDestroyedEventHandler(int id);
     
     public:
         ConsoleGraphX_Internal::ResourceManager  _m_resourceManager;

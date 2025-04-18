@@ -1,13 +1,14 @@
 #include "PCH_CGX.h"
 #include "Engine\Core\Application\application.h"
 #include "Engine\Core\Window\window_manager.h"
-#include "Engine\Layout\window_layout.h"
 #include "Engine\Core\Profiler\profiler.h"
+#include "Engine\Layout\window_layout.h"
+
 
 namespace ConsoleGraphX
 {
     Application::Application()
-        : m_engine(Engine())
+        : m_engine(Engine()), _m_state(ApplicationState::Running)
     {}
 
     void Application::WarmUp(SceneSystem& sceneSystem)
@@ -15,10 +16,8 @@ namespace ConsoleGraphX
         m_engine.WarmUp(sceneSystem);
     }
 
-    void Application::Run(SceneSystem& sceneSystem)
+    void Application::Run(SceneSystem& sceneSystem, std::atomic<bool>* shutdownSignal)
     {
-        _m_state = ApplicationState::Running;
-
         const float targetUpdateRate = 1.0f / 60.0f;
         float accumulator = 0.0f;
         int framesPerSecond = 0;
@@ -56,6 +55,11 @@ namespace ConsoleGraphX
                 {
                     std::lock_guard<std::mutex> lock(_m_mutex);
                     _m_condition.notify_one();
+                }
+
+                if (shutdownSignal)
+                {
+                    *shutdownSignal = true;
                 }
 
                 notified = true;

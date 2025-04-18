@@ -1,8 +1,12 @@
+dofile("../premake_common.lua")
+
 project "ConsoleGraphX"
     kind "StaticLib"
     language "C++"
     cppdialect "C++20"
     staticruntime "on"
+
+    SetEditorDefines()
 
     targetdir ("../bin/%{cfg.buildcfg}")
     objdir ("../bin-int/%{cfg.buildcfg}")
@@ -17,7 +21,9 @@ project "ConsoleGraphX"
     links { "WinCore" }
 
     filter "configurations:Debug"
+        defines { "DEBUG" }
         symbols "on"
 
     filter "configurations:Release"
+        defines { "NDEBUG" }
         optimize "on"

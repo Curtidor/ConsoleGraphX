@@ -9,7 +9,7 @@ namespace ConsoleGraphX_Internal
     class ComponentPoolSprite : public ResourcePool<ConsoleGraphX::Sprite>
     {
     public:
-        [[nodiscard]] ResourceIndex CloneComponentWithTransform(ResourceIndex index, ResourceManager& rManager, size_t transformID)
+        [[nodiscard]] ResourceIndex CloneComponentWithTransform(ResourceIndex index, ResourceManager* rManager, size_t transformID)
         {
             ConsoleGraphX::Sprite* sprite = GetResourceFromPool(index);
 

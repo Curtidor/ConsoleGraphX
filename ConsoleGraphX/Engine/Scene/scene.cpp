@@ -16,21 +16,16 @@ namespace ConsoleGraphX
 
     Entity* Scene::RegisterEntityN(std::string name)
     {
+        auto result = _m_entities.emplace(std::move(Entity(&_m_resourceManager)));
 
-        auto result = _m_entities.insert(Entity(_m_resourceManager));
-
-        // check if the insertion was successful
         if (!result.second)
         {
             throw std::runtime_error("Entity with the same ID already exists.");
         }
 
-        // NOTE TO FUTURE ME: Casting away const-ness is valid here because the `Entity` objects
-        // in the scene are mutable and intended to be modified. The `const_iterator`
-        // returned by `emplace` is a `const_iterator` to indicate that it is safe to
-        // read from, but since `Entity` objects are not actually const, removing
-        // the const qualifier to obtain a modifiable reference is appropriate in this case.
         Entity& insertedEntity = const_cast<Entity&>(*result.first);
+
+        insertedEntity.EntityDestroyedEvent.AddListener(this, &Scene::_EntityDestroyedEventHandler);
 
         if (!insertedEntity.m_tag.empty())
         {
@@ -59,15 +54,32 @@ namespace ConsoleGraphX
         _m_entities.erase(itEntity);
     }
 
+    void Scene::_EntityDestroyedEventHandler(int id)
+    {
+        DeregisterEntity(*GetEntity(id));
+    }
+
     void Scene::Destroy()
     {
-        for (const Entity& entity : _m_entities)
+        // copy entities to a temp list to avoid modifying the set while iterating
+        std::vector<Entity*> entitiesToKill;
+        entitiesToKill.reserve(_m_entities.size());
+
+        for (const auto& entity : _m_entities)
         {
-            entity.KillEntity();
+            entitiesToKill.push_back(const_cast<Entity*>(&entity));
         }
 
-        _m_entities.clear();
+        // kill each entity (which removes them from the set internally)
+        for (Entity* entity : entitiesToKill)
+        {
+            entity->KillEntity(); // killEntity will remove it from _m_entities
+        }
+
+        _m_entities.clear();     
+        _m_tagIDMap.clear();
     }
+
 
     Entity* Scene::GetEntity(int id)
     {

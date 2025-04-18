@@ -6,10 +6,15 @@
 #include <iostream>
 #include "Engine\Core\Window\window.h"
 
-#define PROFILE_SCOPE(name) Timer timer##__LINE__(name)
-#define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCTION__)
-#define INCREMENT_COUNTER(name, value) CGXProfiler::Instance().IncrementCounter(name, value)
-
+#ifdef Editor
+    #define PROFILE_SCOPE(name) Timer timer##__LINE__(name)
+    #define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCTION__)
+    #define INCREMENT_COUNTER(name, value) CGXProfiler::Instance().IncrementCounter(name, value)
+#else
+    #define PROFILE_SCOPE(name)
+    #define PROFILE_FUNCTION()
+    #define INCREMENT_COUNTER(name, value)
+#endif
 
 namespace ConsoleGraphX_Internal
 {

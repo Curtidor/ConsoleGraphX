@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include "Engine\Core\Event\events.h"
 #include "Engine\Components\transform.h"
 #include "Engine\Resources\resource_id.h"
 #include "Engine\Resources\resource_manager.h"
@@ -56,7 +57,7 @@ namespace ConsoleGraphX
     {
     private:
         Entity* _m_parent;
-        ConsoleGraphX_Internal::ResourceManager& _m_resourceManager; // Injected via DI
+        ConsoleGraphX_Internal::ResourceManager* _m_resourceManager; // Injected via DI
 
         std::unordered_set<Entity*> _m_children;
        
@@ -83,19 +84,19 @@ namespace ConsoleGraphX
         {
             if constexpr (std::is_same_v<T, ConsoleGraphX::Sprite>)
             {
-                return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)..., _m_resourceManager, _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
+                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., _m_resourceManager, _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
             }
             else if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value)
             {
-                return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
+                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
             }
             else if constexpr (ConsoleGraphX_Internal::IsScript<T>)
             {
-                return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)..., this).second;
+                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., this).second;
             }
             else 
             {
-                return _m_resourceManager.CreateResource<T>(std::forward<Args>(args)...).second;
+                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)...).second;
             }
         }
 
@@ -103,19 +104,25 @@ namespace ConsoleGraphX
         const size_t m_id;
         std::string m_tag;
 
+        CGXEventArgs<int> EntityDestroyedEvent;
+
     public:
 
         /**
          * @brief Default constructor for creating an entity.
          */
         Entity(int id);
-        Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager);
-
-        Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager, int id);
-
-        Entity(ConsoleGraphX_Internal::ResourceManager& resourceManager, int id, const std::string& tag);
+        Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager);
+        Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id);
+        Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id, const std::string& tag);
 
         ~Entity();
+
+        Entity(const Entity&) = delete;
+        Entity& operator=(const Entity&) = delete;
+
+        Entity(Entity&& other) noexcept;
+        Entity& operator=(Entity&& other) noexcept;
 
         /**
          * @brief Sets the parent of the entity.
@@ -138,7 +145,7 @@ namespace ConsoleGraphX
         /**
          * @brief Destroys the entity, removing it from the ECS.
          */
-        void KillEntity() const;
+        void KillEntity();
 
         /**
          * @brief Gets a reference to the components associated with this entity.
@@ -296,7 +303,7 @@ namespace ConsoleGraphX
                 return nullptr;
             }
 
-            return _m_resourceManager.GetResource<T>(it->second);
+            return _m_resourceManager->GetResource<T>(it->second);
         }
     };
 };

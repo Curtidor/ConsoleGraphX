@@ -1,5 +1,6 @@
 #include "PCH_CGX.h"
 #include <cmath>
+#include <limits>
 #include "Engine\Graphics\renderer.h"
 #include "Engine\Graphics\ScreenGraphics\screen.h"
 #include "Engine\Components\PositionComponents\sprite.h"
@@ -45,6 +46,12 @@ namespace ConsoleGraphX_Internal
             ConsoleGraphX::Vector3 relativePosition;
             for (const ConsoleGraphX::Sprite& sprite : *sprites)
             {
+
+                if (sprite.m_textureIndex == (std::numeric_limits<ConsoleGraphX::TransformID>::max)()) // the sprite is recycled
+                {
+                    continue;
+                }
+
                 // Get both the current and previous positions of the sprite
                 const ConsoleGraphX::Transform* spriteTransform = sprite.GetTransform();
                 ConsoleGraphX::Vector3 currentSpritePosition = spriteTransform->GetWorldPosition();

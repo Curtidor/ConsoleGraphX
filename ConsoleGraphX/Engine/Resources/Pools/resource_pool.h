@@ -1,7 +1,10 @@
 #pragma once
+
+#include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
-#include <queue>
+#include <span>
 #include <algorithm>
 #include <type_traits>
 #include <stdexcept>
@@ -14,50 +17,59 @@ namespace ConsoleGraphX_Internal
     class ResourcePool : public BaseResourcePool
     {
     private:
-        // maps the resource handle (as stored by entities or other systems) to the actual index in the underlying pool
-        // this is useful to maintain consistent references even if the pool is resized or reallocated.
         std::unordered_map<ResourceIndex, ResourceIndex> _m_handleToPoolIndex;
+        std::vector<ResourceIndex> _m_cachedActiveIndices;
+        std::unordered_set<ResourceIndex> _m_openPoolIndexes;
+        std::vector<T> _m_pool;
         size_t _m_maxFreeIndexThreshold;
+        bool _m_dirtyCache = false;
 
-    private:
         ResourceIndex _GetCompressedIndex(ResourceIndex index)
         {
             auto it = _m_handleToPoolIndex.find(index);
-
             if (it == _m_handleToPoolIndex.end())
             {
                 throw std::runtime_error("bad index");
             }
-
             return it->second;
         }
 
-    protected:
-        std::vector<T> _m_pool;
-        std::queue<ResourceIndex> _m_openPoolIndexes;
+        void _RebuildActiveIndexCache()
+        {
+            _m_cachedActiveIndices.clear();
+            _m_cachedActiveIndices.reserve(_m_handleToPoolIndex.size());
 
+            for (const auto& [_, index] : _m_handleToPoolIndex)
+            {
+                _m_cachedActiveIndices.push_back(index);
+            }
+
+            _m_dirtyCache = false;
+        }
+
+    protected:
         [[nodiscard]] ResourceIndex _GetOpenPoolIndex()
         {
+            _m_dirtyCache = true;
+
             if (_m_openPoolIndexes.size() >= _m_maxFreeIndexThreshold)
             {
-                Compress();
+                //Compress(); // if needed
             }
 
             ResourceIndex index;
             if (!_m_openPoolIndexes.empty())
             {
-                index = _m_openPoolIndexes.front();
-                _m_openPoolIndexes.pop();
+                auto it = _m_openPoolIndexes.begin();
+                index = *it;
+                _m_openPoolIndexes.erase(it);
             }
             else
             {
                 index = _m_pool.size();
-
             }
 
             _m_handleToPoolIndex.insert({ index, index });
-
-
             return index;
         }
 
@@ -74,8 +86,25 @@ namespace ConsoleGraphX_Internal
         }
 
     public:
-        ResourcePool(size_t maxFreeIndexThreshold = 500): _m_maxFreeIndexThreshold(maxFreeIndexThreshold)
+        ResourcePool(size_t maxFreeIndexThreshold = 500)
+            : _m_maxFreeIndexThreshold(maxFreeIndexThreshold)
         {}
+
+        ~ResourcePool()
+        {
+            if constexpr (std::is_pointer_v<T>)
+            {
+                for (T& resource : _m_pool)
+                {
+                    delete resource;
+                }
+            }
+
+            _m_pool.clear();
+            _m_openPoolIndexes.clear(); // should now be safe
+            _m_handleToPoolIndex.clear();
+            _m_cachedActiveIndices.clear();
+        }
 
         template <typename... Args>
         ResourceIndex CreateResource(Args&&... args)
@@ -104,65 +133,8 @@ namespace ConsoleGraphX_Internal
             return index;
         }
 
-        void Compress() 
-        {
-            if (_m_openPoolIndexes.empty()) 
-            {
-                return; // no need to compress if there are no open indices
-            }
-
-            // sort the indices in the queue for easier processing
-            std::vector<ResourceIndex> openIndices;
-            while (!_m_openPoolIndexes.empty()) 
-            {
-                openIndices.push_back(_m_openPoolIndexes.front());
-                _m_openPoolIndexes.pop();
-            }
-
-            std::sort(openIndices.begin(), openIndices.end());
-
-            size_t nextAvailableIndex = openIndices.front();
-            size_t openIndexPos = 0;
-
-            for (size_t i = nextAvailableIndex; i < _m_pool.size(); ++i)
-            {
-                if (openIndexPos < openIndices.size() && i == openIndices[openIndexPos]) 
-                {
-                    ++openIndexPos;
-                }
-                else 
-                {
-                    // move valid elements to the next available spot
-                    if (nextAvailableIndex != i)
-                    {
-                        _m_pool[nextAvailableIndex] = std::move(_m_pool[i]);
-
-                        // update the handle-to-index map to reflect the new position
-                        for (auto& entry : _m_handleToPoolIndex)
-                        {
-                            if (entry.second == i) 
-                            {
-                                entry.second = nextAvailableIndex;
-                                break;
-                            }
-                        }
-                    }
-                    ++nextAvailableIndex;
-                }
-            }
-
-            // resize the pool to remove the trailing empty elements
-            _m_pool.resize(nextAvailableIndex);
-
-            // clear the queue since there are no more open spots
-            std::queue<ResourceIndex>().swap(_m_openPoolIndexes);
-        }
-
-
-
         [[nodiscard]] ResourceIndex CloneResource(ResourceIndex index) override
         {
-            // temp until textures are made cloneable 
             if constexpr (std::is_same_v<T, Texture>)
             {
                 return index;
@@ -183,26 +155,26 @@ namespace ConsoleGraphX_Internal
             }
         }
 
-
         [[nodiscard]] ResourceIndex PlaceResourceInPool(T resource)
         {
             ResourceIndex index = _GetOpenPoolIndex();
-           
-            if (index == _m_pool.size())
-            {
-                _m_pool.push_back(std::move(resource));
-            }
-            else
-            {
-                _m_pool[index] = std::move(resource);
-            }
-
+            _InsertIntoPool(index, std::move(resource));
             return index;
         }
 
         std::vector<T>* GetPoolItems()
         {
             return &_m_pool;
+        }
+
+        std::span<const ResourceIndex> GetActiveIndexSpan()
+        {
+            if (_m_dirtyCache)
+            {
+                _RebuildActiveIndexCache();
+            }
+
+            return std::span<const ResourceIndex>(_m_cachedActiveIndices);
         }
 
         typename std::remove_pointer<T>::type* GetResourceFromPool(ResourceIndex index)
@@ -215,13 +187,20 @@ namespace ConsoleGraphX_Internal
             }
             else
             {
-               return &_m_pool[cmpIndex];
+                return &_m_pool[cmpIndex];
             }
         }
 
         void RemoveResourceFromPool(ResourceIndex index) override
         {
             ResourceIndex cmpIndex = _GetCompressedIndex(index);
+
+            // Defensive bounds check
+            if (cmpIndex >= _m_pool.size())
+            {
+                std::cerr << "[ResourcePool] Invalid cmpIndex during remove: " << cmpIndex << " (pool size: " << _m_pool.size() << ")\n";
+                __debugbreak();
+            }
 
             T& resource = _m_pool[cmpIndex];
 
@@ -233,26 +212,58 @@ namespace ConsoleGraphX_Internal
             else
             {
                 resource.~T();
+                resource = T();
+            }
 
-                if constexpr (std::is_trivially_constructible<T>::value)
+            if (!_m_openPoolIndexes.insert(cmpIndex).second)
+            {
+                std::cerr << "[ResourcePool] Tried to re-insert already freed index: " << cmpIndex << "\n";
+                __debugbreak();
+            }
+
+            _m_handleToPoolIndex.erase(index); //  restored
+            _m_dirtyCache = true;
+        }
+
+        void Compress()
+        {
+            if (_m_openPoolIndexes.empty())
+                return;
+
+            std::vector<ResourceIndex> openIndices(_m_openPoolIndexes.begin(), _m_openPoolIndexes.end());
+            std::sort(openIndices.begin(), openIndices.end());
+
+            size_t nextAvailableIndex = openIndices.front();
+            size_t openIndexPos = 0;
+
+            for (size_t i = nextAvailableIndex; i < _m_pool.size(); ++i)
+            {
+                if (openIndexPos < openIndices.size() && i == openIndices[openIndexPos])
                 {
-                    std::memset(&resource, 0, sizeof(T));
+                    ++openIndexPos;
                 }
                 else
                 {
-                    resource = T();
+                    if (nextAvailableIndex != i)
+                    {
+                        _m_pool[nextAvailableIndex] = std::move(_m_pool[i]);
+
+                        for (auto& entry : _m_handleToPoolIndex)
+                        {
+                            if (entry.second == i)
+                            {
+                                entry.second = nextAvailableIndex;
+                                break;
+                            }
+                        }
+                    }
+                    ++nextAvailableIndex;
                 }
             }
 
-            _m_openPoolIndexes.push(cmpIndex);
-
-            auto it = _m_handleToPoolIndex.find(index);
-
-            if (it != _m_handleToPoolIndex.end())
-            {
-                _m_handleToPoolIndex.erase(it);
-            }
+            _m_pool.erase(_m_pool.begin() + nextAvailableIndex, _m_pool.end());
+            _m_openPoolIndexes.clear();
+            _m_dirtyCache = true;
         }
-
     };
-};
+}

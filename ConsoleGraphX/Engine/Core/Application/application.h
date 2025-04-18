@@ -1,4 +1,5 @@
 #pragma once
+#include <atomic>
 #include "Engine\Core\Window\abstract_window.h"
 #include "Engine\Core\Application\engine.h"
 #include "Engine\Systems\scene_system.h"
@@ -23,7 +24,7 @@ namespace ConsoleGraphX
     public:
         Application();
         void WarmUp(SceneSystem& sceneSystem);
-        void Run(SceneSystem& sceneSystem);
+        void Run(SceneSystem& sceneSystem, std::atomic<bool>* shutdownSignal);
         void Shutdown();    
         void OnConsoleClose(AbstractWindow* window);
 

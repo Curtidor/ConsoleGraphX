@@ -1,4 +1,5 @@
 #include "PCH_CGX.h"
+#include <limits>
 #include "Engine\Systems\player_controller_system.h"
 #include "Engine\Components\PositionComponents\player_controller.h"
 #include "Engine\Systems\input_system.h"
@@ -20,6 +21,23 @@ namespace ConsoleGraphX
 
         for (PlayerController& controller : *controllers)
         {
+            // TODO: Remove the need for this conditional check.
+            // Currently, when an entity is destroyed, its components are reset to default values.
+            // This means recycled slots in the pool may temporarily hold invalid data
+            // until they're reassigned to a new entity.
+            //
+            // To avoid applying logic to invalid controllers, we check for a sentinel value.
+            // In this case, if `m_transformID` is max(), we assume it's no longer valid.
+            //
+            // Potential Improvements:
+            // 1. Use a `bool m_isActive` flag in each component to explicitly track usage.
+            // 2. Track active indexes in the pool separately.
+            // 3. Return only valid components from `GetPoolItems()`.
+            if (controller.m_transformID == (std::numeric_limits<ConsoleGraphX::TransformID>::max)())
+            {
+                continue;
+            }
+
             Transform* transform = controller.GetTransform();
 
             controller.m_velocity.y -= controller.m_gravity * deltaTime;
@@ -46,7 +64,7 @@ namespace ConsoleGraphX
             }
 
             transform->Translate(movement * controller.m_moveSpeed * deltaTime);
-
         }
     }
+
 };

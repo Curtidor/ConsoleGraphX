@@ -9,6 +9,7 @@
 #include "../ConsoleGraphX/Engine/Components/camera.h"
 #include "../ConsoleGraphX/Engine/Math/vector3.h"
 #include "../ConsoleGraphX/Engine/Resources/Pools/base_resource_pool.h"
+#include "./Engine/Systems/scene_system.h"
 
 using namespace ConsoleGraphX;
 
@@ -42,12 +43,11 @@ void Player::Update(UpdateContext& context)
 {
 	Vector3 playerPosition = _m_owner->GetComponent<Transform>()->m_position;
 
-	/*InputSystem& i = InputSystem::Instance();
-	if (i.IsKeyPressed(Key::B))
+	if (context.input.IsKeyPressed(Key::B))
 	{
 		_m_owner->KillEntity();
 
-	}*/
+	}
 }
 
 

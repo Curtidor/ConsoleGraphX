@@ -32,6 +32,34 @@ namespace ConsoleGraphX
     public:
         using CallableType = CallableTypeImpl<Func, Args...>;
 
+        CGXEventBase() = default;
+
+        CGXEventBase(const CGXEventBase& other)
+            : _m_callbacks(other._m_callbacks), _m_nextHandle(other._m_nextHandle.load()) {}
+
+        CGXEventBase& operator=(const CGXEventBase& other)
+        {
+            if (this != &other) 
+            {
+                _m_callbacks = other._m_callbacks;
+                _m_nextHandle.store(other._m_nextHandle.load());
+            }
+            return *this;
+        }
+
+        CGXEventBase(CGXEventBase&& other) noexcept
+            : _m_callbacks(std::move(other._m_callbacks)), _m_nextHandle(other._m_nextHandle.load()) {}
+
+        CGXEventBase& operator=(CGXEventBase&& other) noexcept
+        {
+            if (this != &other) 
+            {
+                _m_callbacks = std::move(other._m_callbacks);
+                _m_nextHandle.store(other._m_nextHandle.load());
+            }
+            return *this;
+        }
+
         /**
         * @brief Invoke all stored callbacks with forwarded arguments.
         *
