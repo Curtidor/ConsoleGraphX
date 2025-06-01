@@ -1,19 +1,13 @@
 import sys
+import struct
 
 import tkinter as tk
-from dataclasses import dataclass
 
 from tkinter import filedialog
 
-from SpriteMaker.constants import PALETTE_COLORS, FULL_BLOCK_CHAR, TRANSPARENT_CHAR, DEFAULT_COLOR
-from SpriteMaker.utils import int16_to_hex_string, reverse_bytes_for_little_endian, write_hex_file
-
-
-@dataclass
-class SpriteData:
-    char: int
-    color: int
-
+from SpriteMaker.constants import PALETTE_COLORS, FULL_BLOCK_CHAR_INT, TRANSPARENT_CHAR_INT, DEFAULT_COLOR_INT, \
+    SPRITE_MAKER_VERSION
+from WorldEditor.models import SpriteData
 
 TRANSPARENT_CHAR_LE = int.from_bytes(bytes.fromhex("200e"), "little")
 TRANSPARENT_CHAR_BE = int.from_bytes(bytes.fromhex("200e"), "big")
@@ -23,14 +17,14 @@ def is_transparent(char_value: int) -> bool:
     return char_value in (TRANSPARENT_CHAR_LE, TRANSPARENT_CHAR_BE)
 
 
-def open_sprite_file() -> tuple[int, list[list[SpriteData]]] | None:
+def open_sprite_file() -> tuple[int, list[list[SpriteData]], str] | None:
     root = tk.Tk()
     root.withdraw()
     file_path = filedialog.askopenfilename(filetypes=[("CXSP Sprite", "*.cxsp")])
 
     if file_path:
         width, height, sprite_id, sprite_data = load_sprite(file_path)
-        return sprite_id, sprite_data
+        return sprite_id, sprite_data, file_path
 
     return None
 
@@ -38,50 +32,44 @@ def open_sprite_file() -> tuple[int, list[list[SpriteData]]] | None:
 def export_sprite(sprite_width: int, sprite_height: int,
                   colors: list[list[int]], export_path: str, sprite_id: int):
     """
-    @brief Exports a sprite to a .cxsp file in a hex-based CHAR_INFO-like format.
+    @brief Exports a sprite to a .cxsp file using struct.pack, with 32-bit header fields.
 
-    This function generates a sprite file (.cxsp) that stores character and color data
-    in a format similar to the Windows CHAR_INFO structure. The file begins with a header
-    containing the sprite width, height, and sprite ID, followed by pixel data where each
-    tile consists of a 2-byte character and a 2-byte color attribute.
+    File structure:
+    - 4 bytes: version        (uint32)
+    - 4 bytes: sprite_width   (uint32)
+    - 4 bytes: sprite_height  (uint32)
+    - 4 bytes: sprite_id      (uint32)
+    - Per-tile: 2 bytes char + 2 bytes color attribute (uint16 + uint16)
 
-    The exported data is written as a hex string and saved using the provided export path.
-
-    @param sprite_width The width of the sprite in tiles (must be a positive 16-bit integer).
-    @param sprite_height The height of the sprite in tiles (must be a positive 16-bit integer).
-    @param colors A 2D list [height][width] of color values. Use None for transparent tiles.
-    @param export_path The file path to export the .cxsp sprite file (excluding extension).
-    @param sprite_id A unique positive 16-bit ID for the sprite (0–65535).
-
-    @throws ValueError if sprite_id, width, or height is out of the 16-bit positive range.
+    @param sprite_width The width of the sprite in tiles (1–4294967295).
+    @param sprite_height The height of the sprite in tiles (1–4294967295).
+    @param colors A 2D list [height][width] of color RGB tuples. Use None for transparent tiles.
+    @param export_path The output path for the .cxsp file.
+    @param sprite_id A unique 32-bit unsigned integer ID for this sprite.
     """
-    if not (0 <= sprite_id <= 0xFFFF):
-        raise ValueError("sprite_id must be a positive 16-bit value (0–65535)")
-    if not (0 < sprite_width <= 0xFFFF):
-        raise ValueError("sprite_width must be a positive 16-bit value (1–65535)")
-    if not (0 < sprite_height <= 0xFFFF):
-        raise ValueError("sprite_height must be a positive 16-bit value (1–65535)")
+    if not (0 <= sprite_id <= 0xFFFFFFFF):
+        raise ValueError("sprite_id must be a 32-bit unsigned integer (0–4294967295)")
+    if not (0 < sprite_width <= 0xFFFFFFFF):
+        raise ValueError("sprite_width must be a 32-bit unsigned integer (1–4294967295)")
+    if not (0 < sprite_height <= 0xFFFFFFFF):
+        raise ValueError("sprite_height must be a 32-bit unsigned integer (1–4294967295)")
 
-    output = []
-    output.extend([int16_to_hex_string(sprite_width), "00 00", int16_to_hex_string(sprite_height), "00 00"])
-    output.extend([int16_to_hex_string(sprite_id), "00 00"])
+    with open(export_path, 'wb') as f:
+        # Write 32-bit header
+        f.write(struct.pack('<IIII', SPRITE_MAKER_VERSION, sprite_width, sprite_height, sprite_id))
 
-    for y in range(sprite_height):
-        row_output = []
-        for x in range(sprite_width):
-            color = colors[y][x]
-            if color is None:
-                row_output.append(TRANSPARENT_CHAR)
-                row_output.append(DEFAULT_COLOR)
-            else:
-                color_index = PALETTE_COLORS.index(color)
-                row_output.append(FULL_BLOCK_CHAR)
-                row_output.append(int16_to_hex_string(color_index))
-        output.extend(row_output)
-
-    formatted_bytes = reverse_bytes_for_little_endian(output) if sys.byteorder == "little" else output
-    byte_data = "".join(formatted_bytes).replace(" ", "")
-    write_hex_file(export_path, byte_data)
+        for y in range(sprite_height):
+            for x in range(sprite_width):
+                color = colors[y][x]
+                if color is None:
+                    char = TRANSPARENT_CHAR_INT
+                    attr = DEFAULT_COLOR_INT
+                else:
+                    color_index = PALETTE_COLORS.index(color)
+                    char = FULL_BLOCK_CHAR_INT
+                    attr = color_index
+                f.write(struct.pack('<HH', char, attr))
+        print(f'saved: {export_path}')
 
 
 def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
@@ -100,6 +88,7 @@ def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
         raise ValueError(f"Unsupported file type {file_path.split('.')[-1]}")
 
     with open(file_path, 'rb') as binary_sprite:
+        version = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         width = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         height = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         sprite_id = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
