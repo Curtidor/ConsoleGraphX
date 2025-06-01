@@ -1,23 +1,29 @@
 GRID_SIZE_X = 6
 GRID_SIZE_Y = 8
-CANVAS_WIDTH, CANVAS_HEIGHT = 64, 64  # Grid dimensions
+CANVAS_WIDTH, CANVAS_HEIGHT = 10, 18  # Grid dimensions
 PALETTE_SIZE = 16
-SPRITE_ID = 1
+SPRITE_ID = 15
+SPRITE_MAKER_VERSION = 1
 SCREEN_WIDTH = max(CANVAS_WIDTH * GRID_SIZE_X, PALETTE_SIZE * GRID_SIZE_X)
 SCREEN_HEIGHT = (CANVAS_HEIGHT + 1) * GRID_SIZE_Y
 
-EXPORT_FILE_PATH = "wall.cxsp"
+EXPORT_FILE_PATH = "player_sprite.cxsp"
 
 
 DEFAULT_COLOR = "00 00"
 FULL_BLOCK_CHAR = "25 88"
 TRANSPARENT_CHAR = "20 0e"
 
+DEFAULT_COLOR_INT = 0x0000            # treated as transparent
+FULL_BLOCK_CHAR_INT = 0x2588          # '█' full block character (solid pixel)
+TRANSPARENT_CHAR_INT = 0x0020         # ' ' space character (empty tile)
+
+
 TRANSPARENT_COLOR = (0, 0, 0)
 
 
 # Custom palette colors
-PALETTE_COLORS_x = [
+PALETTE_COLORS = [
     (242, 192, 162),  # RGB(242, 192, 162)
     (233, 132, 114),  # RGB(233, 132, 114)
     (216, 35, 35),    # RGB(216, 35, 35)
@@ -36,7 +42,7 @@ PALETTE_COLORS_x = [
     (22, 20, 35)      # RGB(22, 20, 35)
 ]
 
-PALETTE_COLORS = [
+PALETTE_COLORS_x = [
     (133, 149, 161),
     (109, 194, 202),
     (117, 113, 97),
