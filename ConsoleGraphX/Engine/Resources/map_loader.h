@@ -1,10 +1,13 @@
 #pragma once
 #include <iosfwd>
 #include <fstream>
+#include <vector>
 #include <cstdint>
 #include <array>
-#include <vector>
 #include <memory>
+#include <unordered_map>
+#include <sstream>
+#include <string>
 #include "Engine\Graphics\texture.h"
 #include "Engine\Core\Utils\file_utils.h"
 #include "Engine\Resources\texture_loader.h"
@@ -32,6 +35,18 @@ namespace ConsoleGraphX_Internal
         size_t m_spriteCount;
     };
 
+    void _ReadMapHeader(MapInfo& mInfo, std::ifstream& file)
+    {
+        file.read(reinterpret_cast<char*>(&mInfo.m_version_info), sizeof(mInfo.m_version_info));
+        file.read(reinterpret_cast<char*>(&mInfo.m_chunk_width), sizeof(mInfo.m_chunk_width));
+        file.read(reinterpret_cast<char*>(&mInfo.m_chunk_height), sizeof(mInfo.m_chunk_height));
+
+        if (file.fail())
+        {
+            throw std::runtime_error("Failed to read map header");
+        }
+    }
+
     std::vector<Chunk> LoadMap(const std::string& filename)
     {
         VerifyFileExtension(filename, ".cxmap");
@@ -57,8 +72,7 @@ namespace ConsoleGraphX_Internal
 
             for (uint32_t i = 0; i < spriteCount; ++i)
             {
-                int32_t x = 0, y = 0, z = 0;
-                int spriteId = 0;
+                int32_t x = 0, y = 0, z = 0, spriteId = 0;
 
                 mapFile.read(reinterpret_cast<char*>(&x), sizeof(x));
                 mapFile.read(reinterpret_cast<char*>(&y), sizeof(y));
@@ -77,17 +91,34 @@ namespace ConsoleGraphX_Internal
         mapFile.close();
         return chunks;
     }
+}
 
-    void _ReadMapHeader(MapInfo& mInfo, std::ifstream& file)
-    {
-        file.read(reinterpret_cast<char*>(&mInfo.m_version_info), sizeof(mInfo.m_version_info));
-        file.read(reinterpret_cast<char*>(&mInfo.m_chunk_width), sizeof(mInfo.m_chunk_width));
-        file.read(reinterpret_cast<char*>(&mInfo.m_chunk_height), sizeof(mInfo.m_chunk_height));
+std::unordered_map<uint32_t, std::string> LoadSpriteRegistry(const std::string& filePath) 
+{
+    std::unordered_map<uint32_t, std::string> spriteMap;
+    std::ifstream file(filePath);
+    std::string line;
 
-        if (file.fail())
-        {
-            throw std::runtime_error("Failed to read map header");
+    if (!file.is_open()) {
+        std::cerr << "Failed to open sprite registry: " << filePath << "\n";
+        return spriteMap;
+    }
+
+    while (std::getline(file, line)) {
+        // ignore empty lines and comments
+        if (line.empty() || line[0] == '#') continue;
+
+        std::istringstream ss(line);
+        std::string keyStr, value;
+        if (std::getline(ss, keyStr, '=') && std::getline(ss, value)) {
+            uint32_t id = static_cast<uint32_t>(std::stoul(keyStr));
+            // remove leading/trailing whitespace
+            value.erase(0, value.find_first_not_of(" \t"));
+            value.erase(value.find_last_not_of(" \t") + 1);
+            spriteMap[id] = value;
         }
     }
 
+    return spriteMap;
 }
+
