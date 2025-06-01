@@ -45,6 +45,15 @@ namespace ConsoleGraphX_Internal
 
     void TextureLoader::_ReadTextureHeader(TextureInfo& tInfo, std::ifstream& textureFile)
     {
+        uint32_t VERSION = 0;
+        uint32_t SUPPORTED_VERSION = 1;
+        textureFile.read(reinterpret_cast<char*>(&VERSION), 4);
+
+        if (VERSION != SUPPORTED_VERSION) 
+        {
+            throw std::runtime_error("UnSupported Texture Version");
+        }
+
         textureFile.read(reinterpret_cast<char*>(&tInfo.width), 4);
         textureFile.read(reinterpret_cast<char*>(&tInfo.height), 4);
         textureFile.read(reinterpret_cast<char*>(&tInfo.id),4);
