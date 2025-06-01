@@ -23,6 +23,33 @@ def write_hex_file(file_path, hex_data):
         print(f"An unexpected error occurred: {e}")
 
 
+def write_binary_file(file_path: str, binary_data: bytes):
+    """
+    Writes raw binary data to a file.
+
+    Parameters:
+    - file_path: Path to the output file.
+    - binary_data: Byte array or bytes object to write directly to disk.
+    """
+    print("Saving...")
+    print("Header bytes:", binary_data[:10].hex(" "))
+    try:
+        directory = os.path.dirname(file_path)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
+
+        with open(file_path, "wb") as file:
+            file.write(binary_data)
+
+        print("Done!")
+
+    except IOError as e:
+        print(f"Error writing file {file_path}: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+
+
 def int16_to_hex_string(value: int) -> str:
     """Converts a 16-bit integer to a space-separated hex string (e.g., '1234' -> '12 34')."""
     if not (0 <= value <= 0xFFFF):
