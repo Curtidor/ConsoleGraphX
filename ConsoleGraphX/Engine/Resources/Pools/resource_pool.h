@@ -155,6 +155,7 @@ namespace ConsoleGraphX_Internal
             }
         }
 
+        // returns the index of the resource in the pool
         [[nodiscard]] ResourceIndex PlaceResourceInPool(T resource)
         {
             ResourceIndex index = _GetOpenPoolIndex();
@@ -195,7 +196,7 @@ namespace ConsoleGraphX_Internal
         {
             ResourceIndex cmpIndex = _GetCompressedIndex(index);
 
-            // Defensive bounds check
+            // defensive bounds check
             if (cmpIndex >= _m_pool.size())
             {
                 std::cerr << "[ResourcePool] Invalid cmpIndex during remove: " << cmpIndex << " (pool size: " << _m_pool.size() << ")\n";
