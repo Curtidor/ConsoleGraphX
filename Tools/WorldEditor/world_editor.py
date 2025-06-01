@@ -54,6 +54,8 @@ def main():
 
                 if event.key == pygame.K_s:
                     state.save()
+                elif event.key == pygame.K_l:
+                    state.load()
 
         pygame.display.flip()
         state.clock.tick(60)
