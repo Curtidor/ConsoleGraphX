@@ -12,6 +12,7 @@
 #include "./Engine/Components/camera.h"
 #include "./Engine/Graphics/ScreenGraphics/screen.h"
 #include "./Engine/Resources/map_loader.h"
+#include "./Engine/Resources/texture_loader.h"
 // Register->Load->Initialize->Run
 
 using namespace ConsoleGraphX;
@@ -26,15 +27,30 @@ public:
 
 	void Initialize() override
 	{
-		std::vector<ConsoleGraphX_Internal::Chunk> map_data = LoadMap("test.cxmap");
+		const std::vector<ConsoleGraphX_Internal::Chunk> map_data = LoadMap("test.cxmap");
+		const std::unordered_map<uint32_t, std::string> reg = LoadSpriteRegistry("C:/Users/tanja/OneDrive/Desktop/ConsoleGraphXFolder/Tools/WorldEditor/sprites.cxreg");
 
-		for (ConsoleGraphX_Internal::Chunk& chunk : map_data)
-		{
-			for (auto& sprite_ids : chunk.m_sprites)
-			{
+		for (const Chunk& chunk : map_data) {
+			for (size_t i = 0; i < chunk.m_spriteCount; i++) {
+				// lookup sprite file path from registry
+				auto it = reg.find(chunk.m_sprites[i].m_spriteId);
+				if (it == reg.end())
+					continue;
+					
+				ResourceManager& rManager = GetResourceManager();
+				// load texture -> get index
+				const size_t textureIndexInPool = rManager.CreateTextureResource(it->second).second;
 
+				// position sprite in world
+				const Vector3& pos = chunk.m_sprites[i].m_mapPosition;
+				const size_t transformIndexInPool = rManager.CreateResource<Transform>(pos.x, pos.y, pos.z, 1, 1, 1).second;
+
+				// register sprite with transform + texture
+
+				rManager.CreateResource<Sprite>(textureIndexInPool, &GetResourceManager(), transformIndexInPool);
 			}
 		}
+
 
 		//TODO GET CAMERA SIZE
 		Entity* camera = RegisterEntityN();
