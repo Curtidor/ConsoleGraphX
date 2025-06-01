@@ -61,9 +61,9 @@ def handle_sidebar_click(pos, state):
     load_button_x = state.editor_width + (state.sidebar_width - load_button_width) // 2
     if (load_button_x <= mx <= load_button_x + load_button_width and
             load_button_y <= my <= load_button_y + 30):
-        sprite_id, sprite_data = open_sprite_file()
+        sprite_id, sprite_data, sprite_path = open_sprite_file()
         if sprite_data:
-            state.sprite_library.append(SpriteEntry(sprite_id, sprite_data))
+            state.sprite_library.append(SpriteEntry(sprite_id, sprite_data, sprite_path))
         return
 
     # Check for sprite selection
