@@ -1,29 +1,12 @@
-import sys
-
 import pygame
+import struct
 
 from enum import Enum
-from dataclasses import dataclass
 
 from Config.settings import *
-from SpriteMaker.sprite_utils import SpriteData
-from SpriteMaker.utils import (write_hex_file, int16_to_hex_string, int32_to_hex_string, int64_to_hex_string,
-                               reverse_bytes_for_little_endian)
-
-
-@dataclass
-class SpriteEntry:
-    sprite_id: int
-    sprite_data: list[list[SpriteData]]
-
-
-@dataclass
-class PlacedSprite:
-    position_x: int
-    position_y: int
-    grid_x: int
-    grid_y: int
-    sprite_entry: SpriteEntry
+from SpriteMaker.utils import write_binary_file
+from WorldEditor.loader import load_map_and_registry
+from WorldEditor.models import SpriteEntry, PlacedSprite
 
 
 class ActiveElement(Enum):
@@ -81,7 +64,7 @@ class EditorState:
 
     def place_sprite(self) -> None:
         gx, gy = self.ghost_sprite_pos
-        sprite = PlacedSprite(gx, gy, gx//(CHUNK_PIXEL_WIDTH/TILE_SIZE), gy//(CHUNK_PIXEL_HEIGHT/TILE_SIZE),
+        sprite = PlacedSprite(gx, gy, gx // (CHUNK_PIXEL_WIDTH / TILE_SIZE), gy // (CHUNK_PIXEL_HEIGHT / TILE_SIZE),
                               self.loaded_sprite_data)
         self.placed_sprites.append(sprite)
         self.placing_sprite = False
@@ -125,49 +108,92 @@ class EditorState:
         elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
             self.adjust_zoom(-1)
 
+    def load(self):
+        load_result = load_map_and_registry(TILE_SIZE)
+        if load_result:
+            _, _, placed_sprites, sprite_db = load_result
+
+            self.placed_sprites.extend(placed_sprites)
+        else:
+            print(load_result, 'result')
+
     def save(self):
+        """
+        Serializes and saves the placed sprites to a `.cxmap` file using binary format.
+
+        Format:
+        - uint16: MAP_VERSION
+        - uint32: chunk width in tiles
+        - uint32: chunk height in tiles
+        - For each chunk:
+            - uint32: sprite count
+            - For each sprite:
+                - uint32: position_x (pixels)
+                - uint32: position_y (pixels)
+                - uint32: sprite_id
+            - uint64: chunk end marker (0xFFFFFFFFFFFFFFFF)
+        """
         if len(self.placed_sprites) < 1:
             return
 
         self.placed_sprites.sort(key=lambda sprite: (sprite.grid_y, sprite.grid_x))
+        export_sprite_registry('sprites.cxreg', self.placed_sprites)
+        buffer = bytearray()
 
-        hex_data = [
-            int16_to_hex_string(MAP_VERSION),
-            int32_to_hex_string(CHUNK_PIXEL_WIDTH // TILE_SIZE),
-            int32_to_hex_string(CHUNK_PIXEL_HEIGHT // TILE_SIZE)
-        ]
+        # Header
+        buffer.extend(struct.pack('<H', MAP_VERSION))
+        buffer.extend(struct.pack('<I', CHUNK_PIXEL_WIDTH // TILE_SIZE))
+        buffer.extend(struct.pack('<I', CHUNK_PIXEL_HEIGHT // TILE_SIZE))
 
         current_chunk_x = self.placed_sprites[0].grid_x
         current_chunk_y = self.placed_sprites[0].grid_y
-        current_chunk_sprite_count = 0
         current_chunk_data = []
 
-        def flush_chunk_data(grid_x, grid_y, sprite_count, sprite_data):
-            hex_data.append(int32_to_hex_string(sprite_count))  # sprite count
-            hex_data.extend(sprite_data)
-            hex_data.append(int64_to_hex_string(0xFFFFFFFFFFFFFFFF))  # chunk terminator
+        def flush_chunk_data(sprite_data):
+            buffer.extend(struct.pack('<I', len(sprite_data)))  # sprite count
+            for pos_x, pos_y, sprite_id in sprite_data:
+                buffer.extend(struct.pack('<III', pos_x, pos_y, sprite_id))
+            buffer.extend(struct.pack('<Q', 0xFFFFFFFFFFFFFFFF))  # chunk end marker
 
         for sprite in self.placed_sprites:
             sprite_chunk_x, sprite_chunk_y = sprite.grid_x, sprite.grid_y
 
             if (sprite_chunk_x != current_chunk_x) or (sprite_chunk_y != current_chunk_y):
-                flush_chunk_data(current_chunk_x, current_chunk_y, current_chunk_sprite_count, current_chunk_data)
-                current_chunk_x, current_chunk_y = sprite_chunk_x, sprite_chunk_y
+                flush_chunk_data(current_chunk_data)
                 current_chunk_data = []
-                current_chunk_sprite_count = 0
+                current_chunk_x, current_chunk_y = sprite_chunk_x, sprite_chunk_y
 
-            current_chunk_data.append(int32_to_hex_string(sprite.position_x))
-            current_chunk_data.append(int32_to_hex_string(sprite.position_y))
-            current_chunk_data.append(int32_to_hex_string(sprite.sprite_entry.sprite_id))
-            current_chunk_sprite_count += 1
+            current_chunk_data.append((
+                sprite.position_x,
+                sprite.position_y,
+                sprite.sprite_entry.sprite_id
+            ))
 
-        # Flush last chunk
-        flush_chunk_data(current_chunk_x, current_chunk_y, current_chunk_sprite_count, current_chunk_data)
+        # Flush final chunk
+        flush_chunk_data(current_chunk_data)
 
-        formatted_bytes = reverse_bytes_for_little_endian(hex_data) if sys.byteorder == "little" else hex_data
-        byte_data = "".join(formatted_bytes).replace(" ", "")
-
-        write_hex_file('test.cxmap', byte_data)
+        write_binary_file('test.cxmap', buffer)
 
 
+def export_sprite_registry(file_path: str, placed_sprites: list[PlacedSprite]):
+    """
+    Writes a sprite ID → sprite path mapping file from placed sprites.
+    Only unique (path, ID) pairs are recorded.
+    """
+    seen = set()
+    lines = []
 
+    for sprit in placed_sprites:
+        entry = sprit.sprite_entry
+        key = (entry.sprite_id, entry.sprite_path)
+        if key not in seen:
+            seen.add(key)
+            lines.append(f"{entry.sprite_id} = {entry.sprite_path}")
+
+    try:
+        with open(file_path, 'w') as f:
+            f.write("# Sprite ID registry\n")
+            f.write("\n".join(lines))
+        print(f"Sprite registry saved to: {file_path}")
+    except Exception as e:
+        print(f"Failed to write sprite registry: {e}")
