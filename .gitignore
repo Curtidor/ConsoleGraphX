@@ -180,3 +180,5 @@ healthchecksdb
 MigrationBackup/
 .ionide/
 FodyWeavers.xsd
+/ConsoleGraphX/ConsoleGraphX.vcxproj
+/ConsoleGraphX/ConsoleGraphX.vcxproj.filters
