@@ -11,6 +11,7 @@
 #include "Engine\Resources\resource_id.h"
 #include "Engine\Resources\Pools\component_sprite_pool.h"
 #include "Engine\Resources\Pools\component_script_pool.h"
+#include "Engine\Resources\Pools\component_texture_pool.h"
 #include "Engine\Resources\Pools\resource_pool.h"
 #include "Engine\Resources\Pools\base_resource_pool.h"
 #include "Engine\Core\Utils\meta_utils.h"
@@ -48,6 +49,13 @@ namespace ConsoleGraphX_Internal
     {
         using type = ComponentPoolSprite;
 
+    };
+
+    template <>
+    struct PoolForType<ConsoleGraphX_Internal::Texture>
+
+    {
+        using type = ComponentTexturePool;
     };
 
     template <>
@@ -93,11 +101,11 @@ namespace ConsoleGraphX_Internal
             {
                 if (index == N)
                 {
-                    return std::ref(std::get<N>(tpl)); // Wrap the pool reference in std::reference_wrapper
-                } // thats right
+                    return std::ref(std::get<N>(tpl)); // wrap the pool reference in std::reference_wrapper
+                } // thats right: montgomery
                 else
                 {
-                    return _GetResourcePoolByIndex<N + 1>(tpl, index); // Recursively check the next index
+                    return _GetResourcePoolByIndex<N + 1>(tpl, index); // recursively check the next index
                 }
             }
             throw std::out_of_range("Index out of bounds");
@@ -141,27 +149,19 @@ namespace ConsoleGraphX_Internal
             return { resourceId, index };
         }
 
+        // returns the id of the resource and the index of the texture in the pool
         std::pair<ResourceID, ResourceIndex> CreateTextureResource(const std::string& filename)
         {
-            // add a way to look up textures by name to avoid reloading them
-            Texture* texture = TextureLoader::LoadTexture(filename);
-
-            if (!texture) 
-            {
-                throw std::runtime_error("Failed to load texture");
-            }
-
-            ResourcePool<Texture>& tPool = GetResourcePool<Texture>();
-
-            return { GenResourceID::Get<Texture>(), tPool.PlaceResourceInPool(std::move(*texture)) };
-
+            ComponentTexturePool& tPool = GetResourcePool<Texture>();
+            
+            return tPool.LoadTexture(filename);
         }
 
         std::pair<ResourceID, ResourceIndex> CreateTextureResource(uint32_t width, uint32_t height, int color)
         {
             Texture* texture = new Texture(width, height, color);
 
-            ResourcePool<Texture>& tPool = GetResourcePool<Texture>();
+            ComponentTexturePool& tPool = GetResourcePool<Texture>();
 
             return { GenResourceID::Get<Texture>(), tPool.PlaceResourceInPool(std::move(*texture)) };
         }
