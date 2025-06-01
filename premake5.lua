@@ -1,7 +1,13 @@
+dofile("premake_common.lua")
+
 workspace "ConsoleGraphX"
     architecture "x64"
     configurations { "Debug", "Release" }
-    startproject "Editor"  -- Start with Editor
+    if _OPTIONS["withEditor"] then
+        startproject "Editor"
+    else
+        startproject "RunTime"
+    end
 
     outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
