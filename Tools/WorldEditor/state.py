@@ -16,7 +16,7 @@ class ActiveElement(Enum):
 
 class EditorState:
     def __init__(self):
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((WORLD_EDITOR_SCREEN_WIDTH, WORLD_EDITOR_SCREEN_HEIGHT))
         pygame.display.set_caption("World Editor")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont(None, 18)
@@ -31,6 +31,7 @@ class EditorState:
         self.selected_sprite_index: int = -1
         self.sprite_rects: list[tuple[pygame.Rect, int]] = []
         self.sprite_scroll_offset: int = 0
+        self.library_updated = False
 
         self.loaded_sprite_data = SpriteEntry | None
         self.loaded_sprite_size = (0, 0)
@@ -39,7 +40,7 @@ class EditorState:
 
         self.editor_width = EDITOR_WIDTH
         self.sidebar_width = SIDEBAR_WIDTH
-        self.screen_height = SCREEN_HEIGHT
+        self.screen_height = WORLD_EDITOR_SCREEN_HEIGHT
         self.tile_size = TILE_SIZE
         self.chunk_w = CHUNK_PIXEL_WIDTH
         self.chunk_h = CHUNK_PIXEL_HEIGHT
@@ -100,13 +101,16 @@ class EditorState:
             self._move_cam(event)
         else:
             self._scroll_sprites(event)
-
-        self.active_sprite_library = self.sprite_library[self.sprite_scroll_offset:]
+            self.update_sprite_library()
 
         if event.key in (pygame.K_EQUALS, pygame.K_KP_PLUS):
             self.adjust_zoom(1)
         elif event.key in (pygame.K_MINUS, pygame.K_KP_MINUS):
             self.adjust_zoom(-1)
+
+    def update_sprite_library(self):
+        self.active_sprite_library = self.sprite_library[self.sprite_scroll_offset:]
+        self.library_updated = False
 
     def load(self):
         load_result = load_map_and_registry(TILE_SIZE)
@@ -136,7 +140,7 @@ class EditorState:
         if len(self.placed_sprites) < 1:
             return
 
-        self.placed_sprites.sort(key=lambda sprite: (sprite.grid_y, sprite.grid_x))
+        self.placed_sprites.sort(key=lambda sprt: (sprt.grid_y, sprt.grid_x))
         export_sprite_registry('sprites.cxreg', self.placed_sprites)
         buffer = bytearray()
 
@@ -173,6 +177,10 @@ class EditorState:
         flush_chunk_data(current_chunk_data)
 
         write_binary_file('test.cxmap', buffer)
+
+    def undo(self):
+        if len(self.placed_sprites) > 0:
+            self.placed_sprites.pop()
 
 
 def export_sprite_registry(file_path: str, placed_sprites: list[PlacedSprite]):
