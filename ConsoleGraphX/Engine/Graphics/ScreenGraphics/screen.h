@@ -16,8 +16,8 @@ namespace ConsoleGraphX_Internal
 		static inline Screen* _s_activeScreen = nullptr;
 
 	protected:
-		const unsigned short _m_pixelWidth;
-		const unsigned short _m_pixelHeight;
+		const uint16_t _m_pixelWidth;
+		const uint16_t _m_pixelHeight;
 
 	public:									   
 		static const wchar_t s_pixel = L'\x2588';
@@ -32,15 +32,15 @@ namespace ConsoleGraphX_Internal
 		/// <param name="fontWidth"></param>
 		/// <param name="fontHeight"></param>
 		/// <param name="sBuffer"></param>
-		Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer);
+		Screen(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight, std::unique_ptr<PixelBuffer> sBuffer);
 		// Normal constructor
-		Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight);
+		Screen(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight);
 
 
 		bool DrawScreen();
-		bool WriteText(const std::string& text, short x, short y);
+		bool WriteText(const std::string& text,uint16_t x, uint16_t y);
 
-		void WriteTextColor(CHAR_INFO* text, short x, short y);
+		void WriteTextColor(CHAR_INFO* text, uint16_t x, uint16_t y);
 
 		int GetPixelWidth() const;
 		int GetPixelHeight() const;

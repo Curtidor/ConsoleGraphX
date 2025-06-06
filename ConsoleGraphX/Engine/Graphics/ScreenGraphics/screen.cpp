@@ -11,13 +11,13 @@
 
 namespace ConsoleGraphX_Internal
 {
-	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, std::unique_ptr<PixelBuffer> sBuffer)
+	Screen::Screen(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight, std::unique_ptr<PixelBuffer> sBuffer)
 		: PixelCanvas(width, height, std::move(sBuffer)),
 		_m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{}
 
 
-	Screen::Screen(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight)
+	Screen::Screen(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight)
 		: PixelCanvas(width, height),
 		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
@@ -91,7 +91,7 @@ namespace ConsoleGraphX_Internal
 		Screen::_s_activeScreen->SetPixels(srcStart, srcEnd, dest);
 	}
 
-	bool Screen::WriteText(const std::string& text, short x, short y)
+	bool Screen::WriteText(const std::string& text, uint16_t x, uint16_t y)
 	{
 		PixelBuffer* buffer = _m_screenBuffer.get();
 		int screenWidth = buffer->m_bufferSize.X;
@@ -126,11 +126,11 @@ namespace ConsoleGraphX_Internal
 
 
 
-	void Screen::WriteTextColor(CHAR_INFO* text, short x, short y)
+	void Screen::WriteTextColor(CHAR_INFO* text, uint16_t x, uint16_t y)
 	{
 		ConsoleGraphX_Internal::PixelBuffer* pBuffer = _m_screenBuffer.get();
 
-		SMALL_RECT writeRegion = { x, y, pBuffer->m_writePosition.Right, pBuffer->m_writePosition.Top };
+		SMALL_RECT writeRegion = { static_cast<short>(x), static_cast<short>(y), pBuffer->m_writePosition.Right, pBuffer->m_writePosition.Top };
 
 		WriteConsoleOutputA(pBuffer->GetConsoleHandle(), text, pBuffer->m_bufferSize, pBuffer->m_bufferCoord, &writeRegion);
 	}
