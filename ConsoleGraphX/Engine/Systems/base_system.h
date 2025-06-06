@@ -9,6 +9,7 @@ namespace ConsoleGraphX
 	public:
 		virtual void Initialize() = 0;
 		virtual void Update(float delta_time, SceneSystem& sceneSystem) = 0;
+		virtual void ShutDown() = 0;
 
 		virtual ~BaseSystem() = default;
 	};

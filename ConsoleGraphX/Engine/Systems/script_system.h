@@ -14,6 +14,7 @@ namespace ConsoleGraphX
 	public:
 		void Initialize() override;
 		void Update(float delta_time, SceneSystem& sceneSystem) override;
+		void ShutDown() override {};
 
 		// I don't like this static, maybe if other system in the future need a warmup method well make it apart of the base
 		// and do a system wide warmup

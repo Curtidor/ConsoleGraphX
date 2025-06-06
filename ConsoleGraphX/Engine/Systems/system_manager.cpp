@@ -21,4 +21,11 @@ namespace ConsoleGraphX_Internal
 			systemPair.second->Update(deltaTime, sceneSystem);
 		}
 	}
+	void SystemManager::ShutDown()
+	{
+		for (auto& [type_index , base_system] : _m_systems)
+		{
+			base_system->ShutDown();
+		}
+	}
 };

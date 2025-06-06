@@ -11,5 +11,6 @@ namespace ConsoleGraphX
 	public:
 		void Initialize()  override;
 		void Update(float delta_time, SceneSystem& sceneSystem) override;
+		void ShutDown() override {};
 	};
 };
