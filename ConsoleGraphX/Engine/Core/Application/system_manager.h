@@ -54,6 +54,7 @@ namespace ConsoleGraphX_Internal
 		}
 
 		void Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem);
+		void ShutDown();
 	};
 };
 
