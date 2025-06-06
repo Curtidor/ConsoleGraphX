@@ -1,22 +1,21 @@
 import pygame
 import sys
 
-from SpriteMaker.constants import (SCREEN_WIDTH, SCREEN_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT, GRID_SIZE_X, GRID_SIZE_Y,
-                                   EXPORT_FILE_PATH, SPRITE_ID)
+from Config.settings import (SPRITE_MAKER_SCREEN_HEIGHT, SPRITE_MAKER_SCREEN_WIDTH, SPRITE_MAKER_CANVAS_WIDTH,
+                             SPRITE_MAKER_CANVAS_HEIGHT, GRID_SIZE_X, GRID_SIZE_Y, EXPORT_FILE_PATH, SPRITE_ID,
+                             TRANSPARENT_COLOR)
 from SpriteMaker.canvas import Canvas
 from SpriteMaker.sprite_utils import export_sprite
-
-from constants import TRANSPARENT_COLOR
 
 
 def main():
     print("CONTROLS:")
     print('-'*40)
-    print("F: to fill the screen with the currently selected color\nE: to export the sprite"
+    print("F: to fill the screen with the currently selected color\nS: to export the sprite"
           "\nR: to go into erase mode\n\nEnjoy!\n")
     pygame.init()
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((SPRITE_MAKER_SCREEN_WIDTH, SPRITE_MAKER_SCREEN_HEIGHT))
     pygame.display.set_caption("Sprite Drawer")
 
     canvas = Canvas()
@@ -32,7 +31,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
-                if mouse_y >= CANVAS_HEIGHT * GRID_SIZE_Y:
+                if mouse_y >= SPRITE_MAKER_CANVAS_HEIGHT * GRID_SIZE_Y:
                     palette_index = mouse_x // GRID_SIZE_X
                     canvas.select_color(palette_index)
                 else:
@@ -48,9 +47,9 @@ def main():
                     canvas.handle_drawing(mouse_x, mouse_y)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
+                if event.key == pygame.K_s:
                     export_sprite(
-                        sprite_width=CANVAS_WIDTH, sprite_height=CANVAS_HEIGHT,
+                        sprite_width=SPRITE_MAKER_CANVAS_WIDTH, sprite_height=SPRITE_MAKER_CANVAS_HEIGHT,
                         colors=canvas.canvas, export_path=EXPORT_FILE_PATH, sprite_id=SPRITE_ID
                                   )
 
@@ -66,4 +65,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
