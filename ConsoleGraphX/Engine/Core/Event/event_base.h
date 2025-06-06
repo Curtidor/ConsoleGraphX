@@ -103,6 +103,20 @@ namespace ConsoleGraphX
         }
 
         /**
+         * @brief Add a captured lambda directly (e.g., `[this](...) {}`).
+         *
+         * @param lambda The lambda function.
+         * @return EventCallBackHandle
+         */
+        [[nodiscard]] EventCallBackHandle<CallableType, Args...> AddListenerLambda(CallableType&& lambda)
+        {
+            size_t handle = _m_nextHandle.fetch_add(1, std::memory_order_relaxed);
+            _m_callbacks.emplace_back(std::move(lambda), handle);
+            return _m_callbacks.back();
+        }
+
+
+        /**
         * @brief Add a listener based on a weak pointer.
         *
         * @tparam T The type of the object managed by the weak pointer.
@@ -173,6 +187,12 @@ namespace ConsoleGraphX
                         return handle.handle == handleToRemove.handle;
                     }),
                 _m_callbacks.end());
+        }
+        
+        // dont use in deconstructors
+        void ClearListeners() 
+        {
+            _m_callbacks.clear();
         }
     };
 
