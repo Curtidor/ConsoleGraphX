@@ -73,7 +73,7 @@ namespace ConsoleGraphX_Internal
         std::streamsize fileSize = textureFile.tellg();
         textureFile.seekg(currentPosition);  // return to the position after reading width and height
 
-        if (fileSize != (static_cast<std::size_t>(currentPosition) + expectedPixelDataSize))
+        if (fileSize != (static_cast<long long>(currentPosition) + expectedPixelDataSize))
         {
             throw std::runtime_error("File size does not match expected size");
         }
