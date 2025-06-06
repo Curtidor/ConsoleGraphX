@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Engine\Core\Window\window.h"
 
-#ifdef Editor
+#if defined(Editor) && (MIN_BUILD == 0) 
     #define PROFILE_SCOPE(name) Timer timer##__LINE__(name)
     #define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCTION__)
     #define INCREMENT_COUNTER(name, value) CGXProfiler::Instance().IncrementCounter(name, value)
@@ -36,9 +36,11 @@ namespace ConsoleGraphX_Internal
 
         static void ShutDown()
         {
+        #if MIN_BUILD == 0
             assert(_s_instance);
 
             delete _s_instance;
+        #endif
         }
 
         void AttachWindow(ConsoleGraphX::CrossProcessWindow* window)
@@ -54,7 +56,7 @@ namespace ConsoleGraphX_Internal
         }
 
         // Increments a named counter
-        void IncrementCounter(const std::string& name, int value = 1) 
+        void IncrementCounter(const std::string& name, size_t value = 1) 
         {
             _m_counters[name] += value;
         }
@@ -66,7 +68,7 @@ namespace ConsoleGraphX_Internal
                 return;
             }
 
-            int y = 0;
+            unsigned short y = 0;
 
             _m_window->WriteText("==================== CGX Profiler Metrics ====================", 2, y++);
 
@@ -111,7 +113,7 @@ namespace ConsoleGraphX_Internal
         };
 
         std::unordered_map<std::string, TimerData> _m_timers;
-        std::unordered_map<std::string, int> _m_counters;
+        std::unordered_map<std::string, size_t> _m_counters;
     };
 
     class Timer
