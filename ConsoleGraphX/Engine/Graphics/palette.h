@@ -12,15 +12,15 @@ namespace ConsoleGraphX
     private:
         std::array<Color_CGX, 16> _m_colors;
         // unsigned shorts are used for indexes as CHAR_INFO attribue use a unsinged short, this allows direct conversion
-        std::unordered_map<std::string, unsigned short> _m_nameToIndex;
+        std::unordered_map<std::string, uint16_t> _m_nameToIndex;
 
     public:
         Palette();
 
         bool AddColor(const std::string& name, const Color_CGX& color, int index);
 
-        unsigned short GetColorIndex(const std::string& name) const;
-        std::optional<Color_CGX> GetColor(unsigned short index) const;
+        int16_t GetColorIndex(const std::string& name) const;
+        std::optional<Color_CGX> GetColor(uint16_t index) const;
         std::optional<Color_CGX> GetColor(const std::string& name) const;
         std::array<Color_CGX, 16>& GetColors();
 

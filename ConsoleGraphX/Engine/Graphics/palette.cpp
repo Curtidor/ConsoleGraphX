@@ -14,7 +14,7 @@ namespace ConsoleGraphX
             return false;
         }
 
-        _m_nameToIndex[name] = index;
+        _m_nameToIndex[name] = static_cast<uint16_t>(index);
         _m_colors[index] = color;
 
         return true;
@@ -40,7 +40,7 @@ namespace ConsoleGraphX
        return std::nullopt;
     }
 
-    unsigned short Palette::GetColorIndex(const std::string& name) const
+    int16_t Palette::GetColorIndex(const std::string& name) const
     {
         auto it = _m_nameToIndex.find(name);
         if (it != _m_nameToIndex.end())
@@ -61,25 +61,26 @@ namespace ConsoleGraphX
         static bool init = false;
         if (!init)
         {
-            palette.AddColor("Soft Peach", Color_CGX(242, 192, 162), 0);        // #f2c0a2
-            palette.AddColor("Coral Pink", Color_CGX(233, 132, 114), 1);        // #e98472
-            palette.AddColor("Bright Red", Color_CGX(216, 35, 35), 2);          // #d82323
-            palette.AddColor("Deep Maroon", Color_CGX(152, 24, 60), 3);         // #98183c
-            palette.AddColor("Bright Green", Color_CGX(31, 203, 35), 4);        // #1fcb23
-            palette.AddColor("Forest Green", Color_CGX(18, 109, 48), 5);        // #126d30
-            palette.AddColor("Cyan", Color_CGX(38, 221, 221), 6);               // #26dddd
-            palette.AddColor("Deep Blue", Color_CGX(24, 103, 160), 7);          // #1867a0
-            palette.AddColor("Chestnut Brown", Color_CGX(147, 66, 38), 8);      // #934226
-            palette.AddColor("Dark Brown", Color_CGX(108, 37, 30), 9);          // #6c251e
-            palette.AddColor("Golden Yellow", Color_CGX(247, 226, 108), 10);    // #f7e26c
-            palette.AddColor("Mustard Yellow", Color_CGX(237, 179, 41), 11);    // #edb329
-            palette.AddColor("Burnt Orange", Color_CGX(231, 109, 20), 12);      // #e76d14
-            palette.AddColor("Soft White", Color_CGX(242, 242, 249), 13);       // #f2f2f9
-            palette.AddColor("Lavender Blue", Color_CGX(106, 95, 160), 14);     // #6a5fa0
-            palette.AddColor("Deep Black", Color_CGX(22, 20, 35), 15);          // #161423
+            palette.AddColor("Color 0", Color_CGX(109, 194, 202), 0);  // #6dc2ca
+            palette.AddColor("Color 1", Color_CGX(117, 113, 97), 1);   // #757161
+            palette.AddColor("Color 2", Color_CGX(109, 170, 44), 2);   // #6daa2c
+            palette.AddColor("Color 3", Color_CGX(89, 125, 206), 3);   // #597dce
+            palette.AddColor("Color 4", Color_CGX(133, 149, 161), 4);  // #8595a1
+            palette.AddColor("Color 5", Color_CGX(218, 212, 94), 5);   // #dad45e
+            palette.AddColor("Color 6", Color_CGX(52, 101, 36), 6);    // #346524
+            palette.AddColor("Color 7", Color_CGX(208, 70, 72), 7);    // #d04648
+            palette.AddColor("Color 8", Color_CGX(48, 52, 109), 8);    // #30346d
+            palette.AddColor("Color 9", Color_CGX(133, 76, 48), 9);    // #854c30
+            palette.AddColor("Color 10", Color_CGX(20, 12, 28), 10);   // #140c1c
+            palette.AddColor("Color 11", Color_CGX(78, 74, 78), 11);   // #4e4a4e
+            palette.AddColor("Color 12", Color_CGX(222, 238, 214), 12); // #deeed6
+            palette.AddColor("Color 13", Color_CGX(210, 125, 44), 13); // #d27d2c
+            palette.AddColor("Color 14", Color_CGX(68, 36, 52), 14);   // #442434
+            palette.AddColor("Color 15", Color_CGX(210, 170, 153), 15); // #d2aa99
 
             init = true;
         }
+
 
         return palette;
     }
