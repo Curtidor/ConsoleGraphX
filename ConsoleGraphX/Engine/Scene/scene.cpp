@@ -25,7 +25,6 @@ namespace ConsoleGraphX
 
         Entity& insertedEntity = const_cast<Entity&>(*result.first);
 
-        insertedEntity.EntityDestroyedEvent.AddListener(this, &Scene::_EntityDestroyedEventHandler);
 
         if (!insertedEntity.m_tag.empty())
         {
@@ -54,7 +53,7 @@ namespace ConsoleGraphX
         _m_entities.erase(itEntity);
     }
 
-    void Scene::_EntityDestroyedEventHandler(int id)
+    void Scene::_EntityDestroyedEventHandler(size_t id)
     {
         DeregisterEntity(*GetEntity(id));
     }
@@ -81,7 +80,7 @@ namespace ConsoleGraphX
     }
 
 
-    Entity* Scene::GetEntity(int id)
+    Entity* Scene::GetEntity(size_t id)
     {
         auto it = _m_entities.find(id);
 

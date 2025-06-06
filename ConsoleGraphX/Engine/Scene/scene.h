@@ -4,6 +4,7 @@
 #include <string>
 #include "Engine\Core\entity.h"
 #include "Engine\Resources\resource_manager.h"
+#include "Engine\Core\Event\event_guard.h"
 
 namespace ConsoleGraphX
 {
@@ -13,10 +14,10 @@ namespace ConsoleGraphX
         const std::string _m_scene_name;
 
         std::unordered_set<Entity, Entity::Hash, Entity::Equal> _m_entities;
-        std::unordered_map<std::string, int> _m_tagIDMap;
+        std::unordered_map<std::string, size_t> _m_tagIDMap;
 
     private:
-        void _EntityDestroyedEventHandler(int id);
+        void _EntityDestroyedEventHandler(size_t id);
     
     public:
         ConsoleGraphX_Internal::ResourceManager  _m_resourceManager;
@@ -28,7 +29,7 @@ namespace ConsoleGraphX
         virtual void Initialize() = 0;
 
         Entity* RegisterEntityN(std::string name = "");
-        Entity* GetEntity(int id);
+        Entity* GetEntity(size_t id);
         Entity* GetEntity(const std::string& tag);
 
         void Destroy();
