@@ -4,10 +4,11 @@ import sys
 from WorldEditor.state import EditorState, ActiveElement
 from WorldEditor.sidebar import draw_sidebar, handle_sidebar_click
 from WorldEditor.grid import draw_grid, draw_sprites, get_hover_tile, draw_ghost_sprite
-from Config.settings import BG_COLOR, HOVER_COLOR, TILE_SIZE
+from Config.settings import BG_COLOR, HOVER_COLOR
 
 
 def main():
+    print("Controls:\nLoad existing map: L\nSave map: S\nUndo placement CRTL+Z")
     pygame.init()
     state = EditorState()
 
@@ -37,6 +38,8 @@ def main():
             grid_y = int(state.screen_to_world(mouse_pos[0], mouse_pos[1])[1]) // state.tile_size
             state.ghost_sprite_pos = (grid_x, grid_y)
 
+        if state.library_updated:
+            state.update_sprite_library()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -56,6 +59,8 @@ def main():
                     state.save()
                 elif event.key == pygame.K_l:
                     state.load()
+                elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_LCTRL:
+                    state.undo()
 
         pygame.display.flip()
         state.clock.tick(60)
