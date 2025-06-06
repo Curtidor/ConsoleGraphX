@@ -7,10 +7,12 @@
 
 namespace ConsoleGraphX
 {
-    void SceneSystem::RegisterScene(std::unique_ptr<Scene> scene)
+    void SceneSystem::RegisterScene(std::unique_ptr<Scene, void(*)(Scene*)> scene)
     {
-        _m_scenes[scene->GetSceneName()] = std::move(scene);
+        _m_scenes.emplace(scene->GetSceneName(), std::move(scene));
+
     }
+
 
     void SceneSystem::DeregisterScene(const std::string& name)
     {
@@ -36,22 +38,23 @@ namespace ConsoleGraphX
 
     void SceneSystem::LoadSceneImpl(const std::string& name)
     {
-        if (!IsSceneRegistered(name))
-        {
-            throw std::runtime_error("Scene must be registered");
-        }
-
         // just incase there isnt an already active scene 
         if (_m_activeScene != nullptr)
         {
             _m_activeScene->Destroy();
         }
 
-        // if we make it to here we can guarantee that name is in _m_scenes allow for a direct "index"
-        _m_activeScene = _m_scenes[name].get();
-        SceneSystem& system = *this;
-        _m_activeScene->Initialize();
+        auto it = _m_scenes.find(name);
+        if (it != _m_scenes.end())
+        {
+            _m_activeScene = it->second.get();
+        }
+        else
+        {
+            throw std::runtime_error("Scene must be registered: " + name);
+        }
 
+        _m_activeScene->Initialize();
 
         ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&_m_activeScene->GetResourceManager());
     }
@@ -79,7 +82,7 @@ namespace ConsoleGraphX
             return;
 
         Scene& scene = *it->second;
-        scene.Destroy();
+        //scene.Destroy();
 
         _m_scenes.erase(it);
     }
@@ -88,10 +91,13 @@ namespace ConsoleGraphX
     {}
 
     SceneSystem::~SceneSystem()
-    {}
+    {
+        ShutDown();
+    }
 
     void SceneSystem::Initialize()
-    {}
+    {
+    }
 
     void SceneSystem::Update(float delta_time, SceneSystem& sceneSystem)
     {
@@ -111,6 +117,10 @@ namespace ConsoleGraphX
             // DeleteScene erases the passed in scene from the map so
             // begin points to a different scene each iteration
         }
+
+        _m_activeScene = nullptr;
+        _m_scenes.clear();
+        _m_sceneToLoad = std::string();
     }
 
 };
