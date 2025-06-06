@@ -1,13 +1,12 @@
 import pygame
-from Config.settings import GRID_COLOR
-from SpriteMaker.constants import PALETTE_COLORS
-from state import EditorState, SpriteEntry
+from Config.settings import GRID_COLOR, PALETTE_COLORS
+from state import EditorState
 
 
 def draw_grid(state: EditorState):
     step = int(state.tile_size * state.zoom)
-    chunk_width_px = state.chunk_w * state.zoom
-    chunk_height_px = state.chunk_h * state.zoom
+    _chunk_width_px = state.chunk_w * state.zoom  # not used, yet
+    _chunk_height_px = state.chunk_h * state.zoom  # not used, yet
     x_start = -int((state.cam_x % state.tile_size) * state.zoom)
     y_start = -int((state.cam_y % state.tile_size) * state.zoom)
 
