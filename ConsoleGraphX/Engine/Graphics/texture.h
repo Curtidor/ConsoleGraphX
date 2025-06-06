@@ -17,7 +17,7 @@ namespace ConsoleGraphX_Internal
     public:
         Texture();
         Texture(uint32_t w, uint32_t h, uint32_t id);
-        Texture(uint32_t width, uint32_t height, uint32_t id, int color);
+        Texture(uint32_t width, uint32_t height, uint32_t id, uint16_t color);
         ~Texture();
 
         // don't allow textures to be copied
