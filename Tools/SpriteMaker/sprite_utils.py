@@ -5,8 +5,8 @@ import tkinter as tk
 
 from tkinter import filedialog
 
-from SpriteMaker.constants import PALETTE_COLORS, FULL_BLOCK_CHAR_INT, TRANSPARENT_CHAR_INT, DEFAULT_COLOR_INT, \
-    SPRITE_MAKER_VERSION
+from Config.settings import PALETTE_COLORS, FULL_BLOCK_CHAR_INT, TRANSPARENT_CHAR_INT, DEFAULT_COLOR_INT, \
+    SPRITE_MAKER_VERSION, TRANSPARENT_COLOR
 from WorldEditor.models import SpriteData
 
 TRANSPARENT_CHAR_LE = int.from_bytes(bytes.fromhex("200e"), "little")
@@ -30,7 +30,7 @@ def open_sprite_file() -> tuple[int, list[list[SpriteData]], str] | None:
 
 
 def export_sprite(sprite_width: int, sprite_height: int,
-                  colors: list[list[int]], export_path: str, sprite_id: int):
+                  colors: list[list[int] | None], export_path: str, sprite_id: int, pallet=PALETTE_COLORS):
     """
     @brief Exports a sprite to a .cxsp file using struct.pack, with 32-bit header fields.
 
@@ -46,7 +46,9 @@ def export_sprite(sprite_width: int, sprite_height: int,
     @param colors A 2D list [height][width] of color RGB tuples. Use None for transparent tiles.
     @param export_path The output path for the .cxsp file.
     @param sprite_id A unique 32-bit unsigned integer ID for this sprite.
+    @param pallet The pallet of colors to use
     """
+    print(f'using: {pallet}')
     if not (0 <= sprite_id <= 0xFFFFFFFF):
         raise ValueError("sprite_id must be a 32-bit unsigned integer (0–4294967295)")
     if not (0 < sprite_width <= 0xFFFFFFFF):
@@ -58,17 +60,15 @@ def export_sprite(sprite_width: int, sprite_height: int,
         # Write 32-bit header
         f.write(struct.pack('<IIII', SPRITE_MAKER_VERSION, sprite_width, sprite_height, sprite_id))
 
-        for y in range(sprite_height):
-            for x in range(sprite_width):
-                color = colors[y][x]
-                if color is None:
-                    char = TRANSPARENT_CHAR_INT
-                    attr = DEFAULT_COLOR_INT
-                else:
-                    color_index = PALETTE_COLORS.index(color)
-                    char = FULL_BLOCK_CHAR_INT
-                    attr = color_index
-                f.write(struct.pack('<HH', char, attr))
+        for color in colors:
+            if color is None or color == TRANSPARENT_COLOR:
+                char = TRANSPARENT_CHAR_INT
+                attr = DEFAULT_COLOR_INT
+            else:
+                color_index = pallet.index(color)
+                char = FULL_BLOCK_CHAR_INT
+                attr = color_index
+            f.write(struct.pack('<HH', char, attr))
         print(f'saved: {export_path}')
 
 
@@ -88,7 +88,7 @@ def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
         raise ValueError(f"Unsupported file type {file_path.split('.')[-1]}")
 
     with open(file_path, 'rb') as binary_sprite:
-        version = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
+        _version = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)  # reads the version number
         width = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         height = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         sprite_id = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
