@@ -94,22 +94,25 @@ namespace ConsoleGraphX_Internal
         PoolsForTypes<BuiltInResoruceTypes::type>::type _m_resourcePoolsT;
 
     private:
-        template <std::size_t N = 0, typename... Ts>
-        typename TupleToVariant<std::tuple<Ts...>>::type _GetResourcePoolByIndex(std::tuple<Ts...>& tpl, std::size_t index)
+        template <std::size_t N, typename... Ts>
+        std::enable_if_t<N == sizeof...(Ts), typename TupleToVariant<std::tuple<Ts...>>::type>
+            _GetResourcePoolByIndex(std::tuple<Ts...>&, std::size_t)
         {
-            if constexpr (N < sizeof...(Ts))
-            {
-                if (index == N)
-                {
-                    return std::ref(std::get<N>(tpl)); // wrap the pool reference in std::reference_wrapper
-                } // thats right: montgomery
-                else
-                {
-                    return _GetResourcePoolByIndex<N + 1>(tpl, index); // recursively check the next index
-                }
-            }
             throw std::out_of_range("Index out of bounds");
         }
+
+
+        template <std::size_t N = 0, typename... Ts>
+        std::enable_if_t<(N < sizeof...(Ts)), typename TupleToVariant<std::tuple<Ts...>>::type>
+            _GetResourcePoolByIndex(std::tuple<Ts...>& tpl, std::size_t index)
+        {
+            if (index == N)
+            {
+                return std::ref(std::get<N>(tpl));
+            }
+            return _GetResourcePoolByIndex<N + 1>(tpl, index);
+        }
+
 
 
     public:
