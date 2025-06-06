@@ -47,8 +47,8 @@ namespace ConsoleGraphX
   //
   // CONCLUSION:
   //      For now, DI (Dependency Injection) is the preferred approach.
-
-
+    
+   inline CGXEventArgs<size_t> EntityDestroyedEvent;
 
     /**
      * @brief A class representing an entity in the entity-component system (ECS).
@@ -101,10 +101,9 @@ namespace ConsoleGraphX
         }
 
     public:
-        const size_t m_id;
+        size_t m_id;
         std::string m_tag;
 
-        CGXEventArgs<int> EntityDestroyedEvent;
 
     public:
 

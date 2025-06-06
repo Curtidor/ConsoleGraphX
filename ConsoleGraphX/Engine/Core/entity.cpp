@@ -61,14 +61,14 @@ namespace ConsoleGraphX
     Entity::~Entity()
     {}
 
-    Entity::Entity(Entity && other) noexcept
+    Entity::Entity(Entity&& other) noexcept
         : _m_parent(other._m_parent),
         _m_resourceManager(other._m_resourceManager),
         _m_children(std::move(other._m_children)),
         _m_componentIdToIndexMap(std::move(other._m_componentIdToIndexMap)),
         _m_scriptIdToIndexes(std::move(other._m_scriptIdToIndexes)),
         m_id(other.m_id),
-        m_tag(std::move(other.m_tag))
+        m_tag(other.m_tag)
     {
         other._m_parent = nullptr;
     }
@@ -82,8 +82,8 @@ namespace ConsoleGraphX
             _m_children = std::move(other._m_children);
             _m_componentIdToIndexMap = std::move(other._m_componentIdToIndexMap);
             _m_scriptIdToIndexes = std::move(other._m_scriptIdToIndexes);
-            //m_id = other.m_id;
-            m_tag = std::move(other.m_tag);
+            m_id = other.m_id;
+            m_tag = other.m_tag;
 
             other._m_parent = nullptr;
         }
@@ -205,7 +205,7 @@ namespace ConsoleGraphX
         DestroyEntityResources();
         ConsoleGraphX_Internal::EntityIDs::RecycleId(m_id);
 
-        EntityDestroyedEvent.Invoke(m_id);
+        EntityDestroyedEvent.InvokeNFC(m_id);
     }
 
     size_t Entity::GetId() const
