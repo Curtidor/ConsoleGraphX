@@ -7,7 +7,7 @@ namespace ConsoleGraphX_Internal
 {
 
     Texture::Texture()
-        : _m_width(1), _m_height(1), _m_id(-1)
+        : _m_width(1), _m_height(1), _m_id(MAX_SIZE_UINT32)
     {
         _m_pixels = new CHAR_INFO[_m_width * _m_height];
     }
@@ -18,14 +18,14 @@ namespace ConsoleGraphX_Internal
         _m_pixels = new CHAR_INFO[width * height];
     }
 
-    Texture::Texture(uint32_t width, uint32_t height, uint32_t id, int color)
+    Texture::Texture(uint32_t width, uint32_t height, uint32_t id, uint16_t color)
         : _m_width(width), _m_height(height), _m_id(id)
     {
         _m_pixels = new CHAR_INFO[width * height];
 
         for (size_t i = 0; i < static_cast<size_t>(width) * height; i++)
         {
-            _m_pixels[i].Attributes = color;
+            _m_pixels[i].Attributes = static_cast<unsigned short>(color); // WORD is a unsigned short
             _m_pixels[i].Char.UnicodeChar = L'\x2588';
         }
     }
