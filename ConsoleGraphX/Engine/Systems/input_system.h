@@ -129,6 +129,6 @@ namespace ConsoleGraphX
         InputSystem(const InputSystem&) = delete;
         InputSystem& operator=(const InputSystem&) = delete;
 
-        char GetKey();
+        int GetKey();
     };
 }

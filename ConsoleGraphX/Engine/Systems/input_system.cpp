@@ -24,7 +24,7 @@ namespace ConsoleGraphX
         _s_instance = nullptr;
     }
 
-    char InputSystem::GetKey()
+    int InputSystem::GetKey()
     {
         if (_kbhit()) return _getch();
         return '\0';
