@@ -8,7 +8,6 @@ from WorldEditor.models import PlacedSprite, SpriteEntry
 
 
 def load_from_files(map_path: str, reg_path: str, tile_size: int):
-    # === Load sprite registry ===
     sprite_registry = {}
     with open(reg_path, "r") as reg_file:
         for line in reg_file:
@@ -21,15 +20,12 @@ def load_from_files(map_path: str, reg_path: str, tile_size: int):
                 path = value.strip()
                 sprite_registry[sprite_id] = path
 
-    print(sprite_registry)
-    # === Load map and placed sprites ===
     sprite_db = {}
     placed_sprites = []
 
     with open(map_path, "rb") as f:
-        version, = struct.unpack('<H', f.read(2))
+        _version, = struct.unpack('<H', f.read(2))
         chunk_w, chunk_h = struct.unpack('<II', f.read(8))
-        print(version, chunk_w, chunk_h)
         chunk_w *= tile_size
         chunk_h *= tile_size
 
@@ -40,19 +36,18 @@ def load_from_files(map_path: str, reg_path: str, tile_size: int):
 
             (sprite_count,) = struct.unpack('<I', count_data)
             if sprite_count == 0:
-                print('skip')
                 continue
 
-            print(sprite_count, 'count')
             for _ in range(sprite_count):
                 x, y, sprite_id = struct.unpack('<iii', f.read(12))
-                print(x, y, sprite_id)
 
                 if sprite_id not in sprite_registry:
                     print(f"[WARN] Unknown sprite ID: {sprite_id}")
                     continue
 
-                sprite_path = sprite_registry[sprite_id]
+                split_map_path = map_path.split('/')[:-1]
+                full_path = '/'.join(split_map_path)
+                sprite_path = full_path + '/' + sprite_registry[sprite_id]
 
                 if sprite_path not in sprite_db:
                     _, _, _, sprite_data = load_sprite(sprite_path)
