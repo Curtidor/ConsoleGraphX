@@ -19,8 +19,7 @@ namespace ConsoleGraphX_Internal
     private:
         std::unordered_map<ResourceIndex, ResourceIndex> _m_handleToPoolIndex;
         std::vector<ResourceIndex> _m_cachedActiveIndices;
-        std::unordered_set<ResourceIndex> _m_openPoolIndexes;
-        std::vector<T> _m_pool;
+        std::unordered_set<ResourceIndex> _m_openPoolIndexes; // the devil
         size_t _m_maxFreeIndexThreshold;
         bool _m_dirtyCache = false;
 
@@ -46,6 +45,8 @@ namespace ConsoleGraphX_Internal
 
             _m_dirtyCache = false;
         }
+    protected:
+        std::vector<T> _m_pool;
 
     protected:
         [[nodiscard]] ResourceIndex _GetOpenPoolIndex()
@@ -92,19 +93,29 @@ namespace ConsoleGraphX_Internal
 
         ~ResourcePool()
         {
-            if constexpr (std::is_pointer_v<T>)
-            {
-                for (T& resource : _m_pool)
-                {
-                    delete resource;
-                }
-            }
+            //if constexpr (std::is_pointer_v<T>)
+            //{
+            //    for (size_t i = 0; i < _m_pool.size(); ++i)
+            //    {
+            //        if (_m_openPoolIndexes.contains(i))
+            //            continue; // already deleted
 
-            _m_pool.clear();
-            _m_openPoolIndexes.clear(); // should now be safe
-            _m_handleToPoolIndex.clear();
-            _m_cachedActiveIndices.clear();
+            //        if (_m_pool[i])
+            //        {
+            //            delete _m_pool[i];
+            //            _m_pool[i] = nullptr;
+            //        }
+            //    }
+            //}
+
+            //_m_pool.clear();
+            //_m_openPoolIndexes.clear();
+            //_m_handleToPoolIndex.clear();
+            //_m_cachedActiveIndices.clear();
         }
+
+
+
 
         template <typename... Args>
         ResourceIndex CreateResource(Args&&... args)
