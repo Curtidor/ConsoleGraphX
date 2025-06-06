@@ -1,6 +1,6 @@
 import pygame
 from SpriteMaker.sprite_utils import open_sprite_file
-from SpriteMaker.constants import PALETTE_COLORS
+from Config.settings import PALETTE_COLORS
 from state import EditorState, SpriteEntry
 
 
@@ -51,7 +51,7 @@ def draw_sidebar(state: EditorState):
                 pygame.draw.rect(state.screen, color, rect)
 
 
-def handle_sidebar_click(pos, state):
+def handle_sidebar_click(pos, state: EditorState):
     if pos[0] < state.editor_width:
         return
 
@@ -61,8 +61,13 @@ def handle_sidebar_click(pos, state):
     load_button_x = state.editor_width + (state.sidebar_width - load_button_width) // 2
     if (load_button_x <= mx <= load_button_x + load_button_width and
             load_button_y <= my <= load_button_y + 30):
-        sprite_id, sprite_data, sprite_path = open_sprite_file()
+        result = open_sprite_file()
+        if not result:
+            return
+
+        sprite_id, sprite_data, sprite_path = result
         if sprite_data:
+            state.library_updated = True
             state.sprite_library.append(SpriteEntry(sprite_id, sprite_data, sprite_path))
         return
 
