@@ -7,16 +7,21 @@
 
 namespace ConsoleGraphX
 {
+#if MIN_BUILD == 1
+    Application* g_app = nullptr;
+#endif
+
     Application::Application()
         : m_engine(Engine()), _m_state(ApplicationState::Running)
-    {}
+    {
+    }
 
     void Application::WarmUp(SceneSystem& sceneSystem)
     {
         m_engine.WarmUp(sceneSystem);
     }
 
-    void Application::Run(SceneSystem& sceneSystem, std::atomic<bool>* shutdownSignal)
+    void Application::Run(SceneSystem& sceneSystem)
     {
         const float targetUpdateRate = 1.0f / 60.0f;
         float accumulator = 0.0f;
@@ -26,7 +31,6 @@ namespace ConsoleGraphX
 
         auto previousTime = std::chrono::high_resolution_clock::now();
 
-        bool notified = false;
         while (_m_state != ApplicationState::Stopped)
         {
             if (_m_state == ApplicationState::Running)
@@ -48,52 +52,50 @@ namespace ConsoleGraphX
                 m_engine.Render(sceneSystem, alpha);
             }
 
-            WindowManager::Instance().ProcessToCloseWindows();
+        #if (MIN_BUILD == 1)
+            Shutdown();
+        #else
+           WindowManager::Instance().ProcessToCloseWindows();
+        #endif // (DEBUG) && (MIN_BUILD == 0)
 
-            if (_m_state == ApplicationState::ShuttingDown && !notified)
-            {
-                {
-                    std::lock_guard<std::mutex> lock(_m_mutex);
-                    _m_condition.notify_one();
-                }
+           while (!_m_task.empty())
+           {
+               auto task = _m_task.front();
+               _m_task.pop();
 
-                if (shutdownSignal)
-                {
-                    *shutdownSignal = true;
-                }
+               if (task)
+                   task();
+           }
 
-                notified = true;
-            }
         }
     }
 
     void Application::Shutdown()
     {
+        //OnClose.Invoke();
+        
+        while (!_m_task.empty())
         {
-            std::unique_lock<std::mutex> lock(_m_mutex);
-            _m_state = ApplicationState::ShuttingDown;
-
-            _m_condition.wait(lock);
-
-            _m_state = ApplicationState::Stopped;
-
-            ConsoleGraphX_Internal::LoggerManager::ShutDown();
-            WindowManager::ShutDown();
-           
-            std::cout << "Shut down done" << std::endl;
+            _m_task.pop(); // remove any remaining task
         }
-       
+
+        _m_state = ApplicationState::ShuttingDown;
+        _m_state = ApplicationState::Stopped;
+
+        #if (MIN_BUILD == 0)
+        m_engine.m_threadManager.RequestShutdownAll();
+        m_engine.m_threadManager.JoinAll();
+
+        WindowManager::ShutDown();
+        ConsoleGraphX_Internal::LoggerManager::ShutDown(); // shouldnt use the window's
+        #endif
+
+        m_engine.Shutdown();
+        std::cout << "Shut down done" << std::endl;
     }
 
     void Application::OnConsoleClose(AbstractWindow* window)
     {
-        OnClose.Invoke();
-
-        std::thread shutdownThread([this]() {
-            Shutdown();
-            });
-
-        // detach the thread to allow it to run independently
-        shutdownThread.detach();
+        _m_task.push([this]() { Shutdown(); });
     }
 }
