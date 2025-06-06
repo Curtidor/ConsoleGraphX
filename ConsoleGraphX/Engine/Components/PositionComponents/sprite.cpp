@@ -12,7 +12,7 @@ namespace ConsoleGraphX
 {
 	Sprite::Sprite()
 		: PositionComponentBase(), _m_width(1), _m_height(1),
-		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(MAX_SIZE_T), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0) 
 	{}
 
@@ -32,7 +32,7 @@ namespace ConsoleGraphX
 	// used when creating a sprite with no texture
 	Sprite::Sprite(uint32_t width, uint32_t height, int color, ConsoleGraphX_Internal::ResourceManager* rManager, TransformID transformD)
 		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
-		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(MAX_SIZE_T), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
 		m_textureIndex = rManager->CreateTextureResource(width, height, color).second;
@@ -41,7 +41,7 @@ namespace ConsoleGraphX
 	// used when creating a sprite with no texture
 	Sprite::Sprite(int width, int height, int color, ConsoleGraphX_Internal::ResourceManager* rManager, TransformID transformD)
 		: PositionComponentBase(transformD), _m_width(width), _m_height(height),
-		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(MAX_SIZE_T), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(width, height)
 	{
 		m_textureIndex = rManager->CreateTextureResource(width, height, color).second;
@@ -50,7 +50,7 @@ namespace ConsoleGraphX
 	// used when cloning sprites
 	Sprite::Sprite(TransformID transformID)
 		: PositionComponentBase(transformID), _m_width(1), _m_height(1),
-		m_textureIndex(-1), _m_isVisible(true), _m_isTransparent(false),
+		m_textureIndex(MAX_SIZE_T), _m_isVisible(true), _m_isTransparent(false),
 		m_layer(0), m_size(0, 0)
 	{}
 
