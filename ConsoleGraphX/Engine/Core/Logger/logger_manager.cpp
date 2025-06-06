@@ -9,16 +9,16 @@
 #include "Engine\Graphics\ScreenGraphics\screen.h"
 #include "Engine\Core\Window\window.h"
 #include "Engine\Core\Window\window_manager.h"
-
+#include "Engine\Core\Concurrency\thread_manager.h"
 
 namespace ConsoleGraphX_Internal
 {
-     LoggerManager::LoggerManager(const char* loggerName) :
-         _m_terminate(false) 
-     {
-         _m_loggerWindow = nullptr;
-        _m_thread = std::thread(&LoggerManager::_ProcessQueue, this);
-     }
+    LoggerManager* LoggerManager::_s_instance = nullptr;
+
+    LoggerManager::LoggerManager()
+        : _m_terminate(false), _m_loggerWindow(nullptr)
+    {
+    }
 
     LoggerManager::~LoggerManager()
     {
@@ -26,24 +26,21 @@ namespace ConsoleGraphX_Internal
             std::lock_guard<std::mutex> lock(_m_mutex);
             _m_terminate = true;
         }
-        _m_cv.notify_one();
-        if (_m_thread.joinable())
-        {
-            _m_thread.join();
-        }
+
+        _m_cv.notify_all(); // wake logger thread if sleeping
     }
 
-    void LoggerManager::Initialize()
+
+    void LoggerManager::Initialize(ThreadManager& threadManager)
     {
         assert(!_s_instance);
-
-        _s_instance = new LoggerManager("Logger");
+        _s_instance = new LoggerManager();
+        //_s_instance->StartLoggerThread(threadManager);
     }
 
     LoggerManager& LoggerManager::Instance()
     {
         assert(_s_instance);
-
         return *_s_instance;
     }
 
@@ -53,17 +50,28 @@ namespace ConsoleGraphX_Internal
         _s_instance = nullptr;
     }
 
+    void LoggerManager::StartLoggerThread(ThreadManager& threadManager)
+    {
+       /* _m_threadID = threadManager.StartThread("LoggerThread", [this](std::atomic<bool>& shouldQuit) {
+            _ProcessQueue(shouldQuit);
+            });*/
+    }
+
     void LoggerManager::LogMessage(const std::string& loggerName, const std::string& message, LogLevel level)
     {
+    
+        #if defined(DEBUG) && (MIN_BUILD == 1)
+            return;
+        #endif
+
         std::string formattedMessage;
-        formattedMessage.reserve(loggerName.size() + message.size() + 14); // reserve space to avoid reallocations 14 is used because: 9 for max log level size, 5 for the added brackets and spaces ("[", "]", and the surrounding spaces).
+        formattedMessage.reserve(loggerName.size() + message.size() + 14);
 
         _FormatLogMessage(formattedMessage, level);
-
         formattedMessage += "[" + loggerName + "] " + message;
+
         {
             std::lock_guard<std::mutex> lock(_m_mutex);
-
             _m_messageQueue.push(std::move(formattedMessage));
 
             if (_m_messageQueue.size() > _m_maxMessages)
@@ -76,10 +84,9 @@ namespace ConsoleGraphX_Internal
     void LoggerManager::AttachWindow(ConsoleGraphX::CrossProcessWindow* window)
     {
         CGX_VERIFY(window, "null Window!");
-
         _m_loggerWindow = window;
 
-        // we store the value so we don't get a warning from [[discard]]
+        [[maybe_unused]]
         ConsoleGraphX::EventCallBackHandle handle = window->OnWindowDestroyed.AddListener(this, &LoggerManager::DetachWindow);
     }
 
@@ -88,24 +95,25 @@ namespace ConsoleGraphX_Internal
         _m_loggerWindow = nullptr;
     }
 
-    void LoggerManager::_ProcessQueue()
+    void LoggerManager::_ProcessQueue(std::atomic<bool>& shouldQuit)
     {
-        static int y = 0;
-        while (true)
+        static uint16_t y = 0;
+        while (!shouldQuit.load(std::memory_order_acquire))
         {
             std::string message;
             {
                 std::unique_lock<std::mutex> lock(_m_mutex);
-                _m_cv.wait(lock, [this]() { return !_m_messageQueue.empty() || _m_terminate; });
+                _m_cv.wait(lock, [this, &shouldQuit]() {
+                    return !_m_messageQueue.empty() || _m_terminate || shouldQuit.load();
+                    });
 
-                if (_m_terminate && _m_messageQueue.empty())
+                if ((_m_terminate || shouldQuit.load()) && _m_messageQueue.empty())
                     break;
 
                 message = std::move(_m_messageQueue.front());
                 _m_messageQueue.pop();
             }
-            
-            // need an else statment for file logger
+
             if (_m_loggerWindow != nullptr)
                 y = _m_loggerWindow->WriteText(message, 2, y++) ? 0 : y++;
         }
@@ -119,7 +127,7 @@ namespace ConsoleGraphX_Internal
             message.insert(0, "[INFO]");
             break;
         case LogLevel::CGX_WARNING:
-            message.insert(0, "[WARNING]" );
+            message.insert(0, "[WARNING]");
             break;
         case LogLevel::CGX_ERROR:
             message.insert(0, "[ERROR]");

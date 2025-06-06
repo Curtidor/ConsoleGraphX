@@ -8,26 +8,12 @@
 #include <memory>
 #include "Engine\Graphics\ScreenGraphics\screen.h"
 #include "Engine\Core\Window\window.h"
+#include "Engine\Core\Concurrency\thread_manager.h"
 
 namespace ConsoleGraphX_Internal
 {
     class LoggerManager
     {
-    private:
-        static inline LoggerManager* _s_instance = nullptr;
-
-        bool _m_terminate;  // flag to terminate the queue processing
-        int _m_maxMessages = 1000;
-        std::mutex _m_mutex;  // mutex for synchronizing access to the message queue
-        std::thread _m_thread;  // thread for processing the message queue
-        std::condition_variable _m_cv;  // condition variable for queue processing
-        std::queue<std::string> _m_messageQueue; 
-        HANDLE _m_receiverProcessHandle = nullptr;
-
-        ConsoleGraphX::CrossProcessWindow* _m_loggerWindow;
-
-
-
     public:
         enum class LogLevel
         {
@@ -36,23 +22,37 @@ namespace ConsoleGraphX_Internal
             CGX_ERROR = 3
         };
 
-        static void Initialize();
-        static void ShutDown();
-        static LoggerManager& Instance();
-
-        LoggerManager(const char* loggerName);
-
+    public:
+        LoggerManager();
         ~LoggerManager();
 
-        // Log a message with the specified log level (default: INFO)
+        static void Initialize(ConsoleGraphX_Internal::ThreadManager& threadManager);
+        static LoggerManager& Instance();
+        static void ShutDown();
+
+        void StartLoggerThread(ConsoleGraphX_Internal::ThreadManager& threadManager); 
+
         void LogMessage(const std::string& loggerName, const std::string& message, LogLevel level = LogLevel::CGX_INFO);
         void AttachWindow(ConsoleGraphX::CrossProcessWindow* window);
         void DetachWindow(ConsoleGraphX::AbstractWindow* window);
 
     private:
-        // Process the message queue in a separate thread
-        void _ProcessQueue();
-        // Formats the log message with the specified log level
+        void _ProcessQueue(std::atomic<bool>& shouldQuit);
         void _FormatLogMessage(std::string& message, LogLevel level);
+
+    private:
+        static LoggerManager* _s_instance;
+
+        std::mutex _m_mutex;
+        std::condition_variable _m_cv;
+
+        std::queue<std::string> _m_messageQueue;
+        const size_t _m_maxMessages = 250;
+
+        ConsoleGraphX::CrossProcessWindow* _m_loggerWindow;
+
+        std::atomic<bool> _m_terminate;
+        std::thread::id _m_threadID; // no longer owns the thread
     };
+
 };
