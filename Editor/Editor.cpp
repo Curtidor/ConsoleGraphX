@@ -1,12 +1,4 @@
-/**
- * @file main.cpp
- * @brief Entry point for the ConsoleGraphX application.
- *
- * This file initializes the application, loads the game module, configures windows,
- * and manages the main application loop.
- */
-
-#include <windows.h>
+﻿#include <windows.h>
 #include <thread>
 #include <iostream>
 #include "./Engine/Core/Window/window.h"
@@ -32,17 +24,20 @@ using namespace ConsoleGraphX_Internal;
  *
  * @return Pointer to the loaded game module, or nullptr on failure.
  */
-static IGameModule* InitializeApplication(HMODULE& moduleHandle)
+static IGameModule* InitializeApplication(Application& app, HMODULE& moduleHandle)
 {
+    #if defined(DEBUG) && (MIN_BUILD == 0)
     CGXProfiler::Initialize();
-    LoggerManager::Initialize();
+    LoggerManager::Initialize(app.m_engine.m_threadManager);
     WindowManager::Initialize();
+    #endif
+
     InputSystem::Initialize();
 
     auto [gameModule, handle] = WinCore::LoadModule<IGameModule>("Sandbox.dll", "CreateGameModule");
     moduleHandle = handle;
 
-    if (!gameModule) 
+    if (!gameModule)
     {
         LoggerManager::Instance().LogMessage("Application", "Failed to load game module.", LoggerManager::LogLevel::CGX_ERROR);
         return nullptr;
@@ -52,51 +47,57 @@ static IGameModule* InitializeApplication(HMODULE& moduleHandle)
 }
 
 /**
- * @brief Configures the application windows and layouts.
- *
- * @param mainApplication Reference to the Application instance.
- * @param zOrders Reference to a vector for window Z-ordering.
- * @param outerLayout Reference to the outer WindowLayout instance.
- * @param innerLayout Reference to the inner WindowLayout instance.
- */
-static void ConfigureWindows(Application& mainApplication, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout)
+*@brief Configures the application windows and layouts.
+*
+* @param mainApplication Reference to the Application instance.
+* @param zOrders Reference to a vector for window Z - ordering.
+* @param outerLayout Reference to the outer WindowLayout instance.
+* @param innerLayout Reference to the inner WindowLayout instance.
+*/
+static void ConfigureWindows(
+    Application& mainApplication,
+    std::vector<WindowZOrder>& zOrders,
+    std::shared_ptr<WindowLayout> outerLayout,
+    std::shared_ptr<WindowLayout> innerLayout)
 {
-    Window* mainWindow = static_cast<Window*>(WindowManager::Instance().GetWindow("Main")); // FWI, the main window is made during the warmup phase of the application
+#if (MIN_BUILD == 1)
+    return; // no window code in min builds
+#endif
 
-    CrossProcessWindow* loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(86, 14, 16, 16, "Logger");
-    LoggerManager::Instance().AttachWindow(loggerWindow);
+    auto editorWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(144, 40, 16, 16, "Editor");
+    EventCallBackHandle handle = editorWindow->OnWindowDestroyed.AddListener(&mainApplication, &Application::OnConsoleClose);
 
-    CrossProcessWindow* editorWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(144, 40, 16, 16, "Editor");
-    editorWindow->OnWindowDestroyed.AddListener(&mainApplication, &Application::OnConsoleClose);
+    auto mainWindow = std::static_pointer_cast<Window>(WindowManager::Instance().GetSharedWindow("Main"));
 
-    CrossProcessWindow* RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(58, 38, 16, 16, "RTIP");
-    CGXProfiler::Instance().AttachWindow(RTIPWindow);
+    auto loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(86, 14, 16, 16, "Logger");
+    LoggerManager::Instance().AttachWindow(loggerWindow.get());
 
-    Sleep(1000); //TODO: sleep is here so we can be sure the HWND are going to be available, this is a temp solution 
+    auto RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(58, 38, 16, 16, "RTIP");
+    CGXProfiler::Instance().AttachWindow(RTIPWindow.get());
 
-    zOrders = 
-    {
-        { mainWindow->GetHWND(), 0 },
-        { editorWindow->GetHWND(), 3 },
-        { loggerWindow->GetHWND(), 2 },
-        { RTIPWindow->GetHWND(), 1 }
+    Sleep(1000); // TEMP workaround for HWND readiness
+
+    zOrders = {
+        { mainWindow, 0 },
+        { editorWindow, 3 },
+        { loggerWindow, 2 },
+        { RTIPWindow, 1 }
     };
 
-    for (AbstractWindow* window : WindowManager::Instance().GetAllWindows())
-    {
-        window->SetHWND(window->GetHWND()); // we do this so the windows will have a const and predictable HWND, if we don;t set it future calls to GetHWND rely on FindWindow
-    }
+    for (const auto& window : WindowManager::Instance().GetAllSharedWindows())
+        window->SetHWND(window->GetHWND());
 
     ApplyWindowStyles(WindowStyles::Borderless, mainWindow->GetHWND());
 
-    WindowPositioningRule loggerWindowRule = { mainWindow, Anchor::None, Alignment::Below, {0, 0}, ZOrder::Below };
-    WindowPositioningRule RTIPWindowRule = { mainWindow, Anchor::None, Alignment::RightOf, {0, 0}, ZOrder::Below };
-    WindowPositioningRule mainWindowRule = { editorWindow, Anchor::TopLeft, Alignment::None, {8, 31}, ZOrder::Above };
+    WindowPositioningRule loggerRule = { mainWindow.get(), Anchor::None, Alignment::Below, {0, 0}, ZOrder::Below };
+    WindowPositioningRule rtipRule = { mainWindow.get(), Anchor::None, Alignment::RightOf, {0, 0}, ZOrder::Below };
+    WindowPositioningRule mainRule = { editorWindow.get(), Anchor::TopLeft, Alignment::None, {8, 31}, ZOrder::Above };
 
-    outerLayout.AddWindow(mainWindow, mainWindowRule);
-    innerLayout.AddWindow(loggerWindow, loggerWindowRule);
-    innerLayout.AddWindow(RTIPWindow, RTIPWindowRule);
+    outerLayout->AddWindow(mainWindow, mainRule);
+    innerLayout->AddWindow(loggerWindow, loggerRule);
+    innerLayout->AddWindow(RTIPWindow, rtipRule);
 }
+
 
 /**
  * @brief Manages the main application loop and window layouts.
@@ -108,84 +109,89 @@ static void ConfigureWindows(Application& mainApplication, std::vector<WindowZOr
  * @param innerLayout Reference to the inner WindowLayout instance.
  * @param isClosing Reference to the closing state flag.
  */
-static void RunApplication(Application& mainApplication, ConsoleGraphX::SceneSystem& sceneSystem, std::vector<WindowZOrder>& zOrders, WindowLayout& outerLayout, WindowLayout& innerLayout)
+static void RunApplication(
+    Application& mainApplication,
+    SceneSystem& sceneSystem,
+    std::vector<WindowZOrder>& zOrders,
+    std::shared_ptr<WindowLayout> outerLayout,
+    std::shared_ptr<WindowLayout> innerLayout)
 {
-    std::atomic<bool> isClosing = false;
+    #if (MIN_BUILD == 0)
+    auto& threadManager = mainApplication.m_engine.m_threadManager;
 
-    // let Application trigger the shutdown signal
-    mainApplication.OnClose.AddListener([&isClosing]() 
-        {
-            isClosing.store(true, std::memory_order_release);
+    std::weak_ptr<WindowLayout> weakInner = innerLayout;
+    std::weak_ptr<WindowLayout> weakOuter = outerLayout;
+
+
+  threadManager.StartThread("WindowPositioner", [&](std::atomic<bool>& shouldQuit) {
+        while (!shouldQuit.load(std::memory_order_acquire)) {
+            AdjustZOrder(zOrders);
+            Sleep(200);
+
+            if (auto inner = weakInner.lock()) 
+                inner->ApplyLayout();
+            if (auto outer = weakOuter.lock()) 
+                outer->ApplyLayout();
+        }
         });
-
-    std::thread windowPositioner([&]() 
-        {
-            while (!isClosing.load(std::memory_order_acquire))
-            {
-                AdjustZOrder(zOrders);
-
-                Sleep(200);
-
-                innerLayout.ApplyLayout();
-                outerLayout.ApplyLayout();
-            }
-        });
-
     LoggerManager::Instance().LogMessage("Application", "Starting Application...");
-    mainApplication.Run(sceneSystem, &isClosing);
-
-    // ensure the thread is safely joined
-    if (windowPositioner.joinable())
-        windowPositioner.join();
+    #endif
+    mainApplication.Run(sceneSystem);
 }
 
-
-/**
- * @brief Main entry point for the application.
- *
- * Initializes the application, loads the game module, sets up windows,
- * and starts the main application loop.
- *
- * @return Exit status of the application.
- */
-int main() 
+// ========================= WARNING FOR FUTURE ME ==========================
+// DO NOT move gameModule deletion or FreeLibrary(moduleHandle) above this block.
+//
+// Reason:
+// - The Application (and everything it owns: SceneSystem, ResourceManager, Entities, etc.)
+//   must be fully destroyed BEFORE unloading the game module DLL.
+// - Destroying the game module first will cause Entity::Kill() or 
+//   DestroyEntityResources() to access freed or unmapped memory → crash.
+//
+// TL;DR:
+// Keep all engine + scene logic scoped inside this block.
+// Only unload the DLL AFTER the Application and its subsystems are dead.
+//
+// (THIS TOOK DAYS TO FIND)
+// =====================================================================================
+int main()
 {
-    Application mainApplication;
-    
-    ConsoleGraphX::SceneSystem& sceneSystem = *static_cast<ConsoleGraphX::SceneSystem*>(mainApplication.m_engine.GetSystemManager().GetSystem<SceneSystem>());
     HMODULE moduleHandle = nullptr;
-
-    IGameModule* gameModule = InitializeApplication(moduleHandle);
-    if (!gameModule) 
+    IGameModule* gameModule = nullptr;
+    
     {
-        return -1;
-    }
+        Application mainApplication;
 
-    gameModule->RegisterScenes(sceneSystem);
-    sceneSystem.LoadScene("Main Scene");
+    #if MIN_BUILD == 1
+        g_app = &mainApplication;
+    #endif
 
-    Scene* activeScene = sceneSystem.GetActiveScene();
-    ResourceManager::SetActiveManager(&activeScene->_m_resourceManager);
+        auto& sceneSystem = *static_cast<SceneSystem*>(mainApplication.m_engine.GetSystemManager().GetSystem<SceneSystem>());
+        moduleHandle = nullptr;
 
-    mainApplication.WarmUp(sceneSystem);
-    Palette& defaultPalette = Palette::DefaultPalette();
-    Screen::SetPalletColors_A(defaultPalette);
+        gameModule = InitializeApplication(mainApplication, moduleHandle);
+        if (!gameModule) return -1;
+      
+        gameModule->RegisterScenes(sceneSystem);
+        sceneSystem.LoadScene("Main Scene");
 
-    std::vector<WindowZOrder> zOrders;
-    WindowLayout outerLayout;
-    WindowLayout innerLayout;
+        Scene* activeScene = sceneSystem.GetActiveScene();
+        ResourceManager::SetActiveManager(&activeScene->_m_resourceManager);
 
-    ConfigureWindows(mainApplication, zOrders, outerLayout, innerLayout);
+        mainApplication.WarmUp(sceneSystem);
+        Palette& defaultPalette = Palette::DefaultPalette();
+        Screen::SetPalletColors_A(defaultPalette);
+        std::vector<WindowZOrder> zOrders;
+        auto outerLayout = std::make_shared<WindowLayout>();
+        auto innerLayout = std::make_shared<WindowLayout>();
+        ConfigureWindows(mainApplication, zOrders, outerLayout, innerLayout);
+  
+        WindowManager::Instance().MonitorWindowCloses(mainApplication.m_engine.m_threadManager); // need
+        RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout);
+    } // everything engine-related MUST be destroyed before DLL unload
 
-    WindowManager::Instance().MonitorWindowCloses(); // kick off the monitoring thread
-
-    RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout);
-    
-    sceneSystem.ShutDown();
-    
     delete gameModule;
     FreeLibrary(moduleHandle);
-
 
     return 0;
 }
