@@ -22,30 +22,30 @@ class MainScene : public Scene
 {
 public:
 
-	MainScene(std::string name) : Scene(name)
+	MainScene() : Scene("Main Scene")
 	{}
 
 	void Initialize() override
 	{
 		const std::vector<ConsoleGraphX_Internal::Chunk> map_data = LoadMap("test.cxmap");
-		const std::unordered_map<uint32_t, std::string> reg = LoadSpriteRegistry("C:/Users/tanja/OneDrive/Desktop/ConsoleGraphXFolder/Tools/WorldEditor/sprites.cxreg");
+		const std::unordered_map<uint32_t, std::string> reg = LoadSpriteRegistry("test.cxreg");
 
 		for (const Chunk& chunk : map_data) {
 			for (size_t i = 0; i < chunk.m_spriteCount; i++) {
-				// lookup sprite file path from registry
+				//lookup sprite file path from registry
 				auto it = reg.find(chunk.m_sprites[i].m_spriteId);
 				if (it == reg.end())
 					continue;
 					
 				ResourceManager& rManager = GetResourceManager();
-				// load texture -> get index
+				 //load texture -> get index
 				const size_t textureIndexInPool = rManager.CreateTextureResource(it->second).second;
 
-				// position sprite in world
+				 //position sprite in world
 				const Vector3& pos = chunk.m_sprites[i].m_mapPosition;
 				const size_t transformIndexInPool = rManager.CreateResource<Transform>(pos.x, pos.y, pos.z, 1, 1, 1).second;
 
-				// register sprite with transform + texture
+				 //register sprite with transform + texture
 
 				rManager.CreateResource<Sprite>(textureIndexInPool, &GetResourceManager(), transformIndexInPool);
 			}

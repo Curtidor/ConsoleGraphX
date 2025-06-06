@@ -10,6 +10,8 @@
 #include "../ConsoleGraphX/Engine/Math/vector3.h"
 #include "../ConsoleGraphX/Engine/Resources/Pools/base_resource_pool.h"
 #include "./Engine/Systems/scene_system.h"
+#include "./Engine/Core/Application/application.h"
+
 
 using namespace ConsoleGraphX;
 
@@ -32,7 +34,7 @@ void Player::Awake()
 
 	_m_owner->AddComponent<Sprite>(index);
 
-	Transform* transform = _m_owner->GetTransform();
+	//Transform* transform = _m_owner->GetTransform();
 	Sprite* sprite = _m_owner->GetComponent<Sprite>();
 
 	_m_owner->GetComponent<Transform>()->SetPosition(50, 50);
@@ -46,8 +48,13 @@ void Player::Update(UpdateContext& context)
 	if (context.input.IsKeyPressed(Key::B))
 	{
 		_m_owner->KillEntity();
-
 	}
+#if MIN_BUILD == 1
+	else if (context.input.IsKeyPressed(Key::K))
+	{
+		context.app->OnConsoleClose(nullptr);
+	}
+#endif
 }
 
 

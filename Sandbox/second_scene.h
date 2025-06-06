@@ -19,7 +19,7 @@ class SecondScene : public Scene
 {
 public:
 
-	SecondScene(std::string name) : Scene(name)
+	SecondScene() : Scene("Second Scene")
 	{}
 
 	void Initialize() override
