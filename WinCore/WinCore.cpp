@@ -4,6 +4,7 @@
 
 // SCREEN/CONSOLE HElPERS
 
+//lucida console font for 3x3
 namespace WinCore
 {
     bool SetConsoleFontSize(HANDLE handle, short width, short height)
@@ -13,6 +14,7 @@ namespace WinCore
 
         font.dwFontSize.X = width;
         font.dwFontSize.Y = height;
+        wcscpy_s(font.FaceName, L"Lucida Console"); 
 
         return SetCurrentConsoleFontEx(handle, FALSE, &font);
     }
