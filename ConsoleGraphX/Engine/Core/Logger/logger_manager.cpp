@@ -35,7 +35,7 @@ namespace ConsoleGraphX_Internal
     {
         assert(!_s_instance);
         _s_instance = new LoggerManager();
-        //_s_instance->StartLoggerThread(threadManager);
+        _s_instance->StartLoggerThread(threadManager);
     }
 
     LoggerManager& LoggerManager::Instance()
@@ -52,9 +52,9 @@ namespace ConsoleGraphX_Internal
 
     void LoggerManager::StartLoggerThread(ThreadManager& threadManager)
     {
-       /* _m_threadID = threadManager.StartThread("LoggerThread", [this](std::atomic<bool>& shouldQuit) {
+       _m_threadID = threadManager.StartThread("LoggerThread", [this](std::atomic<bool>& shouldQuit) {
             _ProcessQueue(shouldQuit);
-            });*/
+            });
     }
 
     void LoggerManager::LogMessage(const std::string& loggerName, const std::string& message, LogLevel level)
