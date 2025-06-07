@@ -1,8 +1,8 @@
 #include "PCH_CGX.h"
-#include "Engine\Core\Application\application.h"
-#include "Engine\Core\Window\window_manager.h"
-#include "Engine\Core\Profiler\profiler.h"
-#include "Engine\Layout\window_layout.h"
+#include "Engine/Core/Application/application.h"
+#include "Engine/Core/Window/window_manager.h"
+#include "Engine/Core/Profiler/profiler.h"
+#include "Engine/Layout/window_layout.h"
 
 
 namespace ConsoleGraphX
@@ -87,7 +87,7 @@ namespace ConsoleGraphX
         m_engine.m_threadManager.JoinAll();
 
         WindowManager::ShutDown();
-        ConsoleGraphX_Internal::LoggerManager::ShutDown(); // shouldnt use the window's
+        ConsoleGraphX_Internal::LoggerManager::ShutDown(); 
         #endif
 
         m_engine.Shutdown();
