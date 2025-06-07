@@ -10,6 +10,8 @@
 
 namespace ConsoleGraphX_Internal
 {
+	// methods with the ending "A" act on the Active screen
+
 	class Screen : public PixelCanvas
 	{
 	protected:
@@ -59,7 +61,5 @@ namespace ConsoleGraphX_Internal
 
 		static Screen* GetActiveScreen_A();
 		static CHAR_INFO* GetActiveScreenBuffer_A();
-
-
 	};
 };
