@@ -67,7 +67,7 @@ namespace ConsoleGraphX
         const HWND GetHWND() const;
         const HANDLE GetCloseEventHandle() const;
 
-        void SetWindowPosition(short x, short y);
+        void SetWindowPosition(int x, int y);
         void SetHWND(HWND windowHWND);
         void ResizeWindow(unsigned short newWidth, unsigned short newHeight);
 

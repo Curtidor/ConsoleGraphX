@@ -69,10 +69,10 @@ namespace ConsoleGraphX
         return _m_closeEvent;
     }
 
-    void AbstractWindow::SetWindowPosition(short x, short y)
+    void AbstractWindow::SetWindowPosition(int x, int y)
     {
         WindowPositionData wp = GetWindowPosition();
-        SetWindowPos(_m_windowHWND, NULL, std::max<short>(x, 0), y, wp.width, wp.height, SWP_NOZORDER | SWP_SHOWWINDOW);
+        SetWindowPos(_m_windowHWND, NULL, std::max<int>(x, 0), y, wp.width, wp.height, SWP_NOZORDER | SWP_SHOWWINDOW);
     }
 
     void AbstractWindow::SetHWND(HWND windowHWND)
