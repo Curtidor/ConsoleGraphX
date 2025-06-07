@@ -10,13 +10,15 @@
 #include <wincontypes.h>
 #include <errhandlingapi.h>
 #include <memoryapi.h>
-#include "./WinCore.h"
-#include "./console_handler.h"
-#include "./Engine/Core/Window/window_styles.h"
-#include "./Engine/Core/Window/shared_window_memory.h"
-#include "./Engine/Graphics/ScreenGraphics/screen.h"
-#include "./Engine/Graphics/ScreenGraphics/pixel_buffer.h"
-#include "./Engine/Core/Window/abstract_window.h"
+//external
+#include "../WinCore/WinCore.h"
+#include "../External/TermLog/Client/client.h"
+//
+#include "Engine/Core/Window/window_styles.h"
+#include "Engine/Core/Window/shared_window_memory.h"
+#include "Engine/Graphics/ScreenGraphics/screen.h"
+#include "Engine/Graphics/ScreenGraphics/pixel_buffer.h"
+#include "Engine/Core/Window/abstract_window.h"
 #include "console_handler.h"
 
 /**
@@ -29,29 +31,31 @@
  * @param fontHeight Height of the font in pixels.
  * @param appName Title of the application.
  */
-static void InitializeConsole(HANDLE hConsole, unsigned short screenWidth, unsigned short screenHeight,
-    unsigned short fontWidth, unsigned short fontHeight, const char* appName)
-{
-    WinCore::SetConsoleWindowSize(hConsole, 1, 1);
-    SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth), static_cast<short>(screenHeight) });
+static void InitializeConsole(HANDLE hConsole, uint16_t screenWidth, uint16_t screenHeight,
+   uint16_t fontWidth, uint16_t fontHeight, const char* appName)
+{   
+    const int initSetConsoleSize = WinCore::SetConsoleWindowSize(hConsole, 1, 1);
+    const BOOL initalBufferSet = SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth), static_cast<short>(screenHeight) });
 
     // get maximum screen size and set the window size
     CONSOLE_SCREEN_BUFFER_INFO cInfo{};
     GetConsoleScreenBufferInfo(hConsole, &cInfo);
-    WinCore::SetConsoleWindowSize(hConsole, cInfo.dwSize.X - 1, cInfo.dwSize.Y - 1);
+    const int finalSetConsoleSize = WinCore::SetConsoleWindowSize(hConsole, cInfo.dwSize.X - 1, cInfo.dwSize.Y - 1);
 
     WinCore::SetConsoleFontSize(hConsole, fontWidth, fontHeight);
     SetConsoleTitleA(appName);
     WinCore::DisableConsoleResize();
 
+    HWND windowHWND = GetConsoleWindow();
+
     // apply borderless style for non-editor applications
     if (strcmp(appName, "Editor") != 0)
     {
-        ApplyWindowStyles(WindowStyles::Borderless, GetConsoleWindow());
+        ApplyWindowStyles(WindowStyles::Borderless, windowHWND); // i think this function is a problem it changed the window size, bad guy
     }
 }
 
-static HANDLE InitializeSharedMemory(const char* windowName, DWORD sharedMemorySize, SharedWindowMemory*& sharedMem, unsigned short screenWidth, unsigned short screenHeight)
+static HANDLE InitializeSharedMemory(const char* windowName, DWORD sharedMemorySize, SharedWindowMemory*& sharedMem,uint16_t screenWidth,uint16_t screenHeight)
 {
     HANDLE hMapFile = WinCore::CreateSharedMemory(sharedMemorySize, windowName);
     if (!hMapFile) return nullptr;
@@ -115,11 +119,11 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    unsigned short screenWidth = static_cast<unsigned short>(std::stoi(argv[1]));
-    unsigned short screenHeight = static_cast<unsigned short>(std::stoi(argv[2]));
-    unsigned short fontWidth = static_cast<unsigned short>(std::stoi(argv[3]));
-    unsigned short fontHeight = static_cast<unsigned short>(std::stoi(argv[4]));
-    const char* windowName = argv[5];
+   uint16_t screenWidth = static_cast<uint16_t>(std::stoi(argv[1]));
+   uint16_t screenHeight = static_cast<uint16_t>(std::stoi(argv[2]));
+   uint16_t fontWidth = static_cast<uint16_t>(std::stoi(argv[3]));
+   uint16_t fontHeight = static_cast<uint16_t>(std::stoi(argv[4]));
+   const char* windowName = argv[5];
 
     // create a named event for signaling on console close
     std::string closeEventName = WINDOW_CLOSE_EVENT_NAME(std::string(windowName));
