@@ -19,7 +19,7 @@ int main()
     Application mainApplication = Application();
 
     CGXProfiler::Initialize();
-    LoggerManager::Initialize();
+    LoggerManager::Initialize(mainApplication.m_engine.m_threadManager);
     WindowManager::Initialize();
     InputSystem::Initialize();
 
