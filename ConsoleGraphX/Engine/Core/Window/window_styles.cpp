@@ -19,17 +19,18 @@ bool operator&(WindowStyles a, WindowStyles b)
 
 void ApplyWindowStyles(WindowStyles styles, HWND hWnd)
 {
-    // Step 1: Get the current client area size
+    Sleep(1000); // TODO, why does sleep fix everything window related... not good need to find a correct fix
+    // get the current window size
     RECT clientRect;
     GetClientRect(hWnd, &clientRect);
 
     int clientWidth = clientRect.right - clientRect.left;
     int clientHeight = clientRect.bottom - clientRect.top;
 
-    // Step 2: Get the current window style
+    // get the current window style
     LONG style = GetWindowLong(hWnd, GWL_STYLE);
 
-    // Step 3: Apply the new styles
+    // apply the new styles
     if (styles & WindowStyles::NoResize)
         style &= ~WS_SIZEBOX;
 
@@ -51,17 +52,14 @@ void ApplyWindowStyles(WindowStyles styles, HWND hWnd)
 
     style &= ~WS_EX_NOACTIVATE;
 
-    // Step 4: Set the new window style
     SetWindowLong(hWnd, GWL_STYLE, style);
 
-    // Step 5: Calculate the new window size to maintain the current client area size
     RECT adjustedRect = { 0, 0, clientWidth, clientHeight };
-    AdjustWindowRect(&adjustedRect, style, FALSE); // Adjust for the new window style
+    bool adjustOk = AdjustWindowRect(&adjustedRect, style, FALSE); // adjust for the new window style
 
     int adjustedWidth = adjustedRect.right - adjustedRect.left;
     int adjustedHeight = adjustedRect.bottom - adjustedRect.top;
 
-    // Step 6: Resize the window to the new size
     SetWindowPos(hWnd, nullptr,
         0, 0,
         adjustedWidth, adjustedHeight,
