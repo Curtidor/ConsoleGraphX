@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{4D6F1AE8-B94E-9983-C266-245A2EC5FFE4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Scripts\player.h">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\scene_switcher.h">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Scripts\snow.h">
+      <Filter>Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="main_scene.h" />
+    <ClInclude Include="second_scene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Scripts\player.cpp">
+      <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\scene_switcher.cpp">
+      <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Scripts\snow.cpp">
+      <Filter>Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="sandbox.cpp" />
+  </ItemGroup>
+</Project>
