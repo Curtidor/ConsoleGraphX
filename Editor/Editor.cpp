@@ -69,10 +69,10 @@ static void ConfigureWindows(
 
     auto mainWindow = std::static_pointer_cast<Window>(WindowManager::Instance().GetSharedWindow("Main"));
 
-    auto loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(86, 14, 16, 16, "Logger");
+    auto loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(86, 12, 16, 16, "Logger");
     LoggerManager::Instance().AttachWindow(loggerWindow.get());
 
-    auto RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(58, 38, 16, 16, "RTIP");
+    auto RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(58, 20, 16, 16, "RTIP");
     CGXProfiler::Instance().AttachWindow(RTIPWindow.get());
 
     Sleep(1000); // TEMP workaround for HWND readiness
@@ -158,7 +158,7 @@ int main()
 {
     HMODULE moduleHandle = nullptr;
     IGameModule* gameModule = nullptr;
-    
+
     {
         Application mainApplication;
 
@@ -166,30 +166,39 @@ int main()
         g_app = &mainApplication;
     #endif
 
-        auto& sceneSystem = *static_cast<SceneSystem*>(mainApplication.m_engine.GetSystemManager().GetSystem<SceneSystem>());
-        moduleHandle = nullptr;
+        // initialize engine module
+        auto& sceneSystem = *static_cast<SceneSystem*>(
+            mainApplication.m_engine.GetSystemManager().GetSystem<SceneSystem>());
 
         gameModule = InitializeApplication(mainApplication, moduleHandle);
-        if (!gameModule) return -1;
-      
+        if (!gameModule)
+            return -1;
+
+        // setup scene
         gameModule->RegisterScenes(sceneSystem);
         sceneSystem.LoadScene("Main Scene");
 
         Scene* activeScene = sceneSystem.GetActiveScene();
         ResourceManager::SetActiveManager(&activeScene->_m_resourceManager);
 
+        //warm up and setup 
         mainApplication.WarmUp(sceneSystem);
-        Palette& defaultPalette = Palette::DefaultPalette();
-        Screen::SetPalletColors_A(defaultPalette);
+
+        // set default palette colors
+        Screen::SetPalletColors_A(Palette::DefaultPalette());
+
+        // window layout setup 
         std::vector<WindowZOrder> zOrders;
         auto outerLayout = std::make_shared<WindowLayout>();
         auto innerLayout = std::make_shared<WindowLayout>();
-        ConfigureWindows(mainApplication, zOrders, outerLayout, innerLayout);
-  
-        WindowManager::Instance().MonitorWindowCloses(mainApplication.m_engine.m_threadManager); // need
-        RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout);
-    } // everything engine-related MUST be destroyed before DLL unload
 
+        ConfigureWindows(mainApplication, zOrders, outerLayout, innerLayout);
+        WindowManager::Instance().MonitorWindowCloses(mainApplication.m_engine.m_threadManager);
+
+        RunApplication(mainApplication, sceneSystem, zOrders, outerLayout, innerLayout);
+    }
+
+    // cleanup
     delete gameModule;
     FreeLibrary(moduleHandle);
 
