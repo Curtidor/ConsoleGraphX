@@ -30,8 +30,8 @@ namespace ConsoleGraphX
 
     struct WindowZOrder 
     {
-        HWND hwnd;     
-        int zOrder;   
+        std::shared_ptr<ConsoleGraphX::AbstractWindow> window;
+        int zOrder;
     };
 
     struct Offset 
@@ -65,12 +65,12 @@ namespace ConsoleGraphX
     class WindowLayout
     {
     public:
-        void AddWindow(AbstractWindow* window, const WindowPositioningRule& rule);
+        void AddWindow(std::shared_ptr<AbstractWindow> window, const WindowPositioningRule& rule);
         void ApplyLayout();
 
     private:
         void _RemoveWindow(AbstractWindow* window);
     private:
-        std::unordered_map<AbstractWindow*, WindowPositioningRule> _m_positioningRules;
+        std::unordered_map<std::shared_ptr<AbstractWindow>, WindowPositioningRule> _m_positioningRules;
     };
 };

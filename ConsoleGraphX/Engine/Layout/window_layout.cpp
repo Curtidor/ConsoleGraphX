@@ -1,39 +1,47 @@
 #include "PCH_CGX.h"
+#include <thread>
+#include <span>
 #include <memory>
-#include "Engine\Layout\window_layout.h"
+#include "Engine\Core\Window\window_manager.h"
 #include "Engine\Core\Logger\logger_manager.h"
 
 namespace ConsoleGraphX
 {
-	void WindowLayout::AddWindow(AbstractWindow* window, const WindowPositioningRule& rule)
-	{
-		_m_positioningRules.insert({ window, rule });
-
-        auto handle = window->OnWindowDestroyed.AddListener(this, &WindowLayout::_RemoveWindow);
-	}
-
-    void WindowLayout::ApplyLayout() 
+    void WindowLayout::AddWindow(std::shared_ptr<AbstractWindow> window, const WindowPositioningRule& rule)
     {
-        for (auto& [window, rule] : _m_positioningRules) 
+        _m_positioningRules.insert({ window, rule });
+
+        EventCallBackHandle callbackHandle = window->OnWindowDestroyed.AddListenerLambda([this](AbstractWindow* destroyed) {
+            this->_RemoveWindow(destroyed);
+            });
+    }
+
+    void WindowLayout::ApplyLayout()
+    {
+        for (auto it = _m_positioningRules.begin(); it != _m_positioningRules.end(); )
         {
-            // Remove windows with invalid references
-            if (rule.referenceWindow == nullptr) 
+            auto window = it->first;
+            auto refWindow = it->second.referenceWindow;
+
+            // If either window expired, erase entry
+            if (!refWindow)
             {
-                _RemoveWindow(window);
+                it = _m_positioningRules.erase(it);
                 continue;
             }
 
-            const auto& refPos = rule.referenceWindow->GetWindowPosition();
-            const auto& winPos = window->GetWindowPosition();
+            const auto rule = it->second;
+
+            const auto refPos = refWindow->GetWindowPosition();
+            const auto winPos = window->GetWindowPosition();
 
             int targetX = refPos.x;
             int targetY = refPos.y;
 
-            // Determine target position based on anchor
-            switch (rule.anchor) 
+            // Anchor logic
+            switch (rule.anchor)
             {
-            case Anchor::TopLeft:
-                break;
+            case Anchor::TopLeft: break;
             case Anchor::TopCenter:
                 targetX += (refPos.width - winPos.width) / 2;
                 break;
@@ -64,8 +72,8 @@ namespace ConsoleGraphX
                 break;
             }
 
-            // Adjust position based on alignment
-            switch (rule.alignment) 
+            // Alignment logic
+            switch (rule.alignment)
             {
             case Alignment::Above:
                 targetY -= winPos.height + rule.offset.m_yOffset;
@@ -80,61 +88,71 @@ namespace ConsoleGraphX
                 targetX += refPos.width + rule.offset.m_xOffset;
                 break;
             case Alignment::Centered:
-                // No adjustment
                 break;
             }
 
-            // Apply final offset
             targetX += rule.offset.m_xOffset;
             targetY += rule.offset.m_yOffset;
 
             window->SetWindowPosition(targetX, targetY);
+            ++it;
         }
     }
-
 
     void WindowLayout::_RemoveWindow(AbstractWindow* window)
     {
-        auto it = _m_positioningRules.find(window);
-
-        if (it != _m_positioningRules.end())
+        for (auto it = _m_positioningRules.begin(); it != _m_positioningRules.end(); ++it)
         {
-            _m_positioningRules.erase(it);
+            auto locked = it->first;
+            if (locked && locked.get() == window)
+            {
+                _m_positioningRules.erase(it);
+                return;
+            }
         }
     }
 
-
-    bool AdjustZOrder(std::vector<WindowZOrder>& windows) 
+    bool AdjustZOrder(std::vector<WindowZOrder>& windows)
     {
-        if (windows.empty())
-        {
-            ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("AdjustZOrder", "WindowZOrder vecotr is empty");
+        if (windows.empty()) {
+            std::cerr << "No windows to reorder.\n";
             return false;
         }
 
-        // Sort the windows by their Z-order value (ascending: lower Z-order is closer to the top).
-        std::sort(windows.begin(), windows.end(), [](const WindowZOrder& a, const WindowZOrder& b) 
-            {
+        // Sort by ascending Z-order (bottom to top)
+        std::sort(windows.begin(), windows.end(), [](const WindowZOrder& a, const WindowZOrder& b) {
             return a.zOrder < b.zOrder;
             });
 
+        HDWP hdwp = BeginDeferWindowPos(static_cast<int>(windows.size()));
+        if (!hdwp) {
+            std::cerr << "BeginDeferWindowPos failed.\n";
+            return false;
+        }
 
-        for (size_t i = 0; i < windows.size(); ++i) 
-        {
-            HWND hwndInsertAfter = (i == 0) ? HWND_TOPMOST : windows[i - 1].hwnd;
+        for (size_t i = 0; i < windows.size(); ++i) {
+            HWND insertAfter = (i == 0) ? HWND_BOTTOM : windows[i - 1].window.get()->GetHWND();
 
-            if (!SetWindowPos(windows[i].hwnd, hwndInsertAfter, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE)) 
-            {
-                std::string errorMessage = "Failed to adjust Z-order for window at index " + std::to_string(i) +
-                    ". Error: " + std::to_string(GetLastError());
+            const AbstractWindow* window = windows[i].window.get();
+            const WindowPositionData& postion = window->GetWindowPosition();
 
-                ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("AdjustZOrder", errorMessage);
+            // You can adjust position/size here if needed
+            hdwp = DeferWindowPos(hdwp, window->GetHWND(), insertAfter,
+                postion.x, postion.y, 
+                postion.width, postion.height, 
+                SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
+            if (!hdwp) {
+                std::cerr << "DeferWindowPos failed at index " << i << ".\n";
                 return false;
             }
         }
 
+        if (!EndDeferWindowPos(hdwp)) {
+            std::cerr << "EndDeferWindowPos failed.\n";
+            return false;
+        }
+
         return true;
     }
-
-};
+}
