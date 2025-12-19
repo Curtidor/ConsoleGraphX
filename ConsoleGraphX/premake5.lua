@@ -6,8 +6,6 @@ project "ConsoleGraphX"
     cppdialect "C++20"
     staticruntime "on"
 
-    SetEditorDefines()
-
     targetdir ("../bin/%{cfg.buildcfg}")
     objdir ("../bin-int/%{cfg.buildcfg}")
 
@@ -20,10 +18,4 @@ project "ConsoleGraphX"
     includedirs { ".", "../WinCore", "Engine/Core/PCH" } 
     links { "WinCore" }
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "on"
-
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "on"
+    ApplyBuildModeDefine()
