@@ -7,12 +7,12 @@
 #include "./Engine/Scene/scene.h"
 #include "./Engine/Components/PositionComponents/sprite.h"
 #include "./Engine/Core/entity.h"
-#include "./Engine/Scene/scene.h"
 #include "./Engine/Math/vector3.h"
 #include "./Engine/Components/camera.h"
 #include "./Engine/Graphics/ScreenGraphics/screen.h"
-#include "./Engine/Resources/map_loader.h"
-#include "./Engine/Resources/texture_loader.h"
+#include "./Engine/Resources/Loaders/map_loader.h"
+#include "./Engine/Resources/Loaders/texture_loader.h"
+#include "./Engine/Components/sprite_animation.h"
 // Register->Load->Initialize->Run
 
 using namespace ConsoleGraphX;
@@ -54,17 +54,18 @@ public:
 
 		//TODO GET CAMERA SIZE
 		Entity* camera = RegisterEntityN();
-		camera->AddComponent<Camera>(300, 120, Vector3(0, 0));
+		camera->AddComponent<Camera>(300, 100, Vector3(0, 0));
 
 		Entity* player = RegisterEntityN();
 		player->AddComponent<Player>();
-
+		player->AddComponent<SpriteAnimation>("Animations/player_idle.cxaim");
+			
 		Entity* snow = RegisterEntityN();
 		snow->AddComponent<Snow>();
 		snow->AddComponent<Sprite>(1, 1, 13);
 
 		Entity* sceneSwitcher = RegisterEntityN();
-		ResourceIndex switcherIndex = sceneSwitcher->AddComponent<SceneSwitcher>();
+		sceneSwitcher->AddComponent<SceneSwitcher>();
 
 	/*	for (int i = 0; i < 700; i++)
 		{
@@ -72,7 +73,7 @@ public:
 
 			snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
 		}*/
-
+	
 
 	}
 };

@@ -9,9 +9,13 @@ struct SceneSwitcher : public Script
 public:
 	SceneSwitcher();
 	SceneSwitcher(Entity* owner);
+	SceneSwitcher(const SceneSwitcher& other, Entity* owner);
 	~SceneSwitcher();
 
 	void Awake() override;
 	void Update(UpdateContext& context) override;
+	
+	void Clone(Script*& script) override;
+	void Clone(Script*& script, Entity* owner) override;
 
 }; 

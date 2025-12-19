@@ -30,7 +30,7 @@ public:
     void RegisterScenes(ConsoleGraphX::SceneSystem& system) override
     {
         system.RegisterScene(MakeScene<MainScene>());
-        //system.RegisterScene(MakeScene<SecondScene>());
+        system.RegisterScene(MakeScene<SecondScene>());
     }
 };
 

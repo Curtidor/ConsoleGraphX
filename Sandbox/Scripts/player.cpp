@@ -28,7 +28,7 @@ void Player::Awake()
 {
 	// TODO: look into what we want the behavior to be should we expose the entities resource manager with a getter and use that manager
 	// or use the scenes manager which may or may not be the same as the entities
-	ConsoleGraphX_Internal::ResourceIndex index = _m_owner->GetResourceManager().CreateTextureResource("Sprites/player_sprite.cxsp").second;
+	ConsoleGraphX_Internal::ResourceIndex index = _m_owner->GetResourceManager().CreateTextureResource("Animations/player_animation_250.cxsp").second;
 
 	_m_playerCam = _m_owner->GetComponent<Camera>();
 

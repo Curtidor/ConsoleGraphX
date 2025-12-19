@@ -17,11 +17,4 @@ project "SandBox"
     libdirs { "../bin/%{cfg.buildcfg}" }
 
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "Full"
-        optimize "Off"
-
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "On"
+    ApplyBuildModeDefine()
