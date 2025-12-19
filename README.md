@@ -33,7 +33,7 @@
 
 ### Editor View  
 
-![Screenshot 2025-06-07 144411](C:\Users\tanja\OneDrive\Pictures\Screenshots\Screenshot 2025-06-07 144411.png)
+![Screenshot 2025-06-07 144411](https://github.com/user-attachments/assets/ddb2a5c5-2588-4594-9297-0ba0c66c4d62)
 
 ### Standalone Runtime  
 ![runtime](https://github.com/user-attachments/assets/65ae0ffe-dae5-46aa-9496-19f61166fb24)
