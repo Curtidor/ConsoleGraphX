@@ -28,7 +28,7 @@ static IGameModule* InitializeApplication(Application& app, HMODULE& moduleHandl
 {
     #if defined(DEBUG) && (MIN_BUILD == 0)
     CGXProfiler::Initialize();
-    LoggerManager::Initialize(app.m_engine.m_threadManager);
+    LoggerManager::Initialize();
     WindowManager::Initialize();
     #endif
 
@@ -64,18 +64,17 @@ static void ConfigureWindows(
     return; // no window code in min builds
 #endif
 
-    auto editorWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(144, 40, 16, 16, "Editor");
+    auto editorWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(110, 60, 8, 8, "Editor");
     EventCallBackHandle handle = editorWindow->OnWindowDestroyed.AddListener(&mainApplication, &Application::OnConsoleClose);
 
     auto mainWindow = std::static_pointer_cast<Window>(WindowManager::Instance().GetSharedWindow("Main"));
 
-    auto loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(86, 12, 16, 16, "Logger");
+    auto loggerWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(90, 20, 8, 8, "Logger");
     LoggerManager::Instance().AttachWindow(loggerWindow.get());
+    LoggerManager::Instance().StartLoggerThread(mainApplication.m_engine.m_threadManager);
 
-    auto RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(58, 20, 16, 16, "RTIP");
+    auto RTIPWindow = WindowManager::Instance().CreateCGXWindow<CrossProcessWindow>(50, 30, 8, 8, "RTIP");
     CGXProfiler::Instance().AttachWindow(RTIPWindow.get());
-
-    Sleep(1000); // TEMP workaround for HWND readiness
 
     zOrders = {
         { mainWindow, 0 },
@@ -84,10 +83,8 @@ static void ConfigureWindows(
         { RTIPWindow, 1 }
     };
 
-    for (const auto& window : WindowManager::Instance().GetAllSharedWindows())
-        window->SetHWND(window->GetHWND());
 
-    ApplyWindowStyles(WindowStyles::Borderless, mainWindow->GetHWND());
+    ApplyWindowStyles(WindowStyles::Borderless, mainWindow->GetHWND(), mainWindow->GetTargetWindowSizeInPixels());
 
     WindowPositioningRule loggerRule = { mainWindow.get(), Anchor::None, Alignment::Below, {0, 0}, ZOrder::Below };
     WindowPositioningRule rtipRule = { mainWindow.get(), Anchor::None, Alignment::RightOf, {0, 0}, ZOrder::Below };
@@ -123,6 +120,7 @@ static void RunApplication(
     std::weak_ptr<WindowLayout> weakOuter = outerLayout;
 
 
+    // this thread no longer effects window width and height only position
   threadManager.StartThread("WindowPositioner", [&](std::atomic<bool>& shouldQuit) {
         while (!shouldQuit.load(std::memory_order_acquire)) {
             AdjustZOrder(zOrders);
@@ -165,6 +163,14 @@ int main()
     #if MIN_BUILD == 1
         g_app = &mainApplication;
     #endif
+
+
+	#if TERMLOG == 1
+        WinCore::CGXCreateProcess("LogServer.exe", std::vector<std::string>());
+    #else
+
+    #endif // TermLog
+
 
         // initialize engine module
         auto& sceneSystem = *static_cast<SceneSystem*>(

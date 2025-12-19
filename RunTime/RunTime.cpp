@@ -19,7 +19,8 @@ int main()
     Application mainApplication = Application();
 
     CGXProfiler::Initialize();
-    LoggerManager::Initialize(mainApplication.m_engine.m_threadManager);
+    LoggerManager::Initialize();
+    //LoggerManager::Instance().StartLoggerThread(mainApplication.m_engine.m_threadManager);
     WindowManager::Initialize();
     InputSystem::Initialize();
 

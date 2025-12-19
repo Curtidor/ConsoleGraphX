@@ -6,8 +6,6 @@ project "Editor"
     cppdialect "C++20"
     staticruntime "on"
 
-    SetEditorDefines()
-
     targetdir ("../bin/%{cfg.buildcfg}")
     objdir ("../bin-int/%{cfg.buildcfg}")
 
@@ -20,10 +18,4 @@ project "Editor"
 
     debugdir "%{cfg.targetdir}"
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "On"
-
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "On"
+    ApplyBuildModeDefine()

@@ -16,10 +16,4 @@ project "RunTime"
 
     debugdir "%{cfg.targetdir}"
 
-    filter "configurations:Debug"
-        defines { "DEBUG" }
-        symbols "On"
-
-    filter "configurations:Release"
-        defines { "NDEBUG" }
-        optimize "On"
+  ApplyBuildModeDefine()
