@@ -29,10 +29,16 @@ namespace ConsoleGraphX
         int frameCounter = 0;
         float fpsTimeCounter = 0.0f;
 
-        auto previousTime = std::chrono::high_resolution_clock::now();
+        const std::vector<std::shared_ptr<CrossProcessWindow>>& crossProcWindows = WindowManager::Instance().GetAllCrossProcessWindows();
 
+        auto previousTime = std::chrono::high_resolution_clock::now();
         while (_m_state != ApplicationState::Stopped)
         {
+            for (const auto& window : crossProcWindows)
+            {
+                window.get()->PollInput();
+			}
+
             if (_m_state == ApplicationState::Running)
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
@@ -56,7 +62,7 @@ namespace ConsoleGraphX
             Shutdown();
         #else
            WindowManager::Instance().ProcessToCloseWindows();
-        #endif // (DEBUG) && (MIN_BUILD == 0)
+        #endif
 
            while (!_m_task.empty())
            {
@@ -66,6 +72,9 @@ namespace ConsoleGraphX
                if (task)
                    task();
            }
+
+           sceneSystem.GetActiveScene()->CleanUpDeadEntities();
+           m_engine.GetSystemManager().CallSystems(ConsoleGraphX_Internal::EndOfFrame);
 
         }
     }

@@ -12,6 +12,7 @@
 #include "Engine\Systems\player_controller_system.h"
 #include "Engine\Systems\script_system.h"
 #include "Engine\Systems\scene_system.h"
+#include "Engine\Systems\sprite_animation_system.h"
 // graphics
 #include "Engine\Graphics\renderer.h"
 #include "Engine\Graphics\ScreenGraphics\screen.h"
@@ -29,6 +30,8 @@ namespace ConsoleGraphX
         _m_systemManager.RegisterSystem<ScriptSystem>();
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
         _m_systemManager.RegisterSystem<SceneSystem>();
+        _m_systemManager.RegisterSystem<SpriteAnimationSystem>();
+        _m_systemManager.RegisterCallTypeSystem(ConsoleGraphX_Internal::EndOfFrame, _m_systemManager.GetSystem<SceneSystem>());
     #if MIN_BUILD == 1
         _m_window = nullptr;
     #endif 
@@ -54,7 +57,7 @@ namespace ConsoleGraphX
     #else
         if (!_m_window)
         {
-            _m_window = WindowManager::Instance().CreateCGXWindow<Window>(300, 120, 3, 3, "Main");
+            _m_window = WindowManager::Instance().CreateCGXWindow<Window>(300, 100, 3, 3, "Main");
             ConsoleGraphX_Internal::Screen::SetActiveScreen_A(_m_window.get());
         }
     #endif

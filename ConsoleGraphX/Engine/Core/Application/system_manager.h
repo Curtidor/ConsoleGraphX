@@ -15,10 +15,16 @@ namespace ConsoleGraphX_Internal
 	 * compile-time ID system for performance. The overhead of std::type_index
 	 * is negligible given that system queries are rare.
 	 */
+	enum CALLTYPE
+	{
+		EndOfFrame = 1
+	};
+
 	class SystemManager
 	{
 	private:
 		std::unordered_map<std::type_index, ConsoleGraphX::BaseSystem*> _m_systems;
+		std::unordered_map<CALLTYPE, std::vector<ConsoleGraphX::BaseSystem*>> _m_callTypeSystems;
 
 	public:
 		~SystemManager();
@@ -31,7 +37,7 @@ namespace ConsoleGraphX_Internal
 
 			std::type_index typeIndex(typeid(SystemType));
 
-			// Prevent duplicate registration
+			// prevent duplicate registration
 			if (_m_systems.find(typeIndex) != _m_systems.end())
 				return;
 
@@ -52,6 +58,9 @@ namespace ConsoleGraphX_Internal
 
 			return nullptr; // System not found
 		}
+
+		void RegisterCallTypeSystem(CALLTYPE callType, ConsoleGraphX::BaseSystem* system);
+		void CallSystems(CALLTYPE callType);
 
 		void Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem);
 		void ShutDown();
