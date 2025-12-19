@@ -1,9 +1,13 @@
 import os
 import sys
+import hashlib
+import tkinter as tk
 
-from PIL import Image
+from tkinter import filedialog, simpledialog
+from PIL import Image, ImageTk
 
-from sprite_utils import export_sprite
+from Config.settings import SPRITE_ID
+from SpriteMaker.sprite_utils import export_sprite
 
 
 def build_palette(image: Image.Image) -> list[tuple[int, int, int]]:
@@ -16,39 +20,118 @@ def build_palette(image: Image.Image) -> list[tuple[int, int, int]]:
             unique_colors.add((r, g, b))  # no alpha
     return list(unique_colors)
 
+# 15, 22
 
-def convert_tile_set_with_transparency(image_path: str, tile_size: int, output_dir: str):
+
+def display_sprite(sprite_colors, tile_width, tile_height):
+    root = tk.Tk()
+    root.title("Sprite Preview")
+
+    img = Image.new("RGBA", (tile_width, tile_height))
+    for y in range(tile_height):
+        for x in range(tile_width):
+            color = sprite_colors[y * tile_width + x]
+            img.putpixel((x, y), color + (255,) if color else (0, 0, 0, 0))
+
+    SCALE = 4
+    scaled_img = img.resize((tile_width * SCALE, tile_height * SCALE), Image.NEAREST)
+
+    tk_img = ImageTk.PhotoImage(scaled_img, master=root)
+    label = tk.Label(root, image=tk_img)
+    label.image = tk_img
+    label.pack()
+
+    input_frame = tk.Frame(root)
+    input_frame.pack(pady=10)
+
+    tk.Label(input_frame, text="File name (no extension):").grid(row=0, column=0, sticky="e")
+    file_name_entry = tk.Entry(input_frame)
+    file_name_entry.grid(row=0, column=1)
+
+    tk.Label(input_frame, text="Sprite ID:").grid(row=1, column=0, sticky="e")
+    texture_id_entry = tk.Entry(input_frame)
+    texture_id_entry.grid(row=1, column=1)
+
+    result = {"file_name": None, "texture_id": None}
+
+    def on_submit():
+        result["file_name"] = file_name_entry.get()
+        try:
+            result["texture_id"] = int(texture_id_entry.get())
+            root.quit()  # End mainloop
+        except ValueError:
+            texture_id_entry.delete(0, tk.END)
+            texture_id_entry.insert(0, "Invalid")
+
+    submit_button = tk.Button(root, text="OK", command=on_submit)
+    submit_button.pack(pady=5)
+
+    root.mainloop()
+    root.destroy()
+
+    return result["file_name"], result["texture_id"]
+
+
+def convert_tile_set_with_transparency(image_path: str, tile_width, tile_height: int,
+                                       output_dir: str, enable_per_save=False, file_name='')\
+        -> tuple[dict[int, list[int]], dict[int, str]]:
     image = Image.open(image_path).convert("RGBA")
     image_width, image_height = image.size
 
-    tiles_x = image_width // tile_size
-    tiles_y = image_height // tile_size
+    tiles_x = image_width // tile_width
+    tiles_y = image_height // tile_height
 
     palette = build_palette(image)
-    sprite_id = 0
+    texture_id = SPRITE_ID
 
-    for ty in range(tiles_y):
-        for tx in range(tiles_x):
-            sprite_colors = []
-            for y in range(tile_size):
-                for x in range(tile_size):
-                    pixel = image.getpixel((tx * tile_size + x, ty * tile_size + y))
-                    r, g, b, a = pixel
-                    if a == 0:
-                        sprite_colors.append(None)
-                    else:
-                        color: tuple[int, int, int] = (r, g, b)
-                        if color not in palette:
-                            palette.append(color)
-                        sprite_colors.append(color)
+    seen_hashes: dict[str, int] = {}
+    # maps sprite id to a list of frame positions
+    frame_positions: dict[int, list[int]] = {}
+    id_to_path: dict[int, str] = {}
+    for frame_position, (ty, tx) in enumerate(((y, x) for y in range(tiles_y) for x in range(tiles_x)), start=1):
+        sprite_colors = []
+        hash_data = bytearray()
+        for y in range(tile_height):
+            for x in range(tile_width):
+                pixel = image.getpixel((tx * tile_width + x, ty * tile_height + y))
+                r, g, b, a = pixel
+                if a == 0:
+                    sprite_colors.append(None)
+                    hash_data.extend((0, 0, 0, 0))
+                else:
+                    color = (r, g, b)
+                    if color not in palette:
+                        palette.append(color)
+                    sprite_colors.append(color)
+                    hash_data.extend((*color, 255))  # RGBA
 
-            export_path = os.path.join(output_dir, f"sprite_{sprite_id}.cxsp")
-            export_sprite(tile_size, tile_size, sprite_colors, export_path, sprite_id, pallet=palette)
-            sprite_id += 1
+        hash_key = hashlib.md5(hash_data).hexdigest()
+        if hash_key not in seen_hashes:
+            seen_hashes[hash_key] = texture_id
+            frame_positions[texture_id] = [frame_position]  # add the frame position
+        else:
+            idx = seen_hashes[hash_key]  # get the related sprite id
+            frame_positions[idx].append(frame_position)
+            print(f"[SKIPPED] Duplicate sprite at tile ({tx}, {ty})")
+            continue
 
-    print("Final palette:")
-    for i, color in enumerate(palette):
-        print(f"{i}: {color}")
+        if enable_per_save:
+            user_file_name, texture_id_override = display_sprite(sprite_colors, tile_width, tile_height)
+            if user_file_name is None or texture_id_override is None:
+                print("Skipping this sprite.")
+                continue
+            texture_id = texture_id_override
+        else:
+            user_file_name = file_name  # fallback to static/default
+
+        save_file_name = f'{user_file_name}_{texture_id}.cxsp' if user_file_name else f'sprite_{texture_id}.cxsp'
+        export_path = os.path.join('Animations', save_file_name)
+
+        export_sprite(tile_width, tile_height, sprite_colors, export_path, texture_id, pallet=palette)
+        id_to_path[texture_id] = export_path
+        texture_id += 1
+
+    return frame_positions, id_to_path
 
 
 def convert_tile_set_to_sprites(image_path: str, tile_size: int, output_dir: str):
@@ -67,7 +150,7 @@ def convert_tile_set_to_sprites(image_path: str, tile_size: int, output_dir: str
     print("Exporting tiles...")
     print(palette)
 
-    sprite_id = 0
+    texture_id = 0
     for ty in range(tiles_y):
         for tx in range(tiles_x):
             sprite_data = []
@@ -81,22 +164,19 @@ def convert_tile_set_to_sprites(image_path: str, tile_size: int, output_dir: str
                         row.append(*pixel)
                 sprite_data.append(row)
 
-            export_path = os.path.join(output_dir, f"sprite_{sprite_id}.cxsp")
-            export_sprite(tile_size, tile_size, sprite_data, export_path, sprite_id, pallet=palette)
+            export_path = os.path.join(output_dir, f"sprite_{texture_id}.cxsp")
+            export_sprite(tile_size, tile_size, sprite_data, export_path, texture_id, pallet=palette)
             print(f"Saved {export_path}")
-            sprite_id += 1
+            texture_id += 1
 
     print("\nPalette Colors (RGB):")
     for i, color in enumerate(palette):
         print(f"{i}: {color}")
 
-    print(f"\nDone! Exported {sprite_id} sprites.")
+    print(f"\nDone! Exported {texture_id} sprites.")
 
 
-def main():
-    import tkinter as tk
-    from tkinter import filedialog, simpledialog
-
+def get_tile_set_data() -> tuple[dict[int, list[int]], dict[int, str]]:
     root = tk.Tk()
     root.withdraw()
 
@@ -104,16 +184,17 @@ def main():
     if not img_path:
         sys.exit("No image selected.")
 
-    tile_size = simpledialog.askinteger("Tile Size", "Enter tile size in pixels:", minvalue=1)
-    if not tile_size:
+    tile_width = simpledialog.askinteger("Tile Width", "Enter tile Width in pixels:", minvalue=1)
+    tile_height = simpledialog.askinteger("Tile Height", "Enter tile Height in pixels:", minvalue=1)
+    if not tile_width or not tile_height:
         sys.exit("No tile size provided.")
 
     output_dir = filedialog.askdirectory(title="Select output folder")
     if not output_dir:
         sys.exit("No output folder selected.")
 
-    convert_tile_set_with_transparency(img_path, tile_size, output_dir)
+    return convert_tile_set_with_transparency(img_path, tile_width, tile_height, output_dir, enable_per_save=False, file_name='player_animation')
 
 
 if __name__ == "__main__":
-    main()
+    get_tile_set_data()

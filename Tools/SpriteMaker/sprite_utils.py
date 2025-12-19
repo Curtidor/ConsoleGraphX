@@ -77,7 +77,7 @@ def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
     Loads a .cxsp sprite file and extracts:
       - width (uint32)
       - height (uint32)
-      - sprite_id (uint32)
+      - texture_id (uint32)
       - color data as a 2D list (height x width)
 
     Assumes each tile in the sprite is a CHAR_INFO-like struct:
@@ -91,7 +91,7 @@ def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
         _version = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)  # reads the version number
         width = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
         height = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
-        sprite_id = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
+        texture_id = int.from_bytes(binary_sprite.read(4), byteorder=sys.byteorder)
 
         sprite_data = []
         for y in range(height):
@@ -110,4 +110,4 @@ def load_sprite(file_path: str) -> tuple[int, int, int, list[list[SpriteData]]]:
                 row.append(SpriteData(char_value, color_value))
             sprite_data.append(row)
 
-    return width, height, sprite_id, sprite_data
+    return width, height, texture_id, sprite_data
