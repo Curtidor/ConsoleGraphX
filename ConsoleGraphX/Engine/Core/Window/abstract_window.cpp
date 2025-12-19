@@ -1,13 +1,15 @@
 #include "PCH_CGX.h"
+#include <windowsx.h>
 #include "Engine\Core\Window\abstract_window.h"
 #include "Engine\Core\Logger\logger_manager.h"
 
 namespace ConsoleGraphX
 {
     AbstractWindow::AbstractWindow(const std::string& windowName)
-        : _m_windowName(windowName), _m_windowHWND(NULL), _m_closeEvent(INVALID_HANDLE_VALUE)
+		: _m_windowName(windowName), _m_windowHWND(NULL), _m_closeEvent(INVALID_HANDLE_VALUE), m_deferWindowPosCountWithWrongSize(0)
     {}
 
+   
     bool AbstractWindow::OpenCloseEvent()
     {
         if (_m_closeEvent && _m_closeEvent != INVALID_HANDLE_VALUE)
@@ -46,22 +48,23 @@ namespace ConsoleGraphX
         }
 
         WindowPositionData positionData{};
-        positionData.x = static_cast<uint16_t>(sizeData.left);
-        positionData.y = static_cast<uint16_t>(sizeData.top);
-        positionData.width = static_cast<uint16_t>(sizeData.right - sizeData.left);
-        positionData.height = static_cast<uint16_t>(sizeData.bottom - sizeData.top);
+        positionData.x = sizeData.left;
+        positionData.y = sizeData.top;
+        positionData.width = sizeData.right - sizeData.left;
+        positionData.height = sizeData.bottom - sizeData.top;
 
         return positionData;
     }
 
-    const HWND AbstractWindow::GetHWND() const
+    HWND AbstractWindow::GetHWND() const noexcept 
     {
-        if (_m_windowHWND == NULL)
+        HWND h = _m_windowHWND.load(std::memory_order_acquire);
+        if (!h) 
         {
-           return FindWindowA(NULL, _m_windowName.c_str());
+            TryResolveHWND();  // let derived try to fill it
+            h = _m_windowHWND.load(std::memory_order_acquire);
         }
-        
-        return _m_windowHWND;
+        return h;
     }
 
     const HANDLE AbstractWindow::GetCloseEventHandle() const
@@ -71,8 +74,8 @@ namespace ConsoleGraphX
 
     void AbstractWindow::SetWindowPosition(int x, int y)
     {
-        WindowPositionData wp = GetWindowPosition();
-        SetWindowPos(_m_windowHWND, NULL, std::max<int>(x, 0), y, wp.width, wp.height, SWP_NOZORDER | SWP_SHOWWINDOW);
+        const Vector2 size = GetTargetWindowSizeInPixels();
+        SetWindowPos(_m_windowHWND, NULL, std::max<int>(x, 0), y, size.x, size.y, SWP_NOZORDER | SWP_SHOWWINDOW);
     }
 
     void AbstractWindow::SetHWND(HWND windowHWND)
@@ -80,8 +83,25 @@ namespace ConsoleGraphX
         _m_windowHWND = windowHWND;
     }
 
-    void AbstractWindow::ResizeWindow(unsigned short newWidth, unsigned short newHeight)
+    void AbstractWindow::ResizeWindow(unsigned short newWidth, unsigned short newHeight, bool triggerEvent)
     {
-        OnWindowResized.InvokeNF(newWidth, newHeight);
+        CrossProcessWindow* cpwWindow = dynamic_cast<CrossProcessWindow*>(this);
+        if (cpwWindow)
+        {
+            cpwWindow->SetNewScreenSize(newWidth, newHeight, cpwWindow->GetPixelWidth(), cpwWindow->GetPixelHeight());
+        }   
+
+        Window* window = dynamic_cast<Window*>(this);
+        if (window)
+        {
+            window->SetNewScreenSize(newWidth, newHeight, window->GetPixelWidth(), window->GetPixelHeight());
+        }
+
+        if (triggerEvent)
+            OnWindowResized.InvokeNF(newWidth, newHeight);
     }
+
+
+    
+
 }

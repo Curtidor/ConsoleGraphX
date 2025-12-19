@@ -5,6 +5,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <atomic>
 #include <memory>
 #include "Engine\Core\Event\events.h"
 #include "Engine\Core\Window\window.h"
@@ -54,7 +55,7 @@ namespace ConsoleGraphX
 
 			if constexpr (std::is_same_v<Window, WindowType>)
 			{
-				newWindow = std::make_shared<WindowType>(width, height, fontWidth, fontHeight, name);
+				newWindow = std::make_shared<Window>(width, height, fontWidth, fontHeight, name);
 			}
 			else
 			{
@@ -73,15 +74,19 @@ namespace ConsoleGraphX
 		std::shared_ptr<AbstractWindow> GetSharedWindow(const std::string& windowName);
 		std::vector<std::shared_ptr<AbstractWindow>> GetAllSharedWindows() const;
 
+		std::vector< std::shared_ptr<CrossProcessWindow>> GetAllCrossProcessWindows() const;
+
 	private:
 		static inline WindowManager* _s_instance = nullptr;
 
 		std::unordered_map<std::string, std::shared_ptr<AbstractWindow>> _m_windows;
 		std::vector<WindowHandleEntry> _m_windowHandleEntries;
 		std::vector<std::string> _m_windowsToClose;
+		std::atomic<bool> _m_wantsToQuit{ false };
 
 	private:
 		void UpdateHandles(std::vector<HANDLE>& handles);
+		void HandleShrunkenWindow(std::shared_ptr<AbstractWindow> window);
 		void DestroyAllWindows();
 	};
 }

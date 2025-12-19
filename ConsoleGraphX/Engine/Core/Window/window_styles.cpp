@@ -17,15 +17,11 @@ bool operator&(WindowStyles a, WindowStyles b)
     return static_cast<unsigned int>(a) & static_cast<unsigned int>(b);
 }
 
-void ApplyWindowStyles(WindowStyles styles, HWND hWnd)
+void ApplyWindowStyles(WindowStyles styles, HWND hWnd, ConsoleGraphX::Vector2 windowSize)
 {
     Sleep(1000); // TODO, why does sleep fix everything window related... not good need to find a correct fix
     // get the current window size
-    RECT clientRect;
-    GetClientRect(hWnd, &clientRect);
 
-    int clientWidth = clientRect.right - clientRect.left;
-    int clientHeight = clientRect.bottom - clientRect.top;
 
     // get the current window style
     LONG style = GetWindowLong(hWnd, GWL_STYLE);
@@ -54,13 +50,13 @@ void ApplyWindowStyles(WindowStyles styles, HWND hWnd)
 
     SetWindowLong(hWnd, GWL_STYLE, style);
 
-    RECT adjustedRect = { 0, 0, clientWidth, clientHeight };
+    RECT adjustedRect = { 0, 0, windowSize.x, windowSize.y };
     bool adjustOk = AdjustWindowRect(&adjustedRect, style, FALSE); // adjust for the new window style
 
     int adjustedWidth = adjustedRect.right - adjustedRect.left;
     int adjustedHeight = adjustedRect.bottom - adjustedRect.top;
 
-    SetWindowPos(hWnd, nullptr,
+  SetWindowPos(hWnd, nullptr,
         0, 0,
         adjustedWidth, adjustedHeight,
         SWP_NOZORDER | SWP_NOMOVE | SWP_FRAMECHANGED | SWP_NOACTIVATE);

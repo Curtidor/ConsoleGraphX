@@ -1,5 +1,6 @@
 #pragma once
 #include <windows.h>
+#include "Engine\Math\vector2.h"
 
 enum class WindowStyles : unsigned int
 {
@@ -18,4 +19,4 @@ WindowStyles& operator|=(WindowStyles& a, WindowStyles b);
 bool operator&(WindowStyles a, WindowStyles b);
 
 // function to apply the selected window styles
-void ApplyWindowStyles(WindowStyles styles, HWND hWnd);
+void ApplyWindowStyles(WindowStyles styles, HWND hWnd, ConsoleGraphX::Vector2 windowSize);

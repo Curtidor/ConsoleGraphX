@@ -54,6 +54,17 @@ namespace ConsoleGraphX
             throw WindowEventException("Failed to open close event for window: " + window->GetWindowNameR());
         }
 
+        window->OnWindowResized.AddListenerLambda(
+            [this, window](unsigned short width, unsigned short height)
+            {
+                if (width <= 10 || height <= 10)
+                {
+					//HandleShrunkenWindow(window); // resize happens inside this function
+                    //Sleep(2000);
+                }
+            }
+        );
+
         OnWindowRegister.InvokeNFC(window);
         _m_windows[window->GetWindowNameR()] = window;
     }
@@ -140,6 +151,7 @@ namespace ConsoleGraphX
         _m_windowsToClose.clear();
     }
 
+
     std::shared_ptr<AbstractWindow> WindowManager::GetSharedWindow(const std::string& windowName)
     {
         auto it = _m_windows.find(windowName);
@@ -157,6 +169,18 @@ namespace ConsoleGraphX
         return result;
     }
 
+    std::vector<std::shared_ptr<CrossProcessWindow>> WindowManager::GetAllCrossProcessWindows() const
+    {
+        std::vector< std::shared_ptr<CrossProcessWindow>> result;
+        result.reserve(_m_windows.size());
+        for (const auto& [_, window] : _m_windows)
+        {
+            if (auto crossProcessWindow = std::dynamic_pointer_cast<CrossProcessWindow>(window))
+                result.push_back(crossProcessWindow);
+        }
+        return result;
+	}
+
     void WindowManager::DestroyAllWindows()
     {
         for (auto& [_, window] : _m_windows)
@@ -170,5 +194,13 @@ namespace ConsoleGraphX
         handles.clear();
         for (const auto& entry : _m_windowHandleEntries)
             handles.push_back(entry.handle);
+    }
+    
+    void WindowManager::HandleShrunkenWindow(std::shared_ptr<AbstractWindow> window)
+    {
+		const Vector2 targetSize = window->GetTargetWindowSizeInPixels();
+        window->SetWindowPosition(targetSize.x / 2, targetSize.y / 2);
+        window->ResizeWindow(targetSize.x, targetSize.y, false);
+        // position the window in the middle of the screen
     }
 }

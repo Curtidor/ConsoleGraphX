@@ -2,16 +2,17 @@
 #include <string>
 #include <windows.h>
 #include <iostream>
+#include "Engine\Math\vector2.h"
 #include "Engine\Core\Event\events.h"
 
 namespace ConsoleGraphX
 {
     struct WindowPositionData
     {
-        uint16_t x;
-        uint16_t y;
-        uint16_t width;
-        uint16_t height;
+        int64_t x;
+        int64_t y;
+        int64_t width;
+        int64_t height;
     };
 
     /**
@@ -47,10 +48,19 @@ namespace ConsoleGraphX
         CGXEvent OnWindowFocusGained;
         CGXEvent OnWindowFocusLost;
 
+        uint32_t m_deferWindowPosCountWithWrongSize;
+
     protected:
-        HWND _m_windowHWND;
+        // derived classes can set this when they know the handle
+        mutable std::atomic<HWND> _m_windowHWND{ nullptr };
+
         HANDLE _m_closeEvent;
         std::string _m_windowName;
+
+    protected:
+
+        // default: nothing to do
+        virtual void TryResolveHWND() const noexcept {}
 
     public:
         explicit AbstractWindow(const std::string& windowName);
@@ -61,15 +71,18 @@ namespace ConsoleGraphX
 
         bool OpenCloseEvent();
 
+        HWND GetHWND() const noexcept;
+        bool HasHWND() const noexcept { return GetHWND() != nullptr; }
+
         std::string& GetWindowNameR();
         const std::string_view GetWindowName() const;
         const WindowPositionData GetWindowPosition() const;
-        const HWND GetHWND() const;
         const HANDLE GetCloseEventHandle() const;
 
         void SetWindowPosition(int x, int y);
         void SetHWND(HWND windowHWND);
-        void ResizeWindow(unsigned short newWidth, unsigned short newHeight);
-
+        void ResizeWindow(unsigned short newWidth, unsigned short newHeight, bool triggerEvent = true);
+        virtual Vector2 GetTargetWindowSize() = 0;
+        virtual Vector2 GetTargetWindowSizeInPixels() = 0;
     };
 }
