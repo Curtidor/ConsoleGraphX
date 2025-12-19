@@ -38,6 +38,8 @@ namespace ConsoleGraphX
 
         Scene* GetActiveScene();
         ConsoleGraphX_Internal::ResourceManager& GetActiveResourceManager();
+
+        virtual void EndOfFrame() override;
     };
 
 };

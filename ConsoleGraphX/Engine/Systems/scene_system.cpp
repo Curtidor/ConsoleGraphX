@@ -74,6 +74,15 @@ namespace ConsoleGraphX
         return _m_activeScene->GetResourceManager();
     }
 
+    void SceneSystem::EndOfFrame()
+    {
+        if (_m_sceneToLoad.empty())
+            return;
+
+        LoadSceneImpl(_m_sceneToLoad);
+        _m_sceneToLoad.clear();
+    }
+
     void SceneSystem::DeleteScene(const std::string& name)
     {
         auto it = _m_scenes.find(name);
@@ -82,7 +91,7 @@ namespace ConsoleGraphX
             return;
 
         Scene& scene = *it->second;
-        //scene.Destroy();
+        scene.Destroy();
 
         _m_scenes.erase(it);
     }
@@ -96,17 +105,10 @@ namespace ConsoleGraphX
     }
 
     void SceneSystem::Initialize()
-    {
-    }
+    {}
 
     void SceneSystem::Update(float delta_time, SceneSystem& sceneSystem)
-    {
-        if (_m_sceneToLoad.empty())
-            return;
-
-        LoadSceneImpl(_m_sceneToLoad);
-        _m_sceneToLoad.clear();
-    }
+    {}
 
     void SceneSystem::ShutDown()
     {

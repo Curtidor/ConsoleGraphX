@@ -12,5 +12,8 @@ namespace ConsoleGraphX
 		virtual void ShutDown() = 0;
 
 		virtual ~BaseSystem() = default;
+
+		virtual void EndOfFrame() {};
 	};
+
 };
