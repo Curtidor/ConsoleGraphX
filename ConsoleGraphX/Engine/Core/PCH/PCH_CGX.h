@@ -38,5 +38,10 @@
 constexpr size_t MAX_SIZE_T = (std::numeric_limits<size_t>::max)();
 constexpr size_t MAX_SIZE_UINT32 = (std::numeric_limits<uint32_t>::max)();
 
+struct ApplicationExecutionPermission
+{
+
+};
+
 #pragma warning(pop) 
 

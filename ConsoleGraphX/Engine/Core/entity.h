@@ -82,7 +82,7 @@ namespace ConsoleGraphX
         template <typename T, typename... Args>
         ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args) 
         {
-            if constexpr (std::is_same_v<T, ConsoleGraphX::Sprite>)
+            if constexpr (std::is_same_v<T, Sprite>)
             {
                 return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., _m_resourceManager, _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
             }
@@ -93,6 +93,12 @@ namespace ConsoleGraphX
             else if constexpr (ConsoleGraphX_Internal::IsScript<T>)
             {
                 return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., this).second;
+            }
+            else if constexpr (std::is_same_v<T, SpriteAnimation>)
+            {
+                // CreateResource<T> is called inside the animation loader which is called inside this method
+                // so eventally the item makes it to the pool, just gotta build it first
+                return _m_resourceManager->CreateAnimationResource(std::forward<Args>(args)..., m_id).second;
             }
             else 
             {
@@ -179,7 +185,7 @@ namespace ConsoleGraphX
          * @return Pointer to the added component.
          */
         template <typename T, typename... Args>
-        ConsoleGraphX_Internal::ResourceIndex AddComponent(Args&&... args) 
+        ConsoleGraphX_Internal::ResourceIndex AddComponent(Args&&... args)
         {
             static_assert(std::is_base_of_v<ConsoleGraphX_Internal::Component, T>, "T must be derived from the Component Type");
 
@@ -191,7 +197,7 @@ namespace ConsoleGraphX
             ConsoleGraphX_Internal::ResourceIndex compIndex = CreateComponentInPool<T>(std::forward<Args>(args)...);
             indexMap.emplace(componentId, compIndex);
 
-            return compIndex;
+            return compIndex ;
         }
 
         /**

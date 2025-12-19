@@ -63,6 +63,8 @@ namespace ConsoleGraphX_Internal
 
         void DisplayMetrics()
         {
+            // TODO: remove this its a TEST
+
             if (!_m_window)
             {
                 return;

@@ -26,7 +26,7 @@ namespace ConsoleGraphX_Internal
         LoggerManager();
         ~LoggerManager();
 
-        static void Initialize(ConsoleGraphX_Internal::ThreadManager& threadManager);
+        static void Initialize();
         static LoggerManager& Instance();
         static void ShutDown();
 
@@ -42,6 +42,8 @@ namespace ConsoleGraphX_Internal
 
     private:
         static LoggerManager* _s_instance;
+       
+        bool _m_loggingThreadStarted;
 
         std::mutex _m_mutex;
         std::condition_variable _m_cv;

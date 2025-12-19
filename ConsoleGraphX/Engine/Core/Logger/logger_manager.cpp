@@ -16,7 +16,7 @@ namespace ConsoleGraphX_Internal
     LoggerManager* LoggerManager::_s_instance = nullptr;
 
     LoggerManager::LoggerManager()
-        : _m_terminate(false), _m_loggerWindow(nullptr)
+        : _m_terminate(false), _m_loggerWindow(nullptr), _m_loggingThreadStarted(false)
     {
     }
 
@@ -31,11 +31,10 @@ namespace ConsoleGraphX_Internal
     }
 
 
-    void LoggerManager::Initialize(ThreadManager& threadManager)
+    void LoggerManager::Initialize()
     {
         assert(!_s_instance);
         _s_instance = new LoggerManager();
-        _s_instance->StartLoggerThread(threadManager);
     }
 
     LoggerManager& LoggerManager::Instance()
@@ -55,6 +54,8 @@ namespace ConsoleGraphX_Internal
        _m_threadID = threadManager.StartThread("LoggerThread", [this](std::atomic<bool>& shouldQuit) {
             _ProcessQueue(shouldQuit);
             });
+
+       _m_loggingThreadStarted = true;
     }
 
     void LoggerManager::LogMessage(const std::string& loggerName, const std::string& message, LogLevel level)
@@ -63,6 +64,9 @@ namespace ConsoleGraphX_Internal
         #if defined(DEBUG) && (MIN_BUILD == 1)
             return;
         #endif
+
+        if (!_m_loggingThreadStarted)
+            return;
 
         std::string formattedMessage;
         formattedMessage.reserve(loggerName.size() + message.size() + 14);
@@ -97,13 +101,17 @@ namespace ConsoleGraphX_Internal
 
     void LoggerManager::_ProcessQueue(std::atomic<bool>& shouldQuit)
     {
+        if (!_m_loggingThreadStarted)
+            return;
+
         static uint16_t y = 0;
         while (!shouldQuit.load(std::memory_order_acquire))
         {
             std::string message;
             {
                 std::unique_lock<std::mutex> lock(_m_mutex);
-                _m_cv.wait(lock, [this, &shouldQuit]() {
+                _m_cv.wait(lock, [this, &shouldQuit]() 
+                    {
                     return !_m_messageQueue.empty() || _m_terminate || shouldQuit.load();
                     });
 
@@ -112,10 +120,19 @@ namespace ConsoleGraphX_Internal
 
                 message = std::move(_m_messageQueue.front());
                 _m_messageQueue.pop();
-            }
 
-            if (_m_loggerWindow != nullptr)
-                y = _m_loggerWindow->WriteText(message, 2, y++) ? 0 : y++;
+                if (_m_loggerWindow != nullptr)
+                {
+                    if (y > _m_loggerWindow->GetHeight())
+                    {
+                        y = 0;
+                    }
+                    _m_loggerWindow->WriteText(message, 0, y);
+                    y += 1;
+                }
+
+              
+            }
         }
     }
 
