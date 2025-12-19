@@ -20,7 +20,10 @@
 .idea/
 
 
+
 # User-specific files
+*.cxsp
+*.cxmap
 *.rsuser
 *.user
 *.userosscache

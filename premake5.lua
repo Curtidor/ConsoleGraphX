@@ -3,6 +3,10 @@ dofile("premake_common.lua")
 workspace "ConsoleGraphX"
     architecture "x64"
     configurations { "Debug", "Release" }
+
+    ApplyStandardConfigs()
+    ApplyBuildModeDefine()
+
     if _OPTIONS["withEditor"] then
         startproject "Editor"
     else
@@ -17,3 +21,4 @@ workspace "ConsoleGraphX"
     include "RunTime"
     include "WindowHandler"
     include "SandBox"
+    include "LogServer"
