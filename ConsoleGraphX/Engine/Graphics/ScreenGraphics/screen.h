@@ -47,6 +47,8 @@ namespace ConsoleGraphX_Internal
 		int GetPixelWidth() const;
 		int GetPixelHeight() const;
 
+		void SetNewScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight);
+
 		CHAR_INFO* GetScreenBuffer();
 
 		static int GetWidth_A();

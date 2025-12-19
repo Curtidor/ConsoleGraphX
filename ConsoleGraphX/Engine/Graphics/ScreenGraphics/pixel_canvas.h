@@ -6,17 +6,17 @@ namespace ConsoleGraphX_Internal
 	class PixelCanvas
 	{
 	protected:
-		const unsigned short _m_width;
-		const unsigned short _m_height;
+		uint16_t _m_width;
+		uint16_t _m_height;
 		std::unique_ptr<PixelBuffer> _m_screenBuffer;
 
 	public:
-		PixelCanvas(unsigned short width, unsigned short height);
-		PixelCanvas(unsigned short width, unsigned short height, std::unique_ptr<PixelBuffer> sBuffer);
+		PixelCanvas(uint16_t width, uint16_t height);
+		PixelCanvas(uint16_t width, uint16_t height, std::unique_ptr<PixelBuffer> sBuffer);
 
 		//Getters 
-		unsigned short GetWidth() const;
-		unsigned short GetHeight() const;
+		uint16_t GetWidth() const;
+		uint16_t GetHeight() const;
 
 		// Buffer manipulation
 		void SetPixel(unsigned int x, unsigned int y, CHAR_INFO s_pixel);

@@ -7,9 +7,9 @@ namespace ConsoleGraphX_Internal
     class PixelBuffer
     {
     public:
-        const COORD m_bufferSize;
-        const COORD m_bufferCoord;
-        const size_t m_size;
+        COORD m_bufferSize;
+        COORD m_bufferCoord;
+        size_t m_size;
         SMALL_RECT m_writePosition;
 
 
