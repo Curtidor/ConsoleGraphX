@@ -71,6 +71,11 @@ namespace ConsoleGraphX_Internal
         return _m_height;
     }
 
+    uint32_t Texture::GetId() const
+    {
+        return _m_id;
+    }
+
     CHAR_INFO* Texture::GetPixels()
     {
         return _m_pixels;

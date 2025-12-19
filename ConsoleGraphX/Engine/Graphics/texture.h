@@ -29,6 +29,7 @@ namespace ConsoleGraphX_Internal
 
         uint32_t GetWidth() const;
         uint32_t GetHeight() const;
+        uint32_t GetId() const;
 
         CHAR_INFO* GetPixels();
     };

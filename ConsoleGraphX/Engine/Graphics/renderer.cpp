@@ -42,6 +42,8 @@ namespace ConsoleGraphX_Internal
             cameraPosition.RoundD();
 
             ConsoleGraphX::Vector2 camViewPort = cam.GetViewPort();
+            camViewPort.x = std::min<int>(camViewPort.x, screen.GetWidth());
+            camViewPort.y = std::min<int>(camViewPort.y, screen.GetHeight());
 
             ConsoleGraphX::Vector3 relativePosition;
             for (const ConsoleGraphX::Sprite& sprite : *sprites)
