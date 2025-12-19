@@ -8,7 +8,7 @@
 #include <string>
 #include "Engine/Graphics/texture.h"
 #include "Engine/Core/Utils/file_utils.h"
-#include "Engine/Resources/texture_loader.h"
+#include "Engine/Resources/Loaders/texture_loader.h"
 #include "WinCore.h"
 #include "Engine/Math/vector3.h"
 

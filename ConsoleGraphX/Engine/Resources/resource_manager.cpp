@@ -5,6 +5,7 @@
 #include "Engine\Resources\resource_manager.h"
 #include "Engine\Components\script.h"
 #include "Engine\Core\Utils\meta_utils.h"
+#include "Engine/Resources/Loaders/animation_loader.h"
 
 namespace ConsoleGraphX_Internal
 {
@@ -30,6 +31,28 @@ namespace ConsoleGraphX_Internal
     ResourceManager::ResourceManager()
     {
     }
+
+    std::pair<ResourceID, ResourceIndex> ResourceManager::CreateTextureResource(const std::string& filename)
+    {
+        ComponentTexturePool& tPool = GetResourcePool<Texture>();
+
+        return tPool.LoadTexture(filename);
+    }
+
+    std::pair<ResourceID, ResourceIndex> ResourceManager::CreateTextureResource(uint32_t width, uint32_t height, int color)
+    {
+        Texture* texture = new Texture(width, height, color);
+
+        ComponentTexturePool& tPool = GetResourcePool<Texture>();
+
+        return { GenResourceID::Get<Texture>(), tPool.PlaceResourceInPool(std::move(*texture)) };
+    }
+
+    std::pair<ResourceID, ResourceIndex> ResourceManager::CreateAnimationResource(const std::string& path, size_t owningEntity)
+    {
+        return { GenResourceID::Get<ConsoleGraphX::SpriteAnimation>(), LoadAnimation(path, *this, owningEntity) };
+    }
+
 
     void ResourceManager::DestroyEntityResources(const std::unordered_map<ResourceID, ResourceIndex>& componentIdToIndexMap)
     {

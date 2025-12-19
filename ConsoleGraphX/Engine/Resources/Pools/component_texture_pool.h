@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Graphics/texture.h"
 #include "Engine/Resources/Pools/resource_pool.h"
-#include "Engine/Resources/texture_loader.h"
+#include "Engine/Resources/Loaders/texture_loader.h"
 #include <Engine/Resources/resource_id.h>
 
 namespace ConsoleGraphX_Internal 

@@ -4,6 +4,7 @@
 #include "Engine\Core\Utils\meta_utils.h"
 #include "Engine\Components\component.h"
 #include "Engine\Components\transform.h"
+#include "Engine/Components/sprite_animation.h"
 #include "Engine\Components\PositionComponents\player_controller.h"
 #include "Engine\Components\camera.h"
 #include "Engine\Components\PositionComponents\sprite.h"
@@ -52,7 +53,7 @@ namespace  ConsoleGraphX_Internal
     };
 
     // IF NEW COMPONENTS ARE ADDED/REMOVED UPDATE THIS REGISTRY AND FOWARD DEC's NO OTHER CODE NEEDS TO BE TOUCHED
-    using BuiltInResoruceTypes = ResourceTypeRegistry<ConsoleGraphX::Script, ConsoleGraphX::Transform, ConsoleGraphX::PlayerController, ConsoleGraphX::Camera, ConsoleGraphX::Sprite, Texture>;
+    using BuiltInResoruceTypes = ResourceTypeRegistry<ConsoleGraphX::Script, ConsoleGraphX::Transform, ConsoleGraphX::PlayerController, ConsoleGraphX::Camera, ConsoleGraphX::Sprite, Texture, ConsoleGraphX::SpriteAnimation>;
 
     /**
         * @brief Provides unique IDs for components.

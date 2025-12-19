@@ -18,7 +18,7 @@
 #include "Engine\Components\script.h"
 #include "Engine\Components\PositionComponents\sprite.h"
 #include "Engine\Graphics\texture.h"
-#include "Engine\Resources\texture_loader.h"
+#include "Engine/Resources/Loaders/texture_loader.h"
 
 // OVERVIEW:
 // Each type of component gets its own pool. However, components that inherit from `Script` share a pool.
@@ -153,21 +153,9 @@ namespace ConsoleGraphX_Internal
         }
 
         // returns the id of the resource and the index of the texture in the pool
-        std::pair<ResourceID, ResourceIndex> CreateTextureResource(const std::string& filename)
-        {
-            ComponentTexturePool& tPool = GetResourcePool<Texture>();
-            
-            return tPool.LoadTexture(filename);
-        }
-
-        std::pair<ResourceID, ResourceIndex> CreateTextureResource(uint32_t width, uint32_t height, int color)
-        {
-            Texture* texture = new Texture(width, height, color);
-
-            ComponentTexturePool& tPool = GetResourcePool<Texture>();
-
-            return { GenResourceID::Get<Texture>(), tPool.PlaceResourceInPool(std::move(*texture)) };
-        }
+        std::pair<ResourceID, ResourceIndex> CreateTextureResource(const std::string& filename);
+        std::pair<ResourceID, ResourceIndex> CreateTextureResource(uint32_t width, uint32_t height, int color);
+        std::pair<ResourceID, ResourceIndex> CreateAnimationResource(const std::string& path, size_t owningEntity);
 
         template <typename T>
         constexpr static typename std::enable_if<IsTypeInTuple<typename std::remove_pointer<T>::type, BuiltInResoruceTypes::type>::value, ResourceID>::type
