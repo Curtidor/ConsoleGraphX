@@ -32,43 +32,46 @@ namespace ConsoleGraphX
 
             const auto rule = it->second;
 
-            const auto refPos = refWindow->GetWindowPosition();
-            const auto winPos = window->GetWindowPosition();
+            const Vector2 refSize = refWindow->GetTargetWindowSizeInPixels();
+            const Vector2 winSize = window->GetTargetWindowSizeInPixels();
 
-            int targetX = refPos.x;
-            int targetY = refPos.y;
+			const auto refPosition = refWindow->GetWindowPosition();
+			const auto winPosition = window->GetWindowPosition();
+
+            int targetX = refPosition.x;
+            int targetY = refPosition.y;
 
             // Anchor logic
             switch (rule.anchor)
             {
             case Anchor::TopLeft: break;
             case Anchor::TopCenter:
-                targetX += (refPos.width - winPos.width) / 2;
+                targetX += (refSize.x - winSize.x) / 2;
                 break;
             case Anchor::TopRight:
-                targetX += refPos.width - winPos.width;
+                targetX += refSize.x - winSize.x;
                 break;
             case Anchor::CenterLeft:
-                targetY += (refPos.height - winPos.height) / 2;
+                targetY += (refSize.y - winSize.y) / 2;
                 break;
             case Anchor::Center:
-                targetX += (refPos.width - winPos.width) / 2;
-                targetY += (refPos.height - winPos.height) / 2;
+                targetX += (refSize.x - winSize.x) / 2;
+                targetY += (refSize.y - winSize.y) / 2;
                 break;
             case Anchor::CenterRight:
-                targetX += refPos.width - winPos.width;
-                targetY += (refPos.height - winPos.height) / 2;
+                targetX += refSize.x - winSize.x;
+                targetY += (refSize.y - winSize.y) / 2;
                 break;
             case Anchor::BottomLeft:
-                targetY += refPos.height - winPos.height;
+                targetY += refSize.y - winSize.y;
                 break;
             case Anchor::BottomCenter:
-                targetX += (refPos.width - winPos.width) / 2;
-                targetY += refPos.height - winPos.height;
+                targetX += (refSize.x - winSize.x) / 2;
+                targetY += refSize.y - winSize.y;
                 break;
             case Anchor::BottomRight:
-                targetX += refPos.width - winPos.width;
-                targetY += refPos.height - winPos.height;
+                targetX += refSize.x - winSize.x;
+                targetY += refSize.y - winSize.y;
                 break;
             }
 
@@ -76,16 +79,16 @@ namespace ConsoleGraphX
             switch (rule.alignment)
             {
             case Alignment::Above:
-                targetY -= winPos.height + rule.offset.m_yOffset;
+                targetY -= winSize.y + rule.offset.m_yOffset;
                 break;
             case Alignment::Below:
-                targetY += refPos.height + rule.offset.m_yOffset;
+                targetY += refSize.y + rule.offset.m_yOffset;
                 break;
             case Alignment::LeftOf:
-                targetX -= winPos.width + rule.offset.m_xOffset;
+                targetX -= winSize.x + rule.offset.m_xOffset;
                 break;
             case Alignment::RightOf:
-                targetX += refPos.width + rule.offset.m_xOffset;
+                targetX += refSize.x + rule.offset.m_xOffset;
                 break;
             case Alignment::Centered:
                 break;
@@ -133,14 +136,42 @@ namespace ConsoleGraphX
         for (size_t i = 0; i < windows.size(); ++i) {
             HWND insertAfter = (i == 0) ? HWND_BOTTOM : windows[i - 1].window.get()->GetHWND();
 
-            const AbstractWindow* window = windows[i].window.get();
-            const WindowPositionData& postion = window->GetWindowPosition();
+            AbstractWindow* window = windows[i].window.get();
+            const WindowPositionData& position = window->GetWindowPosition(); // dont trust the width and height values
+            const Vector2 size = window->GetTargetWindowSizeInPixels();
 
-            // You can adjust position/size here if needed
+            // good chance the window HWND is either not set or invalid
+            if (position.width == 0 && position.height == 0 && position.x == 0 && position.y ==  0)
+            {
+                int x = 10;
+            }
+
+            if (window->GetWindowName() == "Main")
+            {
+                int x = 10;
+            }
+            // check on the return width and height values if they dont match some funny stuff is going on
+            if (position.width != size.x || position.height != size.y)
+            {
+                if (window->m_deferWindowPosCountWithWrongSize < (std::numeric_limits<uint32_t>::max)())
+                    window->m_deferWindowPosCountWithWrongSize++;
+                
+                if (window->m_deferWindowPosCountWithWrongSize > 20) // give the window 20 chances to have the right size
+                {
+                    //why hasnt the window been updated this is  bad news
+                    int x = 10;
+                }
+            }
+            else
+            {
+                window->m_deferWindowPosCountWithWrongSize = 0;
+            }
+
             hdwp = DeferWindowPos(hdwp, window->GetHWND(), insertAfter,
-                postion.x, postion.y, 
-                postion.width, postion.height, 
+                position.x, position.y,
+                size.x, size.y,
                 SWP_NOACTIVATE | SWP_SHOWWINDOW);
+
 
             if (!hdwp) {
                 std::cerr << "DeferWindowPos failed at index " << i << ".\n";

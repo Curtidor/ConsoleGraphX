@@ -7,7 +7,9 @@ namespace ConsoleGraphX
 {
     Scene::Scene(std::string name)
         : _m_scene_name(name), _m_resourceManager(ConsoleGraphX_Internal::ResourceManager())
-    {}
+    {
+        EntityDestroyedEvent.AddListener(this, &Scene::_EntityDestroyedEventHandler);
+    }
 
     Scene::~Scene()
     {
@@ -53,9 +55,17 @@ namespace ConsoleGraphX
         _m_entities.erase(itEntity);
     }
 
+    void Scene::CleanUpDeadEntities()
+    {
+        for(size_t id : _m_entitiesToKill)
+        {
+            DeregisterEntity(*GetEntity(id));
+        }
+    }
+
     void Scene::_EntityDestroyedEventHandler(size_t id)
     {
-        DeregisterEntity(*GetEntity(id));
+        _m_entitiesToKill.push_back(id);
     }
 
     void Scene::Destroy()

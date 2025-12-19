@@ -14,6 +14,7 @@ namespace ConsoleGraphX
         const std::string _m_scene_name;
 
         std::unordered_set<Entity, Entity::Hash, Entity::Equal> _m_entities;
+        std::vector<size_t> _m_entitiesToKill;
         std::unordered_map<std::string, size_t> _m_tagIDMap;
 
     private:
@@ -34,6 +35,7 @@ namespace ConsoleGraphX
 
         void Destroy();
         void DeregisterEntity(const Entity& entity);
+        void CleanUpDeadEntities();
 
         const std::unordered_set<Entity, Entity::Hash, Entity::Equal>& GetEntities();
         const std::string& GetSceneName();
