@@ -43,7 +43,7 @@ namespace ConsoleGraphX
         *
         * @note The 'o_perpendicular_point' parameter will be modified to contain the calculated point.
         */
-        static void PerpendicularPoint(const Vector2& start, const Vector2& end, Vector2& o_normal_point);
+        static void PerpendicularPoint(const Vector2 start, const Vector2 end, Vector2& o_normal_point);
 
         float Magnitude() const;
         void Normalize();

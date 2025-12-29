@@ -64,7 +64,7 @@ namespace ConsoleGraphX
         return *this;
     }
 
-    void Vector2::PerpendicularPoint(const Vector2& start, const Vector2& end, Vector2& oPerpendicularPoint)
+    void Vector2::PerpendicularPoint(const Vector2 start, const Vector2 end, Vector2& oPerpendicularPoint)
     {
         oPerpendicularPoint.x = end.y - start.y;
         oPerpendicularPoint.y = end.x - start.x;
@@ -75,12 +75,14 @@ namespace ConsoleGraphX
         return std::sqrt(x * x + y * y);
     }
 
-    void Vector2::Normalize() 
+    void Vector2::Normalize()
     {
         float magnitude = Magnitude();
+        if (magnitude <= 0.000001f) { x = 0.0f; y = 0.0f; return; }
         x /= magnitude;
         y /= magnitude;
     }
+
 };
 
 
