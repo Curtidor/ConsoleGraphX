@@ -2,17 +2,18 @@
 #include <string>
 #include <windows.h>
 #include <iostream>
-#include "Engine\Math\vector2.h"
+#include "Engine\Math\vector2i.h"
 #include "Engine\Core\Event\events.h"
+#include "Engine\Graphics\ScreenGraphics\screen.h"
 
 namespace ConsoleGraphX
 {
     struct WindowPositionData
     {
-        int64_t x;
-        int64_t y;
-        int64_t width;
-        int64_t height;
+        int32_t x;
+        int32_t y;
+        int32_t width;
+        int32_t height;
     };
 
     /**
@@ -36,8 +37,8 @@ namespace ConsoleGraphX
     class AbstractWindow
     {
     public:
-        CGXEventArgs<unsigned short, unsigned short> OnWindowCreated;
-        CGXEventArgs<unsigned short, unsigned short> OnWindowResized;
+        CGXEventArgs<uint32_t, uint32_t> OnWindowCreated;
+        CGXEventArgs<uint32_t, uint32_t> OnWindowResized;
 
         CGXEventArgs<unsigned int> OnKeyPressed;
         CGXEventArgs<unsigned int> OnKeyReleased;
@@ -56,17 +57,23 @@ namespace ConsoleGraphX
 
         HANDLE _m_closeEvent;
         std::string _m_windowName;
+        int32_t _m_widthPx;
+		int32_t _m_heightPx;
+        ConsoleGraphX_Internal::Screen _m_screen;
 
     protected:
 
         // default: nothing to do
         virtual void TryResolveHWND() const noexcept {}
+        virtual void SetupWindowImpl() = 0;
+
 
     public:
-        explicit AbstractWindow(const std::string& windowName);
+        explicit AbstractWindow(const std::string& windowName, ConsoleGraphX_Internal::Screen screen);
         virtual ~AbstractWindow() = default;
 
-        virtual void SetupWindow() = 0;
+        void SetupWindow();
+        void UpdateWindowSize();
         virtual void Destroy() = 0;
 
         bool OpenCloseEvent();
@@ -76,13 +83,13 @@ namespace ConsoleGraphX
 
         std::string& GetWindowNameR();
         const std::string_view GetWindowName() const;
-        const WindowPositionData GetWindowPosition() const;
         const HANDLE GetCloseEventHandle() const;
 
-        void SetWindowPosition(int x, int y);
+        void MoveWindow(int x, int y);
         void SetHWND(HWND windowHWND);
-        void ResizeWindow(unsigned short newWidth, unsigned short newHeight, bool triggerEvent = true);
-        virtual Vector2 GetTargetWindowSize() = 0;
-        virtual Vector2 GetTargetWindowSizeInPixels() = 0;
+        Vector2i GetTargetWindowSize();
+        bool SetScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth = 0, uint16_t fontHeigh = 0);
+        const ConsoleGraphX_Internal::Screen& GetScreen() const { return _m_screen;}
+
     };
 }

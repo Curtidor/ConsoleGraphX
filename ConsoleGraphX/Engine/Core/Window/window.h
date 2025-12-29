@@ -8,17 +8,14 @@
 
 namespace ConsoleGraphX
 {
-    class Window : public AbstractWindow, public ConsoleGraphX_Internal::Screen
+    class Window : public AbstractWindow
     {
     public:
-        Window(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, const std::string& windowName);
+        Window(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight, const std::string& windowName);
         
         virtual void Destroy() override;
-        virtual void SetupWindow() override;
-
-        virtual Vector2 GetTargetWindowSize() override;
-        virtual Vector2 GetTargetWindowSizeInPixels() override;
-
+        virtual void SetupWindowImpl() override;
+		void SetActiveRenderWindow();
     };
 
     struct WindowState
@@ -31,27 +28,22 @@ namespace ConsoleGraphX
         uint32_t keyBits[8];   // 256 keys -> 8 * 32-bit
     };
 
-    class CrossProcessWindow : public AbstractWindow, public ConsoleGraphX_Internal::Screen
+    class CrossProcessWindow : public AbstractWindow
     {
     private:
         HANDLE _m_hMapFile;
         HANDLE _m_processHandle;
         SharedWindowMemory* _m_sharedMem;
 		WindowState _m_windowState;
-		Client _m_client;
         bool _m_baselineInit = false;
 
     public:
-        CrossProcessWindow(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight,
+        CrossProcessWindow(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight,
             const std::string& windowName, std::unique_ptr<ConsoleGraphX_Internal::PixelBuffer> sBuffer);
 
         virtual void Destroy() override;
-        virtual void SetupWindow() override;
-
+        virtual void SetupWindowImpl() override;
         virtual void TryResolveHWND() const noexcept override;
-
-        virtual Vector2 GetTargetWindowSize() override;
-        virtual Vector2 GetTargetWindowSizeInPixels() override;
 
         void PollInput();
 

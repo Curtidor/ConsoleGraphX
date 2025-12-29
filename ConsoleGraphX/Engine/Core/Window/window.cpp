@@ -2,9 +2,10 @@
 #include <processthreadsapi.h>
 #include <filesystem>
 #include <handleapi.h>
+#include <memory>
 #include <exception>
 #include "Engine\Core\Window\window.h"
-#include "Engine/Core/Logger/logger_manager.cpp"
+#include "Engine/Core/Logger/logger_manager.h"
 #include "shared_window_memory.h"
 #include "../WinCore/WinCore.h"
 #include "../WinCore/console_handler.h"
@@ -27,11 +28,11 @@ namespace ConsoleGraphX
   }
 #endif
 
-
-    Window::Window(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight, const std::string& windowName)
-        : AbstractWindow(windowName), Screen(width, height, fontWidth, fontHeight)
+    
+  // Window implementation
+    Window::Window(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight, const std::string& windowName)
+		: AbstractWindow(windowName, ConsoleGraphX_Internal::Screen(width, height, fontWidth, fontHeight))
     {
-        SetConsoleTitleA(windowName.c_str());
         _m_windowHWND.store(GetConsoleWindow(), std::memory_order_release);
     }
 
@@ -40,7 +41,12 @@ namespace ConsoleGraphX
         OnWindowDestroyed.Invoke(this);
     }
 
-    void Window::SetupWindow()
+    void Window::SetActiveRenderWindow() 
+    {
+		ConsoleGraphX_Internal::Screen::SetActiveScreen_A(&_m_screen);
+    }
+
+    void Window::SetupWindowImpl()
     {
         std::string closeEventName = WINDOW_CLOSE_EVENT_NAME(std::string(_m_windowName));
 
@@ -61,22 +67,16 @@ namespace ConsoleGraphX
         WinCore::ConsoleHandler::SetHandler();
 
         _m_closeEvent = closeEvent;
+
+        _m_screen.SetNewScreenSize(_m_screen.GetWidth(), _m_screen.GetHeight(), _m_screen.GetPixelWidth(), _m_screen.GetPixelHeight());
+        
     }
 
-    Vector2 Window::GetTargetWindowSize()
-    {
-        return { _m_width, _m_height };
-    }
 
-    Vector2 Window::GetTargetWindowSizeInPixels()
-    {
-        return { _m_width * _m_pixelWidth , _m_height * _m_pixelHeight };
-
-    }
-
-    CrossProcessWindow::CrossProcessWindow(unsigned short width, unsigned short height, unsigned short fontWidth, unsigned short fontHeight,
+	// CrossProcessWindow implementation
+    CrossProcessWindow::CrossProcessWindow(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight,
         const std::string& windowName, std::unique_ptr<ConsoleGraphX_Internal::PixelBuffer> sBuffer)
-        : AbstractWindow(windowName), Screen(width, height, fontWidth, fontHeight, std::move(sBuffer)),
+        : AbstractWindow(windowName, ConsoleGraphX_Internal::Screen(width, height, fontWidth, fontHeight, std::move(sBuffer))),
         _m_processHandle(INVALID_HANDLE_VALUE), _m_hMapFile(INVALID_HANDLE_VALUE), _m_sharedMem(nullptr), _m_windowState(WindowState{})
     {}
 
@@ -120,7 +120,7 @@ namespace ConsoleGraphX
         {
             _m_windowState.cols = cols;
             _m_windowState.rows = rows;
-            OnWindowResized.InvokeNF(cols, rows);
+            OnWindowResized.InvokeNFC(cols, rows);
 			ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("CrossProcWindow", "Window resized to " + std::to_string(cols) + "x" + std::to_string(rows) + " for window: " + _m_windowName);
 			//_m_client.PushMessage("Window resized to " + std::to_string(cols) + "x" + std::to_string(rows) + " for window: " + _m_windowName);
             // also call ResizeWindow(cols, rows) if you need to resize buffers
@@ -210,27 +210,25 @@ namespace ConsoleGraphX
         }
 
         OnWindowDestroyed.Invoke(this);
-		_m_client.PushMessage("CrossProcessWindow destroyed for window: " + _m_windowName);
-		_m_client.Disconnect();
     }
 
-    void CrossProcessWindow::SetupWindow()
+    void CrossProcessWindow::SetupWindowImpl()
     {
-        _CreateWindowImpl(_m_width, _m_height, _m_pixelWidth, _m_pixelHeight, _m_windowName);
+        _CreateWindowImpl(_m_screen.GetWidth(), _m_screen.GetHeight(), _m_screen.GetPixelWidth(), _m_screen.GetPixelHeight(), _m_windowName);
         _AccessSharedMemory();
 
         _m_windowHWND = FindWindowA(NULL, _m_windowName.c_str());
 
-        _m_screenBuffer = std::make_unique<ConsoleGraphX_Internal::PixelBuffer>(_m_width, _m_height, _m_sharedMem->m_buffer);
 
         // read HWND directly from shared memory
         _m_windowHWND = reinterpret_cast<HWND>(static_cast<uintptr_t>(_m_sharedMem->hwnd_bits));
 
         // hook the shared CHAR_INFO buffer (just past the header)
         CHAR_INFO* sharedBuffer = reinterpret_cast<CHAR_INFO*>(_m_sharedMem + 1);
-        _m_screenBuffer = std::make_unique<ConsoleGraphX_Internal::PixelBuffer>(
-            _m_width, _m_height, sharedBuffer);
+       
 
+        ConsoleGraphX_Internal::PixelBuffer pBuffer = { _m_screen.GetWidth(), _m_screen.GetHeight(), sharedBuffer };
+        _m_screen.SetScreenBuffer(pBuffer);
 
         _m_windowState.cols = _m_sharedMem->cols.load(std::memory_order_acquire);
         _m_windowState.rows = _m_sharedMem->rows.load(std::memory_order_relaxed);
@@ -241,17 +239,6 @@ namespace ConsoleGraphX
         }
 
         _m_baselineInit = true;
-    }
-
-    Vector2 CrossProcessWindow::GetTargetWindowSize()
-    {
-        return { _m_width, _m_height };
-    }
-
-    Vector2 CrossProcessWindow::GetTargetWindowSizeInPixels()
-    {
-        return { _m_width * _m_pixelWidth , _m_height * _m_pixelHeight };
-
     }
 
 
@@ -271,7 +258,7 @@ namespace ConsoleGraphX
 
     void CrossProcessWindow::_AccessSharedMemory()
     {
-        const DWORD sharedSize = CalcSharedSize(_m_width, _m_height);
+        const DWORD sharedSize = CalcSharedSize(_m_screen.GetWidth(), _m_screen.GetHeight());
 
 		// attempt to access shared memory created by the child process (has built in retry logic)
         _m_hMapFile = WinCore::AccessSharedMemory(_m_windowName, sharedSize, 200, /*delayMs*/5);
@@ -304,7 +291,7 @@ namespace ConsoleGraphX
         }
 
         // sanity check size
-        const size_t expectedCells = static_cast<size_t>(_m_width) * static_cast<size_t>(_m_height);
+        const size_t expectedCells = static_cast<size_t>(_m_screen.GetWidth()) * static_cast<size_t>(_m_screen.GetHeight());
         if (_m_sharedMem->m_bufferSize != expectedCells)
         {
             throw std::runtime_error("Shared buffer size mismatch for window: " + _m_windowName);

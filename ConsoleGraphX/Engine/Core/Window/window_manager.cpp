@@ -54,18 +54,7 @@ namespace ConsoleGraphX
             throw WindowEventException("Failed to open close event for window: " + window->GetWindowNameR());
         }
 
-        window->OnWindowResized.AddListenerLambda(
-            [this, window](unsigned short width, unsigned short height)
-            {
-                if (width <= 10 || height <= 10)
-                {
-					//HandleShrunkenWindow(window); // resize happens inside this function
-                    //Sleep(2000);
-                }
-            }
-        );
-
-        OnWindowRegister.InvokeNFC(window);
+         OnWindowRegister.InvokeNFC(window);
         _m_windows[window->GetWindowNameR()] = window;
     }
 
@@ -196,11 +185,4 @@ namespace ConsoleGraphX
             handles.push_back(entry.handle);
     }
     
-    void WindowManager::HandleShrunkenWindow(std::shared_ptr<AbstractWindow> window)
-    {
-		const Vector2 targetSize = window->GetTargetWindowSizeInPixels();
-        window->SetWindowPosition(targetSize.x / 2, targetSize.y / 2);
-        window->ResizeWindow(targetSize.x, targetSize.y, false);
-        // position the window in the middle of the screen
-    }
 }

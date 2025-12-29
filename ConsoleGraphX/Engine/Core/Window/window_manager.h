@@ -9,7 +9,7 @@
 #include <memory>
 #include "Engine\Core\Event\events.h"
 #include "Engine\Core\Window\window.h"
-#include "Engine\Layout\window_layout.h"
+#include "Engine\Core\Window\Layout\window_layout.h"
 #include "Engine\Core\Concurrency\thread_manager.h"
 
 namespace ConsoleGraphX
