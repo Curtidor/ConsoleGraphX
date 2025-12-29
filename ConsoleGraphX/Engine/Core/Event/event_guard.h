@@ -1,29 +1,35 @@
 #pragma once
 #include <optional>
-#include "./Engine/Core/Event/event_base.h"
+#include <utility>
 
 namespace ConsoleGraphX
 {
-    template <typename CallableType, typename... Args>
+    /**
+     * @brief RAII guard that auto-unsubscribes a listener when destroyed.
+     *
+     * Usage:
+     *   CGXEventGuard<decltype(myEvent)> guard(myEvent, myEvent.AddListenerLambda(...));
+     */
+    template <typename EventT>
     class CGXEventGuard
     {
-        CGXEventBase<CallableType, Args...>* _event = nullptr;
-        std::optional<EventCallBackHandle<CallableType, Args...>> _handle;
+        EventT* _event = nullptr;
+        std::optional<typename EventT::HandleType> _handle;
 
     public:
         CGXEventGuard() = default;
 
-        CGXEventGuard(CGXEventBase<CallableType, Args...>& event, EventCallBackHandle<CallableType, Args...> handle)
-            : _event(&event), _handle(std::move(handle)) {}
+        CGXEventGuard(EventT& event, typename EventT::HandleType handle)
+            : _event(&event), _handle(handle) {
+        }
 
-        // No copy
         CGXEventGuard(const CGXEventGuard&) = delete;
         CGXEventGuard& operator=(const CGXEventGuard&) = delete;
 
-        // Move support
         CGXEventGuard(CGXEventGuard&& other) noexcept
             : _event(std::exchange(other._event, nullptr)),
-            _handle(std::move(other._handle)) {}
+            _handle(std::move(other._handle)) {
+        }
 
         CGXEventGuard& operator=(CGXEventGuard&& other) noexcept
         {
@@ -45,8 +51,11 @@ namespace ConsoleGraphX
         {
             if (_event && _handle)
                 _event->RemoveListener(*_handle);
+
             _event = nullptr;
             _handle.reset();
         }
+
+        [[nodiscard]] bool HasHandle() const noexcept { return _handle.has_value(); }
     };
 }

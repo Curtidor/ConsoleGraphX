@@ -1,41 +1,15 @@
 #pragma once
-#include <type_traits>
-#include <functional>
-#include "Engine\Core\Utils\meta_utils.h"
+#include <cstddef>
 
 namespace ConsoleGraphX
 {
-    // Helper to determine the callable type (std::function or raw pointer)
-    template <typename Func, typename... Args>
-    using CallableTypeImpl = typename std::conditional<
-        is_std_function<Func>::value,
-        std::function<void(Args...)>,       // If Func is std::function, use this
-        void(*)(Args...)                   // If Func is raw pointer, use this
-    >::type;
-
-    /**
-     * @brief Struct to store the callback and its unique handle.
-     *
-     * @tparam Func Callable type (either raw function pointer or std::function).
-     * @tparam Args Variadic template arguments for the callback.
-     */
-    template <typename Func, typename... Args>
-    struct EventCallBackHandle
+    /// Lightweight listener token. Does NOT store the callback.
+    struct EventHandle
     {
-        CallableTypeImpl<Func, Args...> m_callback;  ///< The callback function.
-        size_t handle;  ///< Unique handle for the callback.
+        size_t id = 0;
 
-        /**
-         * @brief Constructor to initialize the callback and handle.
-         *
-         * @param callback The callback function (moved).
-         * @param h A unique handle.
-         */
-        EventCallBackHandle(CallableTypeImpl<Func, Args...>&& callback, size_t h)
-            : m_callback(std::move(callback)), handle(h) {}
-
-        EventCallBackHandle(const EventCallBackHandle&) = default;
-        EventCallBackHandle& operator=(const EventCallBackHandle&) = default;
+        constexpr explicit operator bool() const noexcept { return id != 0; }
+        friend constexpr bool operator==(EventHandle a, EventHandle b) noexcept { return a.id == b.id; }
+        friend constexpr bool operator!=(EventHandle a, EventHandle b) noexcept { return a.id != b.id; }
     };
-
-};
+}
