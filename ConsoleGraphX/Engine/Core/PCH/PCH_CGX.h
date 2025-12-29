@@ -32,7 +32,9 @@
 // common engine code
 #include "Engine\Math\vector3.h"
 #include "Engine\Math\vector2.h"
+#include "Engine\Math\vector2i.h"
 #include "Engine\Core\Utils\verify_macro.h"
+#include "../External/TermLog/Client/client.h"
 
 
 constexpr size_t MAX_SIZE_T = (std::numeric_limits<size_t>::max)();
