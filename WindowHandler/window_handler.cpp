@@ -14,12 +14,12 @@
 #include "../WinCore/WinCore.h"
 #include "../External/TermLog/Client/client.h"
 //
-#include "Engine/Core/Window/window_styles.h"
 #include "Engine/Core/Window/shared_window_memory.h"
 #include "Engine/Graphics/ScreenGraphics/screen.h"
 #include "Engine/Graphics/ScreenGraphics/pixel_buffer.h"
 #include "Engine/Core/Window/abstract_window.h"
 #include "console_handler.h"
+#include "WindowStyleFlags.h"
 
 
 
@@ -36,25 +36,33 @@
 static void InitializeConsole(HANDLE hConsole, uint16_t screenWidth, uint16_t screenHeight,
    uint16_t fontWidth, uint16_t fontHeight, const char* appName)
 {   
-    const int initSetConsoleSize = WinCore::SetConsoleWindowSize(hConsole, 1, 1);
-    const BOOL initalBufferSet = SetConsoleScreenBufferSize(hConsole, { static_cast<short>(screenWidth), static_cast<short>(screenHeight) });
-
-    // get maximum screen size and set the window size
-    CONSOLE_SCREEN_BUFFER_INFO cInfo{};
-    GetConsoleScreenBufferInfo(hConsole, &cInfo);
-    const int finalSetConsoleSize = WinCore::SetConsoleWindowSize(hConsole, cInfo.dwSize.X - 1, cInfo.dwSize.Y - 1);
-
-    WinCore::SetConsoleFontSize(hConsole, fontWidth, fontHeight);
-    SetConsoleTitleA(appName);
-    WinCore::DisableConsoleResize();
-
     HWND windowHWND = GetConsoleWindow();
 
-    // apply borderless style for non-editor applications
+    WinCore::ConsoleConfig config{};
+    config.cols = screenWidth;
+    config.rows = screenHeight;
+    config.fontW = fontWidth;
+    config.fontH = fontHeight;
+	config.title = appName;
+    
     if (strcmp(appName, "Editor") != 0)
     {
-        ApplyWindowStyles(WindowStyles::Borderless, windowHWND,{cInfo.dwSize.X-1, cInfo.dwSize.Y-1}); // i think this function is a problem it changed the window size, bad guy
+        WinCore::ApplyWindowStyles_NoResize(windowHWND, WinCore::WindowStyleFlags::Borderless);
+        config.borderless = true;
+
     }
+    
+    config.disableResize = true;
+
+	WinCore::ConsoleApplied configApp = WinCore::ApplyConsoleConfig(hConsole, config);
+
+    if (configApp.lastError != 0)
+    {
+        std::cerr << "Failed to apply console config. Error: " << configApp.lastError << std::endl;
+        throw std::runtime_error("Fatal: failed to apply console config");
+	}
+
+
 }
 
 static HANDLE InitializeSharedMemory(const char* windowName, DWORD sharedMemorySize,
@@ -330,6 +338,9 @@ int main(int argc, char* argv[])
         std::cerr << "Usage: <screenWidth> <screenHeight> <fontWidth> <fontHeight> <appName>" << std::endl;
         return 1;
     }
+
+    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
 
    uint16_t screenWidth = static_cast<uint16_t>(std::stoi(argv[1]));
    uint16_t screenHeight = static_cast<uint16_t>(std::stoi(argv[2]));

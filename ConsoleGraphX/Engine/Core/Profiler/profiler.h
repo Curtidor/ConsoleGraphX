@@ -70,9 +70,11 @@ namespace ConsoleGraphX_Internal
                 return;
             }
 
+			auto& screen = _m_window->GetScreen();
+
             unsigned short y = 0;
 
-            _m_window->WriteText("==================== CGX Profiler Metrics ====================", 2, y++);
+            screen.WriteText("==================== CGX Profiler Metrics ====================", 2, y++);
 
             // temporary buffer for the current line
             std::string buffer;
@@ -82,8 +84,8 @@ namespace ConsoleGraphX_Internal
             for (auto& [name, timer] : _m_timers)
             {
                 buffer = name + ": " + std::to_string(timer.totalTime) + "ms (" + std::to_string(timer.count) + " calls)";
-                _m_window->WriteText(spaces, 2, y);
-                _m_window->WriteText(buffer, 2, y++);
+                screen.WriteText(spaces, 2, y);
+                screen.WriteText(buffer, 2, y++);
 
                 // reset timer data after displaying
                 timer.totalTime = 0.0f;
@@ -95,8 +97,8 @@ namespace ConsoleGraphX_Internal
             {
                 buffer = name + ": " + std::to_string(count);
 
-                _m_window->WriteText(spaces, 2, y);  
-                _m_window->WriteText(buffer, 2, y++);
+                screen.WriteText(spaces, 2, y);
+                screen.WriteText(buffer, 2, y++);
 
 
                 count = 0;

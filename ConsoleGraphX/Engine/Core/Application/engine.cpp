@@ -36,6 +36,7 @@ namespace ConsoleGraphX
         _m_window = nullptr;
     #endif 
 
+
     }
 
     void Engine::AttachWindow(std::shared_ptr<Window> window)
@@ -57,8 +58,8 @@ namespace ConsoleGraphX
     #else
         if (!_m_window)
         {
-            _m_window = WindowManager::Instance().CreateCGXWindow<Window>(300, 100, 3, 3, "Main");
-            ConsoleGraphX_Internal::Screen::SetActiveScreen_A(_m_window.get());
+            _m_window = WindowManager::Instance().CreateCGXWindow<Window>(300, 100, 4, 4, "Main");
+			_m_window->SetActiveRenderWindow();
         }
     #endif
 
@@ -73,9 +74,10 @@ namespace ConsoleGraphX
 
     void Engine::Render(SceneSystem& sceneSystem, float alpha)
     {
-        _m_window->FillCanvas(CHAR_INFO{ _m_window->s_pixel, 6 });
-        ConsoleGraphX_Internal::Renderer::DrawSprites(*_m_window, sceneSystem, alpha);
-        _m_window->DrawScreen();
+		auto& screen = *ConsoleGraphX_Internal::Screen::GetActiveScreen_A();
+		screen.FillCanvas(CHAR_INFO{ screen.s_transparentPixel, 6 });
+        ConsoleGraphX_Internal::Renderer::DrawSprites(screen, sceneSystem, alpha);
+        screen.DrawScreen();
 
     #if MIN_BUILD == 0
         ConsoleGraphX_Internal::CGXProfiler::Instance().DisplayMetrics();

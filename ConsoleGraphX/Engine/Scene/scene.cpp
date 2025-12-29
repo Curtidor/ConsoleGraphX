@@ -8,7 +8,10 @@ namespace ConsoleGraphX
     Scene::Scene(std::string name)
         : _m_scene_name(name), _m_resourceManager(ConsoleGraphX_Internal::ResourceManager())
     {
-        EntityDestroyedEvent.AddListener(this, &Scene::_EntityDestroyedEventHandler);
+        // In Scene constructor, capture and use the return value to avoid [[nodiscard]]/C6031 warnings.
+        auto listenerHandle = EntityDestroyedEvent.AddListener(this, &Scene::_EntityDestroyedEventHandler);
+        //cast to void to explicitly mark as intentionally unused:
+        (void)listenerHandle;
     }
 
     Scene::~Scene()

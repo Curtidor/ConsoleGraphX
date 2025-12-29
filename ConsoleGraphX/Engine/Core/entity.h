@@ -1,8 +1,13 @@
 #pragma once
 #include <exception>
+#include <queue>
+#include <string>
+#include <stdexcept>
+#include <utility>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+
 #include "Engine\Core\Event\events.h"
 #include "Engine\Components\transform.h"
 #include "Engine\Resources\resource_id.h"
@@ -28,27 +33,27 @@ namespace ConsoleGraphX_Internal
 
 namespace ConsoleGraphX
 {
-  // ARCHITECTURE NOTE FOR FUTURE ME:
-  // CHALLENGE: Accessing the correct ResourceManager in _GetComponentImpl
-  // NOTE ON THE TOPIC:
-  //      When calling GetComponent on an entity, we cannot guarantee that the entity in question 
-  //      is part of the currently active scene. Thus, simply using 
-  //      ResourceManager::GetActiveManager().GetResource<T>(it->second); might return incorrect resources, 
-  //      since the active manager corresponds to the active scene.
-  //
-  // PROPOSED SOLUTIONS:
-  //      1. Dependency Injection (DI): Since scenes are responsible for creating entities, 
-  //         we can easily inject a reference to the scene's ResourceManager into the entity. This would allow for:
-  //         _m_resourceManager.GetResource<T>(it->second);
-  //
-  //      2. Scene ID Lookup: Alternatively, we could pass a scene ID to the entity. This decouples the entity 
-  //         from the ResourceManager but introduces a more costly lookup:
-  //         SceneSystem::GetScene(_m_sceneId)->GetResourceManager().GetResource<T>(it->second);
-  //
-  // CONCLUSION:
-  //      For now, DI (Dependency Injection) is the preferred approach.
-    
-   inline CGXEventArgs<size_t> EntityDestroyedEvent;
+    // ARCHITECTURE NOTE FOR FUTURE ME:
+    // CHALLENGE: Accessing the correct ResourceManager in _GetComponentImpl
+    // NOTE ON THE TOPIC:
+    //      When calling GetComponent on an entity, we cannot guarantee that the entity in question
+    //      is part of the currently active scene. Thus, simply using
+    //      ResourceManager::GetActiveManager().GetResource<T>(it->second); might return incorrect resources,
+    //      since the active manager corresponds to the active scene.
+    //
+    // PROPOSED SOLUTIONS:
+    //      1. Dependency Injection (DI): Since scenes are responsible for creating entities,
+    //         we can easily inject a reference to the scene's ResourceManager into the entity. This would allow for:
+    //         _m_resourceManager.GetResource<T>(it->second);
+    //
+    //      2. Scene ID Lookup: Alternatively, we could pass a scene ID to the entity. This decouples the entity
+    //         from the ResourceManager but introduces a more costly lookup:
+    //         SceneSystem::GetScene(_m_sceneId)->GetResourceManager().GetResource<T>(it->second);
+    //
+    // CONCLUSION:
+    //      For now, DI (Dependency Injection) is the preferred approach.
+
+    inline CGXEventArgs<size_t> EntityDestroyedEvent;
 
     /**
      * @brief A class representing an entity in the entity-component system (ECS).
@@ -60,35 +65,46 @@ namespace ConsoleGraphX
         ConsoleGraphX_Internal::ResourceManager* _m_resourceManager; // Injected via DI
 
         std::unordered_set<Entity*> _m_children;
-       
+
         std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex> _m_componentIdToIndexMap;
         std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex> _m_scriptIdToIndexes;
+
     private:
-        void _CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap);
+        void _CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId,
+            const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap);
 
         template <typename T>
         std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& GetIndexMap()
         {
-            if constexpr (ConsoleGraphX_Internal::IsScript<T>) 
+            if constexpr (ConsoleGraphX_Internal::IsScript<T>)
             {
                 return _m_scriptIdToIndexes;
             }
-            else 
+            else
             {
                 return _m_componentIdToIndexMap;
             }
         }
 
         template <typename T, typename... Args>
-        ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args) 
+        ConsoleGraphX_Internal::ResourceIndex CreateComponentInPool(Args&&... args)
         {
             if constexpr (std::is_same_v<T, Sprite>)
             {
-                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., _m_resourceManager, _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
+                // Enforce: Transform must already exist, and we will NOT default-insert.
+                return _m_resourceManager->CreateResource<T>(
+                    std::forward<Args>(args)...,
+                    _m_resourceManager,
+                    _m_componentIdToIndexMap.at(ConsoleGraphX_Internal::GenResourceID::Get<Transform>())
+                ).second;
             }
             else if constexpr (std::is_base_of<ConsoleGraphX_Internal::PositionComponentBase, T>::value)
             {
-                return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)..., _m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]).second;
+                // Enforce: Transform must already exist, and we will NOT default-insert.
+                return _m_resourceManager->CreateResource<T>(
+                    std::forward<Args>(args)...,
+                    _m_componentIdToIndexMap.at(ConsoleGraphX_Internal::GenResourceID::Get<Transform>())
+                ).second;
             }
             else if constexpr (ConsoleGraphX_Internal::IsScript<T>)
             {
@@ -100,7 +116,7 @@ namespace ConsoleGraphX
                 // so eventally the item makes it to the pool, just gotta build it first
                 return _m_resourceManager->CreateAnimationResource(std::forward<Args>(args)..., m_id).second;
             }
-            else 
+            else
             {
                 return _m_resourceManager->CreateResource<T>(std::forward<Args>(args)...).second;
             }
@@ -110,9 +126,7 @@ namespace ConsoleGraphX
         size_t m_id;
         std::string m_tag;
 
-
     public:
-
         /**
          * @brief Default constructor for creating an entity.
          */
@@ -197,7 +211,7 @@ namespace ConsoleGraphX
             ConsoleGraphX_Internal::ResourceIndex compIndex = CreateComponentInPool<T>(std::forward<Args>(args)...);
             indexMap.emplace(componentId, compIndex);
 
-            return compIndex ;
+            return compIndex;
         }
 
         /**
@@ -208,7 +222,7 @@ namespace ConsoleGraphX
         void RemoveComponent()
         {
             static_assert(std::is_base_of_v<ConsoleGraphX_Internal::Component, T>, "T must be derived from the Component Type");
-            static_assert(std::is_same_v<T, Transform>, "Cannot Remove Transforms!");
+            static_assert(!std::is_same_v<T, Transform>, "Cannot Remove Transforms!"); // not transform = !false = true, transform = !true = false
 
             ConsoleGraphX_Internal::ResourceID componentId = ConsoleGraphX_Internal::ResourceManager::GetResourceID<T>();
 
@@ -222,7 +236,7 @@ namespace ConsoleGraphX
                 throw std::runtime_error("Component not found.");
             }
 
-            _m_resourceManager.RemoveResource<T>(it->second);
+            _m_resourceManager->RemoveResource<T>(it->second);
             indexMap.erase(it);
         }
 
@@ -282,6 +296,7 @@ namespace ConsoleGraphX
             bool operator()(const Entity& entity, int id) const;
             bool operator()(size_t id, const Entity& entity) const;
         };
+
         /**
          * @brief Inequality operator for comparing entities.
          * @param other The entity to compare with.
@@ -300,7 +315,8 @@ namespace ConsoleGraphX
         * @return A pointer to the component, or nullptr if the component does not exist.
         */
         template <typename T>
-        inline T* _GetComponentImpl(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, size_t>& indexMap)
+        inline T* _GetComponentImpl(ConsoleGraphX_Internal::ResourceID componentId,
+            const std::unordered_map<ConsoleGraphX_Internal::ResourceID, size_t>& indexMap)
         {
             auto it = indexMap.find(componentId);
             if (it == indexMap.end())
