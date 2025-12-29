@@ -6,7 +6,7 @@ namespace ConsoleGraphX
     Camera::Camera() : _m_width(1), _m_height(1), _m_position(Vector3()), _m_viewPort(1, 1)
     {}
 
-    Camera::Camera(int width, int height, const Vector3& position)
+    Camera::Camera(int32_t width, int32_t height, const Vector3& position)
         : _m_width(width), _m_height(height), _m_position(position), _m_viewPort(width, height)
     {}
 
@@ -17,7 +17,7 @@ namespace ConsoleGraphX
         _m_position.z = position.z;
     }
 
-    void Camera::SetCameraSize(int width, int height) 
+    void Camera::SetCameraSize(int32_t width, int32_t height) 
     {
         _m_width = width;
         _m_height = height;
@@ -28,7 +28,7 @@ namespace ConsoleGraphX
         return _m_position;
     }
 
-    const Vector2& Camera::GetViewPort() const 
+    const Vector2i& Camera::GetViewPort() const 
     {
         return _m_viewPort;
     }
