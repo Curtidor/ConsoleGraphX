@@ -3,7 +3,7 @@
 
 int main()
 {
-    Server<512> server = Server<512>("EditorLogger");
+    Server<512> server = Server<512>("CGXLog");
     server.Create();
 
     server.WaitForClients();
