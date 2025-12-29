@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine\Graphics\ScreenGraphics\pixel_buffer.h"
+#include <cstdint>
 
 namespace ConsoleGraphX_Internal
 {
@@ -20,8 +21,9 @@ namespace ConsoleGraphX_Internal
 
 		// Buffer manipulation
 		void SetPixel(unsigned int x, unsigned int y, CHAR_INFO s_pixel);
-		void SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest);
+		const void SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest) const;
 		void FillCanvas(CHAR_INFO fillChar);
+		void SetPixelBuffer(std::unique_ptr<PixelBuffer> sBuffer);
 	};
 
 };

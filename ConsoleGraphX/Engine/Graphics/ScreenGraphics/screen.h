@@ -10,6 +10,7 @@
 
 namespace ConsoleGraphX_Internal
 {
+
 	// methods with the ending "A" act on the Active screen
 
 	class Screen : public PixelCanvas
@@ -18,8 +19,8 @@ namespace ConsoleGraphX_Internal
 		static inline Screen* _s_activeScreen = nullptr;
 
 	protected:
-		const uint16_t _m_pixelWidth;
-		const uint16_t _m_pixelHeight;
+		uint16_t _m_pixelWidth;
+		uint16_t _m_pixelHeight;
 
 	public:									   
 		static const wchar_t s_pixel = L'\x2588';
@@ -40,14 +41,15 @@ namespace ConsoleGraphX_Internal
 
 
 		bool DrawScreen();
-		bool WriteText(const std::string& text,uint16_t x, uint16_t y);
+		const bool WriteText(const std::string& text,uint16_t x, uint16_t y) const;
 
 		void WriteTextColor(CHAR_INFO* text, uint16_t x, uint16_t y);
 
 		int GetPixelWidth() const;
 		int GetPixelHeight() const;
 
-		void SetNewScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight);
+		bool SetNewScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight);
+		void SetScreenBuffer(ConsoleGraphX_Internal::PixelBuffer buffer);
 
 		CHAR_INFO* GetScreenBuffer();
 

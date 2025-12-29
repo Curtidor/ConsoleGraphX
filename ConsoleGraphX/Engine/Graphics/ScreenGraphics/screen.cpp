@@ -7,6 +7,9 @@
 #include "Engine\Graphics\ScreenGraphics\pixel_buffer.h"
 #include "Engine\Graphics\color.h"
 #include "Engine\Graphics\palette.h"
+#include "Engine/termlog.h"
+#include "Engine/Core//Logger/logger_manager.h"
+
 
 
 namespace ConsoleGraphX_Internal
@@ -22,8 +25,6 @@ namespace ConsoleGraphX_Internal
 		 _m_pixelWidth(fontWidth), _m_pixelHeight(fontHeight)
 	{
 		SetConsoleOutputCP(CP_UTF8);
-
-		SetNewScreenSize(width, height, fontWidth, fontHeight);
 	}
 
 	bool Screen::DrawScreen()
@@ -70,7 +71,7 @@ namespace ConsoleGraphX_Internal
 	}
 
 	// Returns how many characters were actually written.
-	bool Screen::WriteText(const std::string& text, uint16_t x, uint16_t y)
+	const bool Screen::WriteText(const std::string& text, uint16_t x, uint16_t y) const
 	{
 		PixelBuffer* buffer = _m_screenBuffer.get();
 		CHAR_INFO* bufferData = buffer->GetBuffer();
@@ -99,7 +100,7 @@ namespace ConsoleGraphX_Internal
 		size_t textIdx = 0;
 
 		// Helper: clear an entire row starting at colStart
-		auto clear_row_range = [&](int row, int colStart) 
+		auto clearRowRange = [&](int row, int colStart) 
 			{
 				int base = row * screenWidth;
 				for (int i = colStart; i < screenWidth; ++i) 
@@ -110,10 +111,10 @@ namespace ConsoleGraphX_Internal
 			};
 
 		// helper: write up to n chars on a row starting at colStart
-		auto write_row_range = [&](int row, int colStart, int n) 
+		auto writeRowRange = [&](int row, int colStart, size_t n) 
 			{
 				int base = row * screenWidth + colStart;
-				for (int i = 0; i < n; ++i) 
+				for (size_t i = 0; i < n; ++i) 
 				{
 					bufferData[base + i].Char.UnicodeChar = text[textIdx + i];
 					bufferData[base + i].Attributes = 3;
@@ -126,15 +127,15 @@ namespace ConsoleGraphX_Internal
 		// first row (may be partial)
 		{
 			int capacity = screenWidth - static_cast<int>(x);
-			int n = std::min<int>(remaining, static_cast<size_t>(capacity));
+			size_t n = std::min<size_t>(remaining, static_cast<size_t>(capacity));
 
 			// always clear from x to end of row so old chars don't remain
-			clear_row_range(y, x);
+			clearRowRange(y, x);
 
 			// write chars if we have them
 			if (n > 0) 
 			{
-				write_row_range(y, x, n);
+				writeRowRange(y, x, n);
 			}
 		}
 
@@ -142,14 +143,14 @@ namespace ConsoleGraphX_Internal
 		int row = y + 1;
 		while (remaining > 0 && row < screenHeight) 
 		{
-			int n = std::min<int>(remaining, static_cast<size_t>(screenWidth));
+			size_t n = std::min<size_t>(remaining, static_cast<size_t>(screenWidth));
 
 			// always clear the full row
-			clear_row_range(row, 0);
+			clearRowRange(row, 0);
 
 			if (n > 0) 
 			{
-				write_row_range(row, 0, n);
+				writeRowRange(row, 0, n);
 			}
 
 			++row;
@@ -158,8 +159,6 @@ namespace ConsoleGraphX_Internal
 		// return false if we ran out of screen space before text
 		return (remaining == 0);
 	}
-
-
 
 
 
@@ -190,7 +189,7 @@ namespace ConsoleGraphX_Internal
 		return _m_pixelHeight; 
 	}
 
-	void Screen::SetNewScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight)
+	bool Screen::SetNewScreenSize(uint16_t width, uint16_t height, uint16_t fontWidth, uint16_t fontHeight)
 	{
 		// We set the console window size to 1x1 because if we try to set the console buffer size to dimensions smaller than 
 		// the current window size, the operation will fail. This is due to a restriction in the Windows Console API, which requires
@@ -199,47 +198,66 @@ namespace ConsoleGraphX_Internal
 		// size without encountering this limitation. Once the buffer is set, we can then resize the window back to the desired dimensions.
 		// More details: https://learn.microsoft.com/en-us/windows/console/window-and-screen-buffer-size
 		// Set console window size to minimal (1x1)
+
+		if (fontWidth == 0 || fontHeight == 0)
+		{
+			fontWidth = _m_pixelWidth;
+			fontHeight = _m_pixelHeight;
+
+			if (fontWidth == 0 || fontHeight == 0)
+			{
+				throw std::runtime_error("Font width and height cannot be zero.");
+			}
+		}
+
+		if (width == 0 || height == 0)
+		{
+			throw std::runtime_error("Width and height cannot be zero.");
+		}
+
+		WinCore::ConsoleConfig config{};
+		config.cols = width;
+		config.rows = height;
+		config.fontW = fontWidth;
+		config.fontH = fontHeight;
+		config.borderless = true;
+		config.disableResize = true;
+
 		HANDLE h = _m_screenBuffer->GetConsoleHandle();
+
+		WinCore::ConsoleApplied congfigApplied = WinCore::ApplyConsoleConfig(h, config);
+
 		PixelBuffer* buffer = _m_screenBuffer.get();
 
-		// 1) Set font first
-		WinCore::SetConsoleFontSize(h, fontWidth, fontHeight);
-
-		// 2) Query max window size with this font
-		CONSOLE_SCREEN_BUFFER_INFO csbi{};
-		if (!GetConsoleScreenBufferInfo(h, &csbi))
-			return;
-
-		COORD maxWin = csbi.dwMaximumWindowSize;
-
-		// Clamp requested size to what the console can actually display
-		width = static_cast<uint16_t>(std::min<int>(width, maxWin.X));
-		height = static_cast<uint16_t>(std::min<int>(height, maxWin.Y));
-
 		// 3) Update internal buffer + write region
-		buffer->m_bufferSize.X = static_cast<SHORT>(width);
-		buffer->m_bufferSize.Y = static_cast<SHORT>(height);
+		buffer->m_bufferSize.X = static_cast<SHORT>(congfigApplied.cols);
+		buffer->m_bufferSize.Y = static_cast<SHORT>(congfigApplied.rows);
 
 		_m_screenBuffer->m_writePosition = {
 			0, 0,
-			static_cast<SHORT>(width - 1),
-			static_cast<SHORT>(height - 1)
+			static_cast<SHORT>(congfigApplied.cols - 1),
+			static_cast<SHORT>(congfigApplied.rows - 1)
 		};
 
-		_m_width = width;
-		_m_height = height;
+		_m_width = congfigApplied.cols > 0 ? congfigApplied.cols : _m_width;
+		_m_height = congfigApplied.rows > 0 ? congfigApplied.rows : _m_height;
 
-		// 4) Shrink window so buffer resize can't fail
-		WinCore::SetConsoleWindowSize(h, 1, 1);
+		if (congfigApplied.fontW == 0 || congfigApplied.fontH == 0)
+		{
+			throw std::runtime_error("Fatal: invalid font sizing");
+		}
 
-		if (!SetConsoleScreenBufferSize(h, _m_screenBuffer->m_bufferSize))
-			return;
+		_m_pixelWidth = congfigApplied.fontW;
+		_m_pixelHeight = congfigApplied.fontH;
+		
+		ConsoleGraphX_Internal::LoggerManager::Instance().LogMessage("Screen", "Screen resized to " + std::to_string(_m_width) + "x" + std::to_string(_m_height));
 
-		// 5) Now set window size EXACTLY to buffer size
-		WinCore::SetConsoleWindowSize(h, width, height);
+		return width == congfigApplied.cols && height == congfigApplied.rows;
+	}
 
-		FillCanvas({ s_pixel , 0 });
-
+	void Screen::SetScreenBuffer(ConsoleGraphX_Internal::PixelBuffer buffer)
+	{
+		SetPixelBuffer(std::make_unique<ConsoleGraphX_Internal::PixelBuffer>(buffer));
 	}
 
 	CHAR_INFO* Screen::GetScreenBuffer()

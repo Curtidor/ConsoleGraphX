@@ -17,8 +17,8 @@ namespace ConsoleGraphX_Internal
         CHAR_INFO* _m_buffer;   
 
     public:
-        PixelBuffer(short width, short height);
-        PixelBuffer(short width, short height, CHAR_INFO* buffer);
+        PixelBuffer(uint16_t width, uint16_t height);
+        PixelBuffer(uint16_t width, uint16_t height, CHAR_INFO* buffer);
         virtual ~PixelBuffer() = default;
 
         // GETTERS
@@ -34,8 +34,8 @@ namespace ConsoleGraphX_Internal
         HANDLE _m_handle;
 
     public:
-        PixelBufferHandle(HANDLE handle, short width, short height);
-        PixelBufferHandle(HANDLE handle, short width, short height, CHAR_INFO* buffer);
+        PixelBufferHandle(HANDLE handle, uint16_t width, uint16_t height);
+        PixelBufferHandle(HANDLE handle, uint16_t width, uint16_t height, CHAR_INFO* buffer);
         virtual ~PixelBufferHandle() = default;
 
         HANDLE GetConsoleHandle() const override;

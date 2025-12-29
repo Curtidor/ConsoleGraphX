@@ -39,7 +39,7 @@ namespace ConsoleGraphX_Internal
 		_m_screenBuffer->GetBuffer()[index] = s_pixel;
 	}
 
-	void PixelCanvas::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest)
+	const void PixelCanvas::SetPixels(CHAR_INFO* srcStart, CHAR_INFO* srcEnd, CHAR_INFO* dest) const
 	{
 		// pointer to the end of the screen buffer, calculated based on screen dimensions (width * height) aka "size".
 		const CHAR_INFO* bufferEnd = _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size;
@@ -77,6 +77,11 @@ namespace ConsoleGraphX_Internal
 	void PixelCanvas::FillCanvas(CHAR_INFO fillChar)
 	{
 		std::fill(_m_screenBuffer->GetBuffer(), _m_screenBuffer->GetBuffer() + _m_screenBuffer->m_size, fillChar);
-	}	
+	}
+	void PixelCanvas::SetPixelBuffer(std::unique_ptr<PixelBuffer> sBuffer)
+	{
+		_m_screenBuffer = std::move(sBuffer);
+	}
+
 
 };
