@@ -37,8 +37,8 @@ void Player::Awake()
 	//Transform* transform = _m_owner->GetTransform();
 	Sprite* sprite = _m_owner->GetComponent<Sprite>();
 
-	_m_owner->GetComponent<Transform>()->SetPosition(50, 50);
-	_m_owner->AddComponent<PlayerController>(100, 5, 9);
+	_m_owner->GetComponent<Transform>()->SetPosition(50.0f, 50.0f);
+	_m_owner->AddComponent<PlayerController>(100.0f, 5.0f, 9.0f);
 }
 
 void Player::Update(UpdateContext& context)

@@ -43,7 +43,7 @@ public:
 
 				 //position sprite in world
 				const Vector3& pos = chunk.m_sprites[i].m_mapPosition;
-				const size_t transformIndexInPool = rManager.CreateResource<Transform>(pos.x, pos.y, pos.z, 1, 1, 1).second;
+				const size_t transformIndexInPool = rManager.CreateResource<Transform>(pos.x, pos.y, pos.z, 1.0f, 1.0f, 1.0f).second;
 
 				 //register sprite with transform + texture
 
