@@ -22,7 +22,7 @@ to copy pixels for each region. This can improve performance, especially if you 
 
 namespace ConsoleGraphX_Internal 
 {
-    void Renderer::DrawSprites(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, float alpha)
+    const void Renderer::DrawSprites(const Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, float alpha)
     {
         PROFILE_SCOPE("RENDER");
 
@@ -41,9 +41,9 @@ namespace ConsoleGraphX_Internal
             ConsoleGraphX::Vector3 cameraPosition = cam.GetPosition();
             cameraPosition.RoundD();
 
-            ConsoleGraphX::Vector2 camViewPort = cam.GetViewPort();
-            camViewPort.x = std::min<int>(camViewPort.x, screen.GetWidth());
-            camViewPort.y = std::min<int>(camViewPort.y, screen.GetHeight());
+            ConsoleGraphX::Vector2i camViewPort = cam.GetViewPort();
+            camViewPort.x = std::min<int32_t>(camViewPort.x, screen.GetWidth());
+            camViewPort.y = std::min<int32_t>(camViewPort.y, screen.GetHeight());
 
             ConsoleGraphX::Vector3 relativePosition;
             for (const ConsoleGraphX::Sprite& sprite : *sprites)
@@ -85,7 +85,7 @@ namespace ConsoleGraphX_Internal
     }
 
 
-    void Renderer::_DrawSprite(Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
+    const void Renderer::_DrawSprite(const Screen& screen, ConsoleGraphX::SceneSystem& sceneSystem, const ConsoleGraphX::Vector3& relEntityPosition, const ConsoleGraphX::Sprite& sprite, const OverlapPoints& overlapPoints)
     {
         CHAR_INFO* buffer = Screen::GetActiveScreenBuffer_A();
         CHAR_INFO* pixels = sceneSystem.GetActiveResourceManager().GetResourcePool<Texture>().GetResourceFromPool(sprite.m_textureIndex)->GetPixels();
