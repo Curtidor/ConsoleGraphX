@@ -40,14 +40,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\Debug\</OutDir>
-    <IntDir>..\bin-int\Debug\Debug\WinCore\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Debug\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Debug\Debug\WinCore\</IntDir>
     <TargetName>WinCore</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\Release\</OutDir>
-    <IntDir>..\bin-int\Release\Release\WinCore\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Release\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Release\Release\WinCore\</IntDir>
     <TargetName>WinCore</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -95,6 +95,7 @@
     <ClInclude Include="PCH_WCore.h" />
     <ClInclude Include="WinCore.h" />
     <ClInclude Include="console_handler.h" />
+    <ClInclude Include="WindowStyleFlags.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PCH_WCore.cpp">
@@ -102,6 +103,7 @@
     </ClCompile>
     <ClCompile Include="WinCore.cpp" />
     <ClCompile Include="console_handler.cpp" />
+    <ClCompile Include="WindowStyleFlags.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

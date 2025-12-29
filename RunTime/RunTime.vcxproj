@@ -41,15 +41,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug\</OutDir>
-    <IntDir>..\bin-int\Debug\Debug\RunTime\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Debug\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Debug\Debug\RunTime\</IntDir>
     <TargetName>RunTime</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release\</OutDir>
-    <IntDir>..\bin-int\Release\Release\RunTime\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Release\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Release\Release\RunTime\</IntDir>
     <TargetName>RunTime</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>

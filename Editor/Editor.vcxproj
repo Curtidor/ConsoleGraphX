@@ -41,15 +41,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug\</OutDir>
-    <IntDir>..\bin-int\Debug\Debug\Editor\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Debug\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Debug\Debug\Editor\</IntDir>
     <TargetName>Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release\</OutDir>
-    <IntDir>..\bin-int\Release\Release\Editor\</IntDir>
+    <OutDir>$(ProjectDir)..\bin\Release\</OutDir>
+    <IntDir>$(ProjectDir)..\bin-int\Release\Release\Editor\</IntDir>
     <TargetName>Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -57,7 +57,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TERMLOG=0;DEBUG;MIN_BUILD=0;RunTime;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TERMLOG=1;DEBUG;MIN_BUILD=0;RunTime;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\WinCore;..\ConsoleGraphX;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>

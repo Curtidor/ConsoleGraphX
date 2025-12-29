@@ -65,9 +65,6 @@ namespace ConsoleGraphX_Internal
             return;
         #endif
 
-        if (!_m_loggingThreadStarted)
-            return;
-
         std::string formattedMessage;
         formattedMessage.reserve(loggerName.size() + message.size() + 14);
 
@@ -91,7 +88,7 @@ namespace ConsoleGraphX_Internal
         _m_loggerWindow = window;
 
         [[maybe_unused]]
-        ConsoleGraphX::EventCallBackHandle handle = window->OnWindowDestroyed.AddListener(this, &LoggerManager::DetachWindow);
+        ConsoleGraphX::EventHandle handle = window->OnWindowDestroyed.AddListener(this, &LoggerManager::DetachWindow);
     }
 
     void LoggerManager::DetachWindow(ConsoleGraphX::AbstractWindow* window)
@@ -104,6 +101,7 @@ namespace ConsoleGraphX_Internal
         if (!_m_loggingThreadStarted)
             return;
 
+		const ConsoleGraphX_Internal::Screen& loggerScreen = _m_loggerWindow->GetScreen();
         static uint16_t y = 0;
         while (!shouldQuit.load(std::memory_order_acquire))
         {
@@ -123,11 +121,11 @@ namespace ConsoleGraphX_Internal
 
                 if (_m_loggerWindow != nullptr)
                 {
-                    if (y > _m_loggerWindow->GetHeight())
+                    if (y > loggerScreen.GetHeight())
                     {
                         y = 0;
                     }
-                    _m_loggerWindow->WriteText(message, 0, y);
+                    loggerScreen.WriteText(message, 0, y);
                     y += 1;
                 }
 

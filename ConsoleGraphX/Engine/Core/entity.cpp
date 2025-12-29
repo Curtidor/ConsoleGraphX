@@ -36,30 +36,37 @@ namespace ConsoleGraphX_Internal
 
 namespace ConsoleGraphX
 {
-    Entity::Entity(int id) : m_id(id), m_tag(""), _m_parent(nullptr), _m_resourceManager(&ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager())
+    Entity::Entity(int id)
+        : m_id(id), m_tag(""), _m_parent(nullptr),
+        _m_resourceManager(&ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager())
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager) : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager)
+        : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""),
+        _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id) : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id)
+        : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         AddComponent<Transform>();
     }
 
-    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id, const std::string& tag) : m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager)
+    Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id, const std::string& tag)
+        : m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager)
     {
         AddComponent<Transform>();
     }
 
     Entity::~Entity()
-    {}
+    {
+    }
 
     Entity::Entity(Entity&& other) noexcept
         : _m_parent(other._m_parent),
@@ -120,7 +127,7 @@ namespace ConsoleGraphX
                         clonedComponentIndex = pool.CloneComponentWithTransform(
                             componentIdIndexPair.second,
                             _m_resourceManager,
-                            entity._m_componentIdToIndexMap[ConsoleGraphX_Internal::GenResourceID::Get<Transform>()]
+                            entity._m_componentIdToIndexMap.at(ConsoleGraphX_Internal::GenResourceID::Get<Transform>())
                         );
                     }
                     else
@@ -130,7 +137,6 @@ namespace ConsoleGraphX
                     }
                 }, poolVariant);
 
-
             // insert the cloned component index into the new entity's map
             entity._m_componentIdToIndexMap.insert({ componentIdIndexPair.first, clonedComponentIndex });
         }
@@ -138,7 +144,8 @@ namespace ConsoleGraphX
         ConsoleGraphX_Internal::ComponentPoolScript& scriptPool = _m_resourceManager->GetResourcePool<Script>();
         for (const auto& scriptIdIndexPair : _m_scriptIdToIndexes)
         {
-            ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex = scriptPool.CloneComponentWithEntity(scriptIdIndexPair.second, &entity);
+            ConsoleGraphX_Internal::ResourceIndex clonedComponentIndex =
+                scriptPool.CloneComponentWithEntity(scriptIdIndexPair.second, &entity);
 
             entity._m_scriptIdToIndexes.insert({ scriptIdIndexPair.first, clonedComponentIndex });
         }
@@ -150,7 +157,7 @@ namespace ConsoleGraphX
 
         Vector3 prefabPosition = GetTransform()->GetLocalPosition();
         Vector3 spawnPosition = Vector3(x, y, z) + prefabPosition;
-        
+
         entity.GetTransform()->SetPosition(spawnPosition);
     }
 
@@ -196,7 +203,7 @@ namespace ConsoleGraphX
 
     void Entity::KillEntity()
     {
-        for(const Entity* child : _m_children)
+        for (const Entity* child : _m_children)
         {
             child->DestroyEntityResources();
             ConsoleGraphX_Internal::EntityIDs::RecycleId(child->m_id);
@@ -213,7 +220,7 @@ namespace ConsoleGraphX
         return m_id;
     }
 
-    Transform* Entity::GetTransform() 
+    Transform* Entity::GetTransform()
     {
         return this->GetComponent<Transform>();
     }
@@ -229,16 +236,17 @@ namespace ConsoleGraphX
         return *_m_resourceManager;
     }
 
-    void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId, const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap)
+    void Entity::_CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId,
+        const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap)
     {
         // this is here so if we try to double add a component in a debug build we will get an error, as no entity should have
         // two of the same components, other scripts
-        #ifdef _DEBUG
+#ifdef _DEBUG
         if (indexMap.find(componentId) != indexMap.end())
         {
             throw std::runtime_error("Component already exists.");
         }
-        #endif
+#endif
     }
 
     size_t Entity::Hash::operator()(const Entity& entity) const
@@ -271,4 +279,3 @@ namespace ConsoleGraphX
         return m_id != other.m_id;
     }
 };
-
