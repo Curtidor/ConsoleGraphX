@@ -2,7 +2,9 @@
 #include "Engine/Core/Application/application.h"
 #include "Engine/Core/Window/window_manager.h"
 #include "Engine/Core/Profiler/profiler.h"
-#include "Engine/Layout/window_layout.h"
+#include "Engine/Core/Window/Layout/window_layout.h"
+#include "Engine/termlog.h"
+#include "WinCore.h"
 
 
 namespace ConsoleGraphX
@@ -14,6 +16,13 @@ namespace ConsoleGraphX
     Application::Application()
         : m_engine(Engine()), _m_state(ApplicationState::Running)
     {
+#if TERMLOG == 1
+        WinCore::CGXCreateProcess("LogServer.exe", std::vector<std::string>());
+        Sleep(100); // give it a moment to start
+        g_logClient.Connect("CGXLog");
+#else
+
+#endif // TermLog
     }
 
     void Application::WarmUp(SceneSystem& sceneSystem)
@@ -64,13 +73,17 @@ namespace ConsoleGraphX
            WindowManager::Instance().ProcessToCloseWindows();
         #endif
 
-           while (!_m_task.empty())
+           for (;;)
            {
-               auto task = _m_task.front();
-               _m_task.pop();
-
-               if (task)
-                   task();
+               std::function<void()> task;
+               {
+                   std::lock_guard<std::mutex> lock(_m_taskMutex);
+                   if (_m_task.empty())
+                       break;
+                   task = std::move(_m_task.front());
+                   _m_task.pop();
+               }
+               if (task) task();
            }
 
            sceneSystem.GetActiveScene()->CleanUpDeadEntities();
@@ -105,6 +118,9 @@ namespace ConsoleGraphX
 
     void Application::OnConsoleClose(AbstractWindow* window)
     {
-        _m_task.push([this]() { Shutdown(); });
+        {
+            std::lock_guard<std::mutex> lock(_m_taskMutex);
+            _m_task.push([this]() { Shutdown(); });
+        }
     }
 }
