@@ -1,3 +1,9 @@
+import os
+
+# ===== PATHS =====
+# Repo-root Assets folder. Paths stored inside asset files (.cxaim, .cxreg) are relative to this.
+ASSETS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "Assets"))
+
 # ===== EDITOR SETTINGS =====
 WORLD_EDITOR_SCREEN_WIDTH = 1000
 WORLD_EDITOR_SCREEN_HEIGHT = 600
@@ -28,7 +34,7 @@ SPRITE_MAKER_CANVAS_WIDTH, SPRITE_MAKER_CANVAS_HEIGHT = 9, 12  # Grid dimensions
 SPRITE_MAKER_SCREEN_WIDTH = max(SPRITE_MAKER_CANVAS_WIDTH * GRID_SIZE_X, PALETTE_SIZE * GRID_SIZE_X)
 SPRITE_MAKER_SCREEN_HEIGHT = (SPRITE_MAKER_CANVAS_HEIGHT + 1) * GRID_SIZE_Y
 
-EXPORT_FILE_PATH = "player_sprite.cxsp"
+EXPORT_FILE_PATH = os.path.join(ASSETS_DIR, "Sprites", "player_sprite.cxsp")
 
 # ====== SPRITE DATA CONSTS ======
 DEFAULT_COLOR_INT = 0x0000            # treated as transparent
