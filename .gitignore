@@ -185,3 +185,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /ConsoleGraphX/ConsoleGraphX.vcxproj
 /ConsoleGraphX/ConsoleGraphX.vcxproj.filters
+
+# Game assets are source files; keep them tracked despite the *.cxsp/*.cxmap rules above
+!/Assets/**
