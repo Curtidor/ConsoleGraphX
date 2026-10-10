@@ -8,7 +8,6 @@
 #include <vector>
 #include <thread>
 
-namespace ConsoleGraphX_Internal { class ThreadManager; }
 
 namespace WinCore
 {
