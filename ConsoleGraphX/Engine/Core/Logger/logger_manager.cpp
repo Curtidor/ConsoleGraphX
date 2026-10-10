@@ -51,6 +51,7 @@ namespace ConsoleGraphX_Internal
 
     void LoggerManager::StartLoggerThread(ThreadManager& threadManager)
     {
+		return; // temporarily disable logging thread
        _m_threadID = threadManager.StartThread("LoggerThread", [this](std::atomic<bool>& shouldQuit) {
             _ProcessQueue(shouldQuit);
             });
