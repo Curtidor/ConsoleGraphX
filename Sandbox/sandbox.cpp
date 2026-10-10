@@ -1,5 +1,5 @@
 #include <memory>
-#include "../ConsoleGraphX/Engine/Core/Application/IGameModule.h"
+#include "../ConsoleGraphX/Engine/IGameModule.h"
 #include "main_scene.h"
 #include "second_scene.h"
 
