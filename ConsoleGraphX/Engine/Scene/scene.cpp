@@ -42,6 +42,9 @@ namespace ConsoleGraphX
 
     void Scene::DeregisterEntity(const Entity& entity)
     {
+        if (entity.IsAlive())
+            return;
+
         auto itEntity = _m_entities.find(entity);
         if (itEntity == _m_entities.end())
         {
@@ -54,6 +57,13 @@ namespace ConsoleGraphX
             _m_tagIDMap.erase(itId);
         }
 
+        for (Entity* child : entity.GetChildren())
+        {
+            DeregisterEntity(*child);
+		}
+
+		_m_resourceManager.DestroyEntityResources(entity.GetComponents());
+		_m_resourceManager.DestroyEntityResources(entity.GetScripts());
 
         _m_entities.erase(itEntity);
     }
@@ -62,8 +72,12 @@ namespace ConsoleGraphX
     {
         for(size_t id : _m_entitiesToKill)
         {
-            DeregisterEntity(*GetEntity(id));
+			Entity* entity = GetEntity(id);
+			if (entity)
+                DeregisterEntity(*entity);
         }
+
+        _m_entitiesToKill.clear();
     }
 
     void Scene::_EntityDestroyedEventHandler(size_t id)
@@ -85,8 +99,10 @@ namespace ConsoleGraphX
         // kill each entity (which removes them from the set internally)
         for (Entity* entity : entitiesToKill)
         {
-            entity->KillEntity(); // killEntity will remove it from _m_entities
+            entity->KillEntity();
         }
+
+		CleanUpDeadEntities();
 
         _m_entities.clear();     
         _m_tagIDMap.clear();
