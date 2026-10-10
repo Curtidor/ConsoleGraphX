@@ -1,10 +1,11 @@
+import os
 import struct
-from Config.settings import ANIMATION_MARKER_VERSION
+from Config.settings import ANIMATION_MARKER_VERSION, ASSETS_DIR
 from SpriteMaker.tile_set_sprites import get_tile_set_data
 
 
 def save_animation(texture_id_to_frames: dict[int, list[int]], texture_id_to_path: dict[int, str],
-                   output_path: str = "./Animations/player_idle.cxaim"):
+                   output_path: str = os.path.join(ASSETS_DIR, "Animations", "player_idle.cxaim")):
     with open(output_path, 'wb') as f:
         total_frames = sum(len(frames) for frames in texture_id_to_frames.values())
         total_files = len(texture_id_to_path)
