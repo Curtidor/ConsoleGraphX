@@ -67,12 +67,12 @@ public:
 		Entity* sceneSwitcher = RegisterEntityN();
 		sceneSwitcher->AddComponent<SceneSwitcher>();
 
-	/*	for (int i = 0; i < 700; i++)
+		for (int i = 0; i < 700; i++)
 		{
 			Entity* clonedSnow = RegisterEntityN();
 
 			snow->Clone(*clonedSnow, Vector3(0, 0, 0), Vector3(0, 0, 0));
-		}*/
+		}
 	
 
 	}
