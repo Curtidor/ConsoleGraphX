@@ -27,3 +27,12 @@ function ApplyBuildModeDefine()
         defines { "RunTime" }
     end
 end
+
+
+-- Copies the repo's Assets folder into the output dir after build, so asset
+-- paths like "Sprites/wall_sprite.cxsp" resolve relative to the executable.
+function CopyAssets()
+    postbuildcommands {
+        "{COPYDIR} %[%{wks.location}/Assets] %[%{cfg.targetdir}]"
+    }
+end
