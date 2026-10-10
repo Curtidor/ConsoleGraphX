@@ -6,6 +6,12 @@
 
 namespace ConsoleGraphX_Internal 
 {
+	SystemManager::SystemManager() 
+	{
+		_m_frameExecutor = FrameExecutor();
+	}
+
+
 	SystemManager::~SystemManager()
 	{
 		for (auto& systemPair : _m_systems)
@@ -14,30 +20,12 @@ namespace ConsoleGraphX_Internal
 		}
 	}
 
-	void SystemManager::RegisterCallTypeSystem(CALLTYPE callType, ConsoleGraphX::BaseSystem* system)
-	{
-		if (system == nullptr)
-		{
-			return;
-		}
-		_m_callTypeSystems[callType].push_back(system);
-	}
 
-	void SystemManager::CallSystems(CALLTYPE callType)
+	void SystemManager::RunFrameTimeEvent(FrameExecutionStage stage)
 	{
-		auto it = _m_callTypeSystems.find(callType);
-		if (it != _m_callTypeSystems.end())
+		for (auto& [type_index, base_system] : _m_systems)
 		{
-			for (auto& system : it->second)
-			{
-				switch (callType)
-				{
-				case ConsoleGraphX_Internal::EndOfFrame:
-					system->EndOfFrame();
-				default:
-					break;
-				}
-			}
+			_m_frameExecutor.ExecuteFrameStage(stage, *base_system);
 		}
 	}
 
@@ -56,3 +44,4 @@ namespace ConsoleGraphX_Internal
 		}
 	}
 };
+
