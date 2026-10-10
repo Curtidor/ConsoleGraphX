@@ -31,7 +31,6 @@ namespace ConsoleGraphX
         _m_systemManager.RegisterSystem<PlayerControllerSystem>();
         _m_systemManager.RegisterSystem<SceneSystem>();
         _m_systemManager.RegisterSystem<SpriteAnimationSystem>();
-        _m_systemManager.RegisterCallTypeSystem(ConsoleGraphX_Internal::EndOfFrame, _m_systemManager.GetSystem<SceneSystem>());
     #if MIN_BUILD == 1
         _m_window = nullptr;
     #endif 
