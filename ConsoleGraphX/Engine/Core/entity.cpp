@@ -38,7 +38,7 @@ namespace ConsoleGraphX
 {
     Entity::Entity(int id)
         : m_id(id), m_tag(""), _m_parent(nullptr),
-        _m_resourceManager(&ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager())
+		_m_resourceManager(&ConsoleGraphX_Internal::ResourceManager::GetActiveResourceManager()), _m_isPendingKill(false)
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
@@ -46,20 +46,20 @@ namespace ConsoleGraphX
 
     Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager)
         : m_id(ConsoleGraphX_Internal::EntityIDs::GetId()), m_tag(""),
-        _m_parent(nullptr), _m_resourceManager(resourceManager)
+		_m_parent(nullptr), _m_resourceManager(resourceManager), _m_isPendingKill(false)
     {
         m_tag = std::to_string(m_id);
         AddComponent<Transform>();
     }
 
     Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id)
-        : m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager)
+		: m_id(id), m_tag(std::to_string(id)), _m_parent(nullptr), _m_resourceManager(resourceManager), _m_isPendingKill(false)
     {
         AddComponent<Transform>();
     }
 
     Entity::Entity(ConsoleGraphX_Internal::ResourceManager* resourceManager, int id, const std::string& tag)
-        : m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager)
+		: m_id(id), m_tag(tag), _m_parent(nullptr), _m_resourceManager(resourceManager), _m_isPendingKill(false)
     {
         AddComponent<Transform>();
     }
@@ -74,6 +74,7 @@ namespace ConsoleGraphX
         _m_children(std::move(other._m_children)),
         _m_componentIdToIndexMap(std::move(other._m_componentIdToIndexMap)),
         _m_scriptIdToIndexes(std::move(other._m_scriptIdToIndexes)),
+		_m_isPendingKill(other._m_isPendingKill),
         m_id(other.m_id),
         m_tag(other.m_tag)
     {
@@ -201,18 +202,28 @@ namespace ConsoleGraphX
         }
     }
 
+    const std::unordered_set<Entity*>& Entity::GetChildren() const
+    {
+		return _m_children;
+    }
+
     void Entity::KillEntity()
     {
-        for (const Entity* child : _m_children)
+        for (Entity* child : _m_children)
         {
-            child->DestroyEntityResources();
+			child->_m_isPendingKill = true;
             ConsoleGraphX_Internal::EntityIDs::RecycleId(child->m_id);
         }
 
-        DestroyEntityResources();
         ConsoleGraphX_Internal::EntityIDs::RecycleId(m_id);
 
+        _m_isPendingKill = true;
         EntityDestroyedEvent.InvokeNFC(m_id);
+    }
+
+    bool Entity::IsAlive() const
+    {
+		return !_m_isPendingKill;
     }
 
     size_t Entity::GetId() const
@@ -225,11 +236,6 @@ namespace ConsoleGraphX
         return this->GetComponent<Transform>();
     }
 
-    void Entity::DestroyEntityResources() const
-    {
-        _m_resourceManager->DestroyEntityResources(_m_componentIdToIndexMap);
-        _m_resourceManager->DestroyEntityResources(_m_scriptIdToIndexes);
-    }
 
     ConsoleGraphX_Internal::ResourceManager& Entity::GetResourceManager() const
     {
