@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <utility>
 #include "./Engine/Core/Application/application.h"
-#include "./Engine/Core/Application/IGameModule.h"
+#include "./Engine/IGameModule.h"
 #include "./Engine/Core/Window/window_manager.h"
 #include "./Engine/Core/Profiler/profiler.h"
 #include "./Engine/Systems/input_system.h"
