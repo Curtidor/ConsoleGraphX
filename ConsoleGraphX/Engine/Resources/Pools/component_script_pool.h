@@ -22,10 +22,7 @@ namespace ConsoleGraphX_Internal
 
             script->Clone(clonedComponent, owner);
 
-            ResourceIndex newIndex = _GetOpenPoolIndex();
-            _InsertIntoPool(newIndex, std::move(clonedComponent)); 
-
-            return newIndex;
+            return PlaceResourceInPool(std::move(clonedComponent));;
         }
 
         template <typename T, typename... Args>
@@ -33,11 +30,7 @@ namespace ConsoleGraphX_Internal
         {
             static_assert(std::is_base_of_v<ConsoleGraphX::Script, T>, "T must be derived from Script");
 
-            ResourceIndex index = _GetOpenPoolIndex();
-
-            this->_InsertIntoPool(index, new T(std::forward<Args>(args)...));
-
-            return index;
+            return PlaceResourceInPool(new T(std::forward<Args>(args)...));
         }
     };
 };
