@@ -39,6 +39,8 @@ namespace ConsoleGraphX
         float fpsTimeCounter = 0.0f;
 
         const std::vector<std::shared_ptr<CrossProcessWindow>>& crossProcWindows = WindowManager::Instance().GetAllCrossProcessWindows();
+		ConsoleGraphX_Internal::SystemManager& systemManager = m_engine.GetSystemManager();
+		WindowManager& winManager = WindowManager::Instance();
 
         auto previousTime = std::chrono::high_resolution_clock::now();
         while (_m_state != ApplicationState::Stopped)
@@ -70,7 +72,7 @@ namespace ConsoleGraphX
         #if (MIN_BUILD == 1)
             Shutdown();
         #else
-           WindowManager::Instance().ProcessToCloseWindows();
+           winManager.ProcessToCloseWindows();
         #endif
 
            for (;;)
@@ -86,8 +88,7 @@ namespace ConsoleGraphX
                if (task) task();
            }
 
-           sceneSystem.GetActiveScene()->CleanUpDeadEntities();
-           m_engine.GetSystemManager().CallSystems(ConsoleGraphX_Internal::EndOfFrame);
+           systemManager.RunFrameTimeEvent(ConsoleGraphX_Internal::FrameExecutionStage::END_OF_FRAME);
 
         }
     }
