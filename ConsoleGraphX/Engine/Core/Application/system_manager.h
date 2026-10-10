@@ -2,11 +2,13 @@
 #include <unordered_map>
 #include <typeindex>
 #include <type_traits>
-#include "Engine\Systems\base_system.h"
 #include "Engine\Systems\scene_system.h"
+#include "Engine\Core\frame_executor.h"
+
 
 namespace ConsoleGraphX_Internal
 {
+
 	/**
 	 * @brief Manages systems using a runtime type index.
 	 *
@@ -15,18 +17,17 @@ namespace ConsoleGraphX_Internal
 	 * compile-time ID system for performance. The overhead of std::type_index
 	 * is negligible given that system queries are rare.
 	 */
-	enum CALLTYPE
-	{
-		EndOfFrame = 1
-	};
 
 	class SystemManager
 	{
 	private:
 		std::unordered_map<std::type_index, ConsoleGraphX::BaseSystem*> _m_systems;
-		std::unordered_map<CALLTYPE, std::vector<ConsoleGraphX::BaseSystem*>> _m_callTypeSystems;
+		FrameExecutor _m_frameExecutor;
+
+		
 
 	public:
+		SystemManager();
 		~SystemManager();
 
 		template <typename SystemType>
@@ -59,9 +60,9 @@ namespace ConsoleGraphX_Internal
 			return nullptr; // System not found
 		}
 
-		void RegisterCallTypeSystem(CALLTYPE callType, ConsoleGraphX::BaseSystem* system);
-		void CallSystems(CALLTYPE callType);
 
+		void RunFrameTimeEvent(FrameExecutionStage stage);
+		
 		void Update(float deltaTime, ConsoleGraphX::SceneSystem& sceneSystem);
 		void ShutDown();
 	};
