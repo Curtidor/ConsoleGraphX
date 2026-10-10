@@ -17,5 +17,6 @@ project "Editor"
     libdirs { "../bin/%{cfg.buildcfg}" }
 
     debugdir "%{cfg.targetdir}"
+    CopyAssets()
 
     ApplyBuildModeDefine()
