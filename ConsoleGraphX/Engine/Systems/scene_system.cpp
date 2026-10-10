@@ -10,9 +10,7 @@ namespace ConsoleGraphX
     void SceneSystem::RegisterScene(std::unique_ptr<Scene, void(*)(Scene*)> scene)
     {
         _m_scenes.emplace(scene->GetSceneName(), std::move(scene));
-
     }
-
 
     void SceneSystem::DeregisterScene(const std::string& name)
     {
@@ -21,7 +19,6 @@ namespace ConsoleGraphX
         if (name == _m_activeScene->GetSceneName())
             _m_activeScene = nullptr;
 
-
         DeleteScene(name);
     }
 
@@ -29,7 +26,7 @@ namespace ConsoleGraphX
     {
         _m_sceneToLoad = name;
 
-        if (!_m_activeScene)
+		if (!_m_activeScene) // if there is no active scene load immediately
         {
             LoadSceneImpl(_m_sceneToLoad);
             _m_sceneToLoad.clear();
@@ -38,7 +35,7 @@ namespace ConsoleGraphX
 
     void SceneSystem::LoadSceneImpl(const std::string& name)
     {
-        // just incase there isnt an already active scene 
+		// Destroy the current active scene
         if (_m_activeScene != nullptr)
         {
             _m_activeScene->Destroy();
@@ -57,6 +54,8 @@ namespace ConsoleGraphX
         _m_activeScene->Initialize();
 
         ConsoleGraphX_Internal::ResourceManager::SetActiveManager(&_m_activeScene->GetResourceManager());
+
+        _m_sceneToLoad.clear();
     }
 
     bool SceneSystem::IsSceneRegistered(const std::string& name)
@@ -76,6 +75,8 @@ namespace ConsoleGraphX
 
     void SceneSystem::EndOfFrame()
     {
+        _m_activeScene->CleanUpDeadEntities();
+
         if (_m_sceneToLoad.empty())
             return;
 
