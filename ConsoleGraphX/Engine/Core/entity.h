@@ -69,6 +69,8 @@ namespace ConsoleGraphX
         std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex> _m_componentIdToIndexMap;
         std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex> _m_scriptIdToIndexes;
 
+        bool _m_isPendingKill;
+
     private:
         void _CheckComponentExists(ConsoleGraphX_Internal::ResourceID componentId,
             const std::unordered_map<ConsoleGraphX_Internal::ResourceID, ConsoleGraphX_Internal::ResourceIndex>& indexMap);
@@ -161,10 +163,13 @@ namespace ConsoleGraphX
          */
         void RemoveChild(Entity* child);
 
+		const std::unordered_set<Entity*>& GetChildren() const;
+
         /**
          * @brief Destroys the entity, removing it from the ECS.
          */
         void KillEntity();
+        bool IsAlive() const;
 
         /**
          * @brief Gets a reference to the components associated with this entity.
@@ -272,7 +277,6 @@ namespace ConsoleGraphX
 
         Transform* GetTransform();
 
-        void DestroyEntityResources() const;
         ConsoleGraphX_Internal::ResourceManager& GetResourceManager() const;
 
         /**
