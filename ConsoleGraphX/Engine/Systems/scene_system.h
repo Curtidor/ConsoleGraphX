@@ -3,7 +3,6 @@
 #include <string>
 #include <memory>
 #include <type_traits>
-#include <string>
 #include "Engine\Resources\resource_manager.h"
 #include "Engine\Scene\scene.h"
 #include "Engine\Systems\base_system.h"
@@ -20,6 +19,8 @@ namespace ConsoleGraphX
 
     private:
         void LoadSceneImpl(const std::string& name);
+    protected:
+        virtual void EndOfFrame() override;
 
     public:
         SceneSystem();
@@ -39,7 +40,6 @@ namespace ConsoleGraphX
         Scene* GetActiveScene();
         ConsoleGraphX_Internal::ResourceManager& GetActiveResourceManager();
 
-        virtual void EndOfFrame() override;
     };
 
 };
