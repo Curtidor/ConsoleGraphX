@@ -6,7 +6,7 @@ import tkinter as tk
 from tkinter import filedialog, simpledialog
 from PIL import Image, ImageTk
 
-from Config.settings import SPRITE_ID
+from Config.settings import SPRITE_ID, ASSETS_DIR
 from SpriteMaker.sprite_utils import export_sprite
 
 
@@ -125,9 +125,11 @@ def convert_tile_set_with_transparency(image_path: str, tile_width, tile_height:
             user_file_name = file_name  # fallback to static/default
 
         save_file_name = f'{user_file_name}_{texture_id}.cxsp' if user_file_name else f'sprite_{texture_id}.cxsp'
+        # stored path stays relative to the Assets folder; the file itself is written there
         export_path = os.path.join('Animations', save_file_name)
+        os.makedirs(os.path.join(ASSETS_DIR, 'Animations'), exist_ok=True)
 
-        export_sprite(tile_width, tile_height, sprite_colors, export_path, texture_id, pallet=palette)
+        export_sprite(tile_width, tile_height, sprite_colors, os.path.join(ASSETS_DIR, export_path), texture_id, pallet=palette)
         id_to_path[texture_id] = export_path
         texture_id += 1
 
